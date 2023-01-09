@@ -1,0 +1,5 @@
+{
+  "jest.rootPath": "/src/",
+  "jest.showCoverageOnLoad": true,
+  "jest.autoRun": "watch"
+}
