@@ -14,6 +14,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+__exportStar(require("./textToData"), exports);
+__exportStar(require("./dataToText"), exports);
+__exportStar(require("./htmlToData"), exports);
+__exportStar(require("./dataToHtml"), exports);
+__exportStar(require("./helpers/cleanSpaces"), exports);
 __exportStar(require("./helpers/urlFromText"), exports);
 __exportStar(require("./helpers/tagsFromText"), exports);
 __exportStar(require("./helpers/scopesFromText"), exports);
