@@ -22,11 +22,11 @@ dataToText(data);
 returns
 
 ```
-"Lorem Ipsum
+Lorem Ipsum
 
 https://www.domain.com/
 
-#One #Two #Three @One @Two @Three"
+#One #Two #Three @One @Two @Three
 ```
 
 ### textToData()
