@@ -1,7 +1,7 @@
 import { cleanSpaces } from "./helpers/cleanSpaces";
-import { removeScopesFromText, scopesFromText } from "./helpers/scopesFromText";
-import { removeTagsFromText, tagsFromText } from "./helpers/tagsFromText";
-import { removeUrlFromText, urlFromText } from "./helpers/urlFromText";
+import { scopesFromText } from "./helpers/scopesFromText";
+import { tagsFromText } from "./helpers/tagsFromText";
+import { urlFromText } from "./helpers/urlFromText";
 import { TextWithData } from "./types";
 
 const htmlToData = (text: string): TextWithData | null => {

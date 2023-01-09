@@ -1,10 +1,11 @@
 {
-  "name": "data-text-mapper",
-  "version": "0.0.1",
+  "name": "@schafevormfenster/data-text-mapper",
+  "version": "0.0.2",
   "description": "Extracts data from text and generates text with data included.",
-  "module": "./dist/index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.js",
   "scripts": {
-    "build": "tsc --module commonjs",
+    "build": "tsc",
     "test": "jest --maxWorkers=25%",
     "test:watch": "jest --watch --maxWorkers=25%",
     "test:ci": "jest --runInBand"
@@ -20,10 +21,7 @@
     "transform",
     "extract"
   ],
-  "author": {
-    "name": "Jan-Henrik Hempel",
-    "email": "jan@schafe-vorm-fenster.de"
-  },
+  "author": "Jan-Henrik Hempel <jan@schafe-vorm-fenster.de>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/schafevormfenster/events-api/issues"
