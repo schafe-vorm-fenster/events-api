@@ -1,3 +1,5 @@
+export * from "./types";
+
 export * from "./textToData";
 export * from "./dataToText";
 export * from "./htmlToData";
