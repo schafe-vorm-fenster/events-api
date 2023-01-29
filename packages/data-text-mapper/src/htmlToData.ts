@@ -1,4 +1,5 @@
 import { cleanSpaces } from "./helpers/cleanSpaces";
+import { imageFromText } from "./helpers/imageFromText";
 import { scopesFromText } from "./helpers/scopesFromText";
 import { tagsFromText } from "./helpers/tagsFromText";
 import { urlFromText } from "./helpers/urlFromText";
@@ -19,10 +20,13 @@ const htmlToData = (text: string): TextWithData | null => {
     ""
   );
 
+  // strip image tag from description
+  description = description.replace(new RegExp("(<img .*/>)", "gi"), "");
+
   // strip html from description if wrapped in known tag
-  if (description.match('<p class="description">.*</p>'))
+  if (description.match('<p class="p-description">.*</p>'))
     description = description
-      .replace('<p class="description">', "")
+      .replace('<p class="p-description">', "")
       .replace("</p>", "");
 
   // final cleanup of the description
@@ -33,6 +37,7 @@ const htmlToData = (text: string): TextWithData | null => {
     url: urlFromText(text) || undefined,
     tags: tagsFromText(text) || undefined,
     scopes: scopesFromText(text) || undefined,
+    image: imageFromText(text) || undefined,
   };
 
   return textWithData;

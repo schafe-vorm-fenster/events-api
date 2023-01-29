@@ -29,6 +29,19 @@ describe("should return a valid url from a plain text", () => {
     expect(url).toBe("https://www.first.de/");
   });
 
+  test("returns null if image url", () => {
+    const text: string = "Lorem https://www.first.de/hello.png Ipsum";
+    const url: string | null = urlFromText(text);
+    expect(url).toBeNull();
+  });
+
+  test("returns proper url if multiple urls including image urls are includes", () => {
+    const text: string =
+      "Lorem https://www.first.de/hello.jpg Ipsum https://www.second.de/ Lorem";
+    const url: string | null = urlFromText(text);
+    expect(url).toBe("https://www.second.de/");
+  });
+
   test("returns null if no url is included", () => {
     const text: string = "Lorem Ipsum";
     const url: string | null = urlFromText(text);

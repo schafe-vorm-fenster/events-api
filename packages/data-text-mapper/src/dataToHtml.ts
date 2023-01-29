@@ -5,21 +5,25 @@ import { TextWithData } from "./types";
 const dataToHtml = (data: TextWithData): string => {
   let descriptionLine: string = cleanSpaces(data.description);
   if (!containsHtml(descriptionLine)) {
-    descriptionLine = `<p class="description">${descriptionLine}</p>`;
+    descriptionLine = `<p class="p-description">${descriptionLine}</p>`;
   }
 
+  const imageLine: string | null = data.image
+    ? `<img class="u-photo" src="${data.image}" />`
+    : null;
+
   const urlLine: string | null = data.url
-    ? `<p class="link"><a href="${data.url}">${data.url}</a></p>`
+    ? `<p class="link"><a class="u-url" href="${data.url}">${data.url}</a></p>`
     : null;
 
   const tags: string | null =
     data.tags
-      ?.map((tag: string) => `<span class="tag">#${tag}</span>`)
+      ?.map((tag: string) => `<span class="p-category">#${tag}</span>`)
       .join(" ") || null;
 
   const scopes: string | null =
     data.scopes
-      ?.map((scope: string) => `<span class="scope">@${scope}</span>`)
+      ?.map((scope: string) => `<span class="p-scope">@${scope}</span>`)
       .join(" ") || null;
 
   const tagScopeLine: string | null =
@@ -29,7 +33,7 @@ const dataToHtml = (data: TextWithData): string => {
         "</p>"
       : null;
 
-  return [descriptionLine, urlLine, tagScopeLine]
+  return [descriptionLine, imageLine, urlLine, tagScopeLine]
     .filter((line) => line !== null)
     .join("\n");
 };

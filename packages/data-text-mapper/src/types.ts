@@ -4,6 +4,7 @@ interface TextWithData {
   categories?: string[];
   tags?: string[];
   scopes?: string[];
+  image?: string;
 }
 
 export { TextWithData };
