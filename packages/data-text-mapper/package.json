@@ -1,6 +1,6 @@
 {
   "name": "@schafevormfenster/data-text-mapper",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "Extracts data from text and generates text with data included.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.js",
