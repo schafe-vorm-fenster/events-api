@@ -9,6 +9,12 @@ describe("should return extracted data from a plain text", () => {
     expect(object?.url).toBe("https://www.domain.com/");
   });
 
+  test("returns object with image url", () => {
+    const text: string = "Lorem https://www.domain.com/hello.png Ipsum";
+    const object: TextWithData | null = textToData(text);
+    expect(object?.image).toBe("https://www.domain.com/hello.png");
+  });
+
   test("returns object with tags", () => {
     const text: string = "Lorem #One Ipsum #Two Lorem #Three Ipsum";
     const object: TextWithData | null = textToData(text);
@@ -25,6 +31,12 @@ describe("should return extracted data from a plain text", () => {
 
   test("returns object with url stripped from description", () => {
     const text: string = "Lorem https://www.domain.com/path/param=value Ipsum";
+    const object: TextWithData | null = textToData(text);
+    expect(object?.description).toBe("Lorem Ipsum");
+  });
+
+  test("returns object with image url stripped from description", () => {
+    const text: string = "Lorem https://www.domain.com/hello.png Ipsum";
     const object: TextWithData | null = textToData(text);
     expect(object?.description).toBe("Lorem Ipsum");
   });

@@ -38,15 +38,26 @@ describe("should integrate data in plain text", () => {
     );
   });
 
-  test("returns text with url, tags and scopes", () => {
+  test("returns text with image url in a separate line", () => {
+    const data: TextWithData = {
+      description: "Lorem Ipsum",
+      image: "https://www.domain.com/image.png",
+    };
+    expect(dataToText(data)).toBe(
+      "Lorem Ipsum\n\nhttps://www.domain.com/image.png"
+    );
+  });
+
+  test("returns text with url, tags, scopes, and image url", () => {
     const data: TextWithData = {
       description: "Lorem Ipsum",
       url: "https://www.domain.com/",
       tags: ["One", "Two", "Three"],
       scopes: ["One", "Two", "Three"],
+      image: "https://www.domain.com/image.png",
     };
     expect(dataToText(data)).toBe(
-      "Lorem Ipsum\n\nhttps://www.domain.com/\n\n#One #Two #Three @One @Two @Three"
+      "Lorem Ipsum\n\nhttps://www.domain.com/image.png\n\nhttps://www.domain.com/\n\n#One #Two #Three @One @Two @Three"
     );
   });
 });
@@ -58,6 +69,7 @@ describe("should keep data after roundtrip transformation", () => {
       url: "https://www.domain.com/",
       tags: ["One", "Two", "Three"],
       scopes: ["One", "Two", "Three"],
+      image: "https://www.domain.com/image.png",
     };
     const transformed: TextWithData | null = textToData(dataToText(original));
     expect(transformed).toEqual(original);

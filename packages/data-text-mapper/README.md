@@ -1,8 +1,8 @@
 # data-text-mapper
 
-The `data-text-mapper` contains some utility functions to convert a structured text with link, tag and scope metadata into a combined plain text or html. As well it's made for encode an decode again.
+The `data-text-mapper` contains some utility functions to convert a structured text with link, tag, scope, and image metadata into a combined plain text or html. As well it's made for encode and decode in both directions.
 
-An example use case where it was made for, is to convert structured data given e.g. in ics event data to simplier google events by encoding the metadata inside the description.
+An example use case it was made for is to convert structured data given e.g. in ics event data to simplier google events by encoding the metadata within the description body.
 
 ## Examples
 
@@ -14,6 +14,7 @@ const data: TextWithData = {
     url: "https://www.domain.com/",
     tags: ["One", "Two", "Three"],
     scopes: ["One", "Two", "Three"],
+    image: "https://www.domain.com/image.jpg"
 };
 
 dataToText(data);
@@ -23,6 +24,8 @@ returns
 
 ```
 Lorem Ipsum
+
+https://www.domain.com/image.jpg
 
 https://www.domain.com/
 
@@ -41,6 +44,7 @@ const data: TextWithData = {
     url: "https://www.domain.com/",
     tags: ["One", "Two"],
     scopes: ["Three", "Four"],
+    image: "https://www.domain.com/image.jpg",
 };
 
 dataToHtml(data)
@@ -49,9 +53,10 @@ dataToHtml(data)
 returns
 
 ```
-<p class="description">Lorem Ipsum</p>
-<p class="link"><a href="https://www.domain.com/">https://www.domain.com/</a></p>
-<p class="taxonomy"><span class="tag">#One</span> <span class="tag">#Two</span> <span class="scope">@Three</span> <span class="scope">@Four</span></p>
+<p class="p-description">Lorem Ipsum</p>
+<img class="p-photo" src="https://www.domain.com/image.jpg" />
+<p class="link"><a class="u-url" href="https://www.domain.com/">https://www.domain.com/</a></p>
+<p class="taxonomy"><span class="p-category">#One</span> <span class="p-category">#Two</span> <span class="p-scope">@Three</span> <span class="p-scope">@Four</span></p>
 ```
 
 ### htmlToData()
