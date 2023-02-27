@@ -1,7 +1,7 @@
 {
   "name": "events-api",
   "version": "0.1.0",
-  "main": "index.js",
+  "main": "dist/index.js",
   "author": {
     "name": "Jan-Henrik Hempel",
     "email": "jan@schafe-vorm-fenster.de"

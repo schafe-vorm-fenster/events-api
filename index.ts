@@ -1,5 +1,5 @@
 import express, { Application } from "express";
-import Router from "./src/routes";
+import router from "./src/routes";
 
 const PORT = process.env.PORT || 80;
 
@@ -9,7 +9,7 @@ app.use(express.json());
 
 app.use(express.static("public"));
 
-app.use(Router);
+app.use(router);
 
 app.listen(PORT, () => {
   console.log("Server is running on port", PORT);
