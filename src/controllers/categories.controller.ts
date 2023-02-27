@@ -7,7 +7,7 @@ export type CategoriesResponse = ReadonlyArray<RuralEventCategory>;
 @Route("categories")
 export default class CategoriesController {
   @Get("/")
-  public async getMessage(): Promise<CategoriesResponse> {
+  public async getCategories(): Promise<CategoriesResponse> {
     return ruralEventCategories;
   }
 }

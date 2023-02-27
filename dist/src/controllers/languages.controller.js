@@ -21,7 +21,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tsoa_1 = require("tsoa");
 const languages_1 = require("../../settings/languages");
 let LanguagesController = class LanguagesController {
-    getMessage() {
+    getLanguages() {
         return __awaiter(this, void 0, void 0, function* () {
             return languages_1.svfLocales;
         });
@@ -32,7 +32,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], LanguagesController.prototype, "getMessage", null);
+], LanguagesController.prototype, "getLanguages", null);
 LanguagesController = __decorate([
     (0, tsoa_1.Route)("languages")
 ], LanguagesController);

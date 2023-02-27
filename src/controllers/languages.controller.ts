@@ -6,7 +6,7 @@ export type LanguagesResponse = ReadonlyArray<SvfLanguage>;
 @Route("languages")
 export default class LanguagesController {
   @Get("/")
-  public async getMessage(): Promise<LanguagesResponse> {
+  public async getLanguages(): Promise<LanguagesResponse> {
     return svfLocales;
   }
 }

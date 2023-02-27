@@ -52,7 +52,7 @@
 	"paths": {
 		"/categories": {
 			"get": {
-				"operationId": "GetMessage",
+				"operationId": "GetCategories",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -93,7 +93,7 @@
 		},
 		"/languages": {
 			"get": {
-				"operationId": "GetMessage",
+				"operationId": "GetLanguages",
 				"responses": {
 					"200": {
 						"description": "Ok",

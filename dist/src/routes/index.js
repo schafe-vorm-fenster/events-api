@@ -13,27 +13,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const apicache_1 = __importDefault(require("apicache"));
-const categories_controller_1 = __importDefault(require("../controllers/categories.controller"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
-const categories_controller_2 = __importDefault(require("../controllers/categories.controller"));
+const categories_controller_1 = __importDefault(require("../controllers/categories.controller"));
 const user_router_1 = __importDefault(require("./user.router"));
 const languages_controller_1 = __importDefault(require("../controllers/languages.controller"));
 const router = express_1.default.Router();
-const cache = apicache_1.default.options({ debug: true }).middleware;
-router.get("/ping", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const pingController = new categories_controller_1.default();
-    const response = yield pingController.getMessage();
-    return res.send(response);
-}));
-router.get("/languages", cache("1 month"), (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/languages", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const controller = new languages_controller_1.default();
-    const response = yield controller.getMessage();
+    const response = yield controller.getLanguages();
+    res.set("Cache-Control", "public, max-age=300, s-maxage=300, stale-while-revalidate=60, stale-if-error=60");
     return res.send(response);
 }));
-router.get("/categories", cache("1 month"), (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const controller = new categories_controller_2.default();
-    const response = yield controller.getMessage();
+router.get("/categories", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const controller = new categories_controller_1.default();
+    const response = yield controller.getCategories();
+    res.set("Cache-Control", "public, max-age=300, s-maxage=300, stale-while-revalidate=60, stale-if-error=60");
     return res.send(response);
 }));
 router.use("/users", user_router_1.default);

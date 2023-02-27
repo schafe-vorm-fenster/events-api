@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "@cospired/i18n-iso-languages": "^4.0.1",
-    "apicache": "^1.6.3",
     "express": "^4.18.2",
     "swagger-ui-express": "^4.6.1",
     "tsoa": "^5.1.1"

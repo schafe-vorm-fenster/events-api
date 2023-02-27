@@ -21,7 +21,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tsoa_1 = require("tsoa");
 const ruralEventCategory_1 = require("../../packages/rural-event-categories/src/ruralEventCategory");
 let CategoriesController = class CategoriesController {
-    getMessage() {
+    getCategories() {
         return __awaiter(this, void 0, void 0, function* () {
             return ruralEventCategory_1.ruralEventCategories;
         });
@@ -32,7 +32,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], CategoriesController.prototype, "getMessage", null);
+], CategoriesController.prototype, "getCategories", null);
 CategoriesController = __decorate([
     (0, tsoa_1.Route)("categories")
 ], CategoriesController);
