@@ -42,4 +42,10 @@ router.get("/:community", (_req, res) => __awaiter(void 0, void 0, void 0, funct
     console.log(_req.params);
     return res.send({ debug: "all events for community" });
 }));
+router.post("/:id", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const controller = new events_controller_1.default();
+    let response = undefined;
+    console.log(_req.params);
+    return res.send({ debug: "all events for community" });
+}));
 exports.default = router;

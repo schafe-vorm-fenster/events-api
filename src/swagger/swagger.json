@@ -26,6 +26,25 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"Error": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"message": {
+						"type": "string"
+					},
+					"stack": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"ReadonlyArray_SvfLanguage_": {
 				"properties": {},
 				"type": "object",
@@ -78,7 +97,7 @@
 				"operationId": "GetEventsForCommunityFilteredByScopeAndCategory",
 				"responses": {
 					"200": {
-						"description": "Ok",
+						"description": "Okay",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -86,6 +105,12 @@
 								}
 							}
 						}
+					},
+					"204": {
+						"description": "No Events"
+					},
+					"400": {
+						"description": "Invalid Parameters"
 					}
 				},
 				"description": "Returns a list of events for a given community.",
@@ -138,7 +163,7 @@
 				"operationId": "GetEventsForCommunityFilteredByScope",
 				"responses": {
 					"200": {
-						"description": "Ok",
+						"description": "Okay",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -146,6 +171,12 @@
 								}
 							}
 						}
+					},
+					"204": {
+						"description": "No Events"
+					},
+					"400": {
+						"description": "Invalid Parameters"
 					}
 				},
 				"description": "Returns a list of events for a given community.",
@@ -190,7 +221,7 @@
 				"operationId": "GetEventsForCommunity",
 				"responses": {
 					"200": {
-						"description": "Ok",
+						"description": "Okay",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -198,6 +229,12 @@
 								}
 							}
 						}
+					},
+					"204": {
+						"description": "No Events"
+					},
+					"400": {
+						"description": "Invalid Parameters"
 					}
 				},
 				"description": "Returns a list of events for a given community.",
@@ -226,6 +263,67 @@
 						}
 					}
 				]
+			}
+		},
+		"/events/{id}": {
+			"post": {
+				"operationId": "CreateEvent",
+				"responses": {
+					"201": {
+						"description": "Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/EventsResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Failed",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Events"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "string"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/languages": {

@@ -40,4 +40,11 @@ router.get("/:community", async (_req, res) => {
   return res.send({ debug: "all events for community" });
 });
 
+router.post("/:id", async (_req, res) => {
+  const controller = new EventsController();
+  let response = undefined;
+  console.log(_req.params);
+  return res.send({ debug: "all events for community" });
+});
+
 export default router;

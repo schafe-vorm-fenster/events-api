@@ -1,4 +1,14 @@
-import { Get, Path, Query, Route, Tags } from "tsoa";
+import {
+  Body,
+  Get,
+  Path,
+  Post,
+  Query,
+  Route,
+  Response,
+  SuccessResponse,
+  Tags,
+} from "tsoa";
 import { RuralEventCategory } from "../../packages/rural-event-categories/src/ruralEventCategoryTypes";
 import { RuralEventScope } from "../../packages/rural-event-types/dist/ruralEventTypes";
 
@@ -19,6 +29,9 @@ export default class EventsController {
    * @param category Category to filter events by, values see RuralEventCategory. If no value is provided, all categories are returned.
    */
   @Get("{community}/{scope}/{category}")
+  @SuccessResponse("200", "Okay")
+  @Response("204", "No Events")
+  @Response("400", "Invalid Parameters")
   public async getEventsForCommunityFilteredByScopeAndCategory(
     @Path() community: string,
     @Path() scope: string,
@@ -43,6 +56,9 @@ export default class EventsController {
    * @param days Number of days to look ahead for events. If no value is provided, 30 days will be used.
    */
   @Get("{community}/{scope}")
+  @SuccessResponse("200", "Okay")
+  @Response("204", "No Events")
+  @Response("400", "Invalid Parameters")
   public async getEventsForCommunityFilteredByScope(
     @Path() community: string,
     @Path() scope: string,
@@ -65,6 +81,9 @@ export default class EventsController {
    * @param days Number of days to look ahead for events. If no value is provided, 30 days will be used.
    */
   @Get("{community}")
+  @SuccessResponse("200", "Okay")
+  @Response("204", "No Events")
+  @Response("400", "Invalid Parameters")
   public async getEventsForCommunity(
     @Path() community: string,
     @Query() days?: number
@@ -77,6 +96,17 @@ export default class EventsController {
       throw new Error("Community must match the pattern 'geoname-1234567'");
     }
 
+    return { name: "jan" };
+  }
+
+  @Post("{id}")
+  @SuccessResponse("201", "Created")
+  @Response<Error>(401, "Unauthorized")
+  @Response<Error>(422, "Validation Failed")
+  public async createEvent(
+    @Path() id: string,
+    @Body() requestBody: string
+  ): Promise<EventsResponse> {
     return { name: "jan" };
   }
 }

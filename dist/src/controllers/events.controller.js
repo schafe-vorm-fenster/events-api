@@ -76,9 +76,17 @@ let EventsController = class EventsController {
             return { name: "jan" };
         });
     }
+    createEvent(id, requestBody) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return { name: "jan" };
+        });
+    }
 };
 __decorate([
     (0, tsoa_1.Get)("{community}/{scope}/{category}"),
+    (0, tsoa_1.SuccessResponse)("200", "Okay"),
+    (0, tsoa_1.Response)("204", "No Events"),
+    (0, tsoa_1.Response)("400", "Invalid Parameters"),
     __param(0, (0, tsoa_1.Path)()),
     __param(1, (0, tsoa_1.Path)()),
     __param(2, (0, tsoa_1.Path)()),
@@ -89,6 +97,9 @@ __decorate([
 ], EventsController.prototype, "getEventsForCommunityFilteredByScopeAndCategory", null);
 __decorate([
     (0, tsoa_1.Get)("{community}/{scope}"),
+    (0, tsoa_1.SuccessResponse)("200", "Okay"),
+    (0, tsoa_1.Response)("204", "No Events"),
+    (0, tsoa_1.Response)("400", "Invalid Parameters"),
     __param(0, (0, tsoa_1.Path)()),
     __param(1, (0, tsoa_1.Path)()),
     __param(2, (0, tsoa_1.Query)()),
@@ -98,12 +109,26 @@ __decorate([
 ], EventsController.prototype, "getEventsForCommunityFilteredByScope", null);
 __decorate([
     (0, tsoa_1.Get)("{community}"),
+    (0, tsoa_1.SuccessResponse)("200", "Okay"),
+    (0, tsoa_1.Response)("204", "No Events"),
+    (0, tsoa_1.Response)("400", "Invalid Parameters"),
     __param(0, (0, tsoa_1.Path)()),
     __param(1, (0, tsoa_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Number]),
     __metadata("design:returntype", Promise)
 ], EventsController.prototype, "getEventsForCommunity", null);
+__decorate([
+    (0, tsoa_1.Post)("{id}"),
+    (0, tsoa_1.SuccessResponse)("201", "Created"),
+    (0, tsoa_1.Response)(401, "Unauthorized"),
+    (0, tsoa_1.Response)(422, "Validation Failed"),
+    __param(0, (0, tsoa_1.Path)()),
+    __param(1, (0, tsoa_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], EventsController.prototype, "createEvent", null);
 EventsController = __decorate([
     (0, tsoa_1.Route)("events"),
     (0, tsoa_1.Tags)("Events")
