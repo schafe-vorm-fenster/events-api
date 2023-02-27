@@ -1,8 +1,9 @@
 import express from "express";
 import swaggerUi from "swagger-ui-express";
 import CategoriesController from "../controllers/categories.controller";
-import UserRouter from "./user.router";
+import EventsRouter from "./events.router";
 import LanguagesController from "../controllers/languages.controller";
+import * as swaggerDocument from "../swagger/swagger.json";
 
 const router = express.Router();
 
@@ -26,18 +27,11 @@ router.get("/categories", async (_req, res) => {
   return res.send(response);
 });
 
-router.use("/users", UserRouter);
+router.use("/events", EventsRouter);
 
 router.use(express.static("public"));
 
 router.use("/api-docs", swaggerUi.serve);
-router.get(
-  "/api-docs",
-  swaggerUi.setup(undefined, {
-    swaggerOptions: {
-      url: "/swagger.json",
-    },
-  })
-);
+router.get("/api-docs", swaggerUi.setup(swaggerDocument));
 
 export default router;

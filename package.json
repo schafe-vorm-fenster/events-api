@@ -1,7 +1,7 @@
 {
   "name": "events-api",
   "version": "0.1.0",
-  "main": "dist/index.js",
+  "main": "index.ts",
   "author": {
     "name": "Jan-Henrik Hempel",
     "email": "jan@schafe-vorm-fenster.de"
@@ -9,10 +9,10 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "npx tsc && tsoa spec",
+    "build": "tsc",
     "swagger": "tsoa spec",
     "start": "node dist/index.js",
-    "dev": "yarn build && concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
+    "dev": "concurrently \"tsc --watch\" \"nodemon -q dist/index.js\"",
     "test": "jest --maxWorkers=25%",
     "test:watch": "jest --watch --maxWorkers=25%"
   },

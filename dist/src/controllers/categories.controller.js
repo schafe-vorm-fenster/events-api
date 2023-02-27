@@ -21,6 +21,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tsoa_1 = require("tsoa");
 const ruralEventCategory_1 = require("../../packages/rural-event-categories/src/ruralEventCategory");
 let CategoriesController = class CategoriesController {
+    /**
+     * Returns a list of categories supported by the app incl. all locales.
+     */
     getCategories() {
         return __awaiter(this, void 0, void 0, function* () {
             return ruralEventCategory_1.ruralEventCategories;
@@ -34,6 +37,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], CategoriesController.prototype, "getCategories", null);
 CategoriesController = __decorate([
-    (0, tsoa_1.Route)("categories")
+    (0, tsoa_1.Route)("categories"),
+    (0, tsoa_1.Tags)("Constants")
 ], CategoriesController);
 exports.default = CategoriesController;

@@ -1,0 +1,260 @@
+{
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"ReadonlyArray_RuralEventCategory_": {
+				"properties": {},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CategoriesResponse": {
+				"$ref": "#/components/schemas/ReadonlyArray_RuralEventCategory_"
+			},
+			"EventsResponse": {
+				"properties": {
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ReadonlyArray_SvfLanguage_": {
+				"properties": {},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"LanguagesResponse": {
+				"$ref": "#/components/schemas/ReadonlyArray_SvfLanguage_"
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "events-api",
+		"version": "0.1.0",
+		"license": {
+			"name": "MIT"
+		},
+		"contact": {
+			"name": "Jan-Henrik Hempel",
+			"email": "jan@schafe-vorm-fenster.de"
+		}
+	},
+	"openapi": "3.0.0",
+	"paths": {
+		"/categories": {
+			"get": {
+				"operationId": "GetCategories",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CategoriesResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Returns a list of categories supported by the app incl. all locales.",
+				"tags": [
+					"Constants"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/events/{community}/{scope}/{category}": {
+			"get": {
+				"operationId": "GetEventsForCommunityFilteredByScopeAndCategory",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/EventsResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Returns a list of events for a given community.",
+				"tags": [
+					"Events"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "Geonames.org id of the community, e.g. \"geoname-2838887\".",
+						"in": "path",
+						"name": "community",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Scope to filter events by, values see RuralEventScope. If no value is provided, all scopes are returned.",
+						"in": "path",
+						"name": "scope",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Category to filter events by, values see RuralEventCategory. If no value is provided, all categories are returned.",
+						"in": "path",
+						"name": "category",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "days",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/events/{community}/{scope}": {
+			"get": {
+				"operationId": "GetEventsForCommunityFilteredByScope",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/EventsResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Returns a list of events for a given community.",
+				"tags": [
+					"Events"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "Geonames.org id of the community, e.g. \"geoname-2838887\".",
+						"in": "path",
+						"name": "community",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Scope to filter events by, values see RuralEventScope. If no value is provided, all scopes are returned.",
+						"in": "path",
+						"name": "scope",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Number of days to look ahead for events. If no value is provided, 30 days will be used.",
+						"in": "query",
+						"name": "days",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/events/{community}": {
+			"get": {
+				"operationId": "GetEventsForCommunity",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/EventsResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Returns a list of events for a given community.",
+				"tags": [
+					"Events"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "Geonames.org id of the community, e.g. \"geoname-2838887\".",
+						"in": "path",
+						"name": "community",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Number of days to look ahead for events. If no value is provided, 30 days will be used.",
+						"in": "query",
+						"name": "days",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/languages": {
+			"get": {
+				"operationId": "GetLanguages",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LanguagesResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Returns a list of languages supported by the app incl. all locales.",
+				"tags": [
+					"Constants"
+				],
+				"security": [],
+				"parameters": []
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/"
+		}
+	]
+}

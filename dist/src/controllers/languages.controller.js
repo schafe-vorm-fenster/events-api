@@ -21,6 +21,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tsoa_1 = require("tsoa");
 const languages_1 = require("../../settings/languages");
 let LanguagesController = class LanguagesController {
+    /**
+     * Returns a list of languages supported by the app incl. all locales.
+     */
     getLanguages() {
         return __awaiter(this, void 0, void 0, function* () {
             return languages_1.svfLocales;
@@ -34,6 +37,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], LanguagesController.prototype, "getLanguages", null);
 LanguagesController = __decorate([
-    (0, tsoa_1.Route)("languages")
+    (0, tsoa_1.Route)("languages"),
+    (0, tsoa_1.Tags)("Constants")
 ], LanguagesController);
 exports.default = LanguagesController;
