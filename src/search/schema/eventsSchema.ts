@@ -12,7 +12,9 @@ const eventsSchema: object = {
     { name: "image", type: "string" }, // image link
     { name: "document", type: "string" }, // pdf link
     { name: "categories", type: "string[]", facet: true }, // svf categories
-    { name: "classification", type: "string[]", facet: true }, // googles classification
+    { name: "classification.l1", type: "string[]", facet: true }, // googles classification
+    { name: "classification.l2", type: "string[]", facet: true }, // googles classification
+    { name: "classification.l3", type: "string[]", facet: true }, // googles classification
 
     // date and time
     { name: "start", type: "int64" },
