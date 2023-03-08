@@ -4,6 +4,7 @@ import CategoriesController from "../controllers/categories.controller";
 import EventsRouter from "./events.router";
 import LanguagesController from "../controllers/languages.controller";
 import * as swaggerDocument from "../swagger/swagger.json";
+import SchemaRouter from "./schema.router";
 
 const router = express.Router();
 
@@ -28,6 +29,8 @@ router.get("/categories", async (_req, res) => {
 });
 
 router.use("/events", EventsRouter);
+
+router.use("/schema", SchemaRouter);
 
 router.use(express.static("public"));
 

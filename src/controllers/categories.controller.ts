@@ -1,6 +1,6 @@
 import { Get, Route, Tags } from "tsoa";
-import { ruralEventCategories } from "../../packages/rural-event-categories/src/ruralEventCategory";
-import { RuralEventCategory } from "../../packages/rural-event-categories/src/ruralEventCategoryTypes";
+import { ruralEventCategories } from "../../packages/rural-event-categories/src/types/ruralEventCategory";
+import { RuralEventCategory } from "../../packages/rural-event-categories/src/types/ruralEventCategoryTypes";
 
 export type CategoriesResponse = ReadonlyArray<RuralEventCategory>;
 

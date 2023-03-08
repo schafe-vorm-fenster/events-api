@@ -9,7 +9,8 @@ import {
   SuccessResponse,
   Tags,
 } from "tsoa";
-import { RuralEventCategory } from "../../packages/rural-event-categories/src/ruralEventCategoryTypes";
+import { RuralEventCategory } from "../../packages/rural-event-categories/src/types/ruralEventCategoryTypes";
+
 import { RuralEventScope } from "../../packages/rural-event-types/dist/ruralEventTypes";
 
 type ScopeFilter = RuralEventScope | undefined;

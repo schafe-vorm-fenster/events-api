@@ -17,10 +17,12 @@
     "test:watch": "jest --watch --maxWorkers=25%"
   },
   "dependencies": {
+    "@babel/runtime": "^7.21.0",
     "@cospired/i18n-iso-languages": "^4.0.1",
     "express": "^4.18.2",
     "swagger-ui-express": "^4.6.1",
-    "tsoa": "^5.1.1"
+    "tsoa": "^5.1.1",
+    "typesense": "^1.5.3"
   },
   "devDependencies": {
     "@types/apicache": "^1.6.1",

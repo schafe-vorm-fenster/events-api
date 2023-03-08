@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const events_controller_1 = __importDefault(require("../controllers/events.controller"));
+const eventsSchema_1 = __importDefault(require("../search/schema/eventsSchema"));
 const typesenseClient_1 = __importDefault(require("../search/typesenseClient"));
 const router = express_1.default.Router();
 router.get("/test", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -35,6 +36,26 @@ router.get("/test", (_req, res) => __awaiter(void 0, void 0, void 0, function* (
         res.send(err);
     });
     // return res.send({ debug: "all events for community" });
+}));
+router.post("/schema", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.debug("POST: /events/schema");
+    // await client.collections("events").delete();
+    typesenseClient_1.default
+        .collections()
+        .create(eventsSchema_1.default)
+        .then((data) => {
+        console.debug(data);
+        res.send(data);
+    }, (err) => {
+        res.send(err);
+    });
+    // console.log(_req.params);
+    // return res.send({ debug: "all events for community" });
+}));
+router.get("/schema/list", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.debug("GET: /events/schema/list");
+    const collections = yield typesenseClient_1.default.collections().retrieve();
+    return res.send(collections);
 }));
 router.get("/:community/:scope/:category", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const controller = new events_controller_1.default();

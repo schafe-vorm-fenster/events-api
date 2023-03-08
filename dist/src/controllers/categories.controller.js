@@ -19,7 +19,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const tsoa_1 = require("tsoa");
-const ruralEventCategory_1 = require("../../packages/rural-event-categories/src/ruralEventCategory");
+const ruralEventCategory_1 = require("../../packages/rural-event-categories/src/types/ruralEventCategory");
 let CategoriesController = class CategoriesController {
     /**
      * Returns a list of categories supported by the app incl. all locales.

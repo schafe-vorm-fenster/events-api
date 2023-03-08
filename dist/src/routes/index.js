@@ -41,6 +41,7 @@ const categories_controller_1 = __importDefault(require("../controllers/categori
 const events_router_1 = __importDefault(require("./events.router"));
 const languages_controller_1 = __importDefault(require("../controllers/languages.controller"));
 const swaggerDocument = __importStar(require("../swagger/swagger.json"));
+const schema_router_1 = __importDefault(require("./schema.router"));
 const router = express_1.default.Router();
 router.get("/languages", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const controller = new languages_controller_1.default();
@@ -55,6 +56,7 @@ router.get("/categories", (_req, res) => __awaiter(void 0, void 0, void 0, funct
     return res.send(response);
 }));
 router.use("/events", events_router_1.default);
+router.use("/schema", schema_router_1.default);
 router.use(express_1.default.static("public"));
 router.use("/api-docs", swagger_ui_express_1.default.serve);
 router.get("/api-docs", swagger_ui_express_1.default.setup(swaggerDocument));
