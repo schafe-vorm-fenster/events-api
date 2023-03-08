@@ -4,12 +4,12 @@ const Typesense = require("typesense");
 const client = new Typesense.Client({
     nodes: [
         {
-            host: "localhost",
-            port: "8108",
-            protocol: "http", // For Typesense Cloud use https
+            host: process.env.TYPESENSE_HOST || "localhost",
+            port: process.env.TYPESENSE_PORT || "8108",
+            protocol: process.env.TYPESENSE_PROTOCOL || "http", // For Typesense Cloud use https
         },
     ],
-    apiKey: "xyz",
-    connectionTimeoutSeconds: 5,
+    apiKey: process.env.TYPESENSE_API_KEY || "xyz",
+    connectionTimeoutSeconds: process.env.TYPESENSE_CONNECTION_TIMEOUT_SECONDS || 5,
 });
 exports.default = client;
