@@ -267,6 +267,33 @@
 				]
 			}
 		},
+		"/events": {
+			"get": {
+				"operationId": "GetAllEvents",
+				"responses": {
+					"200": {
+						"description": "Okay",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"204": {
+						"description": "No Events"
+					},
+					"400": {
+						"description": "Invalid Parameters"
+					}
+				},
+				"description": "Returns a list of events for a given community.",
+				"tags": [
+					"Events"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
 		"/events/{id}": {
 			"post": {
 				"operationId": "CreateEvent",
@@ -275,9 +302,7 @@
 						"description": "Created",
 						"content": {
 							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/EventsResponse"
-								}
+								"schema": {}
 							}
 						}
 					},
@@ -315,17 +340,7 @@
 							"type": "string"
 						}
 					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "string"
-							}
-						}
-					}
-				}
+				]
 			}
 		},
 		"/languages": {
