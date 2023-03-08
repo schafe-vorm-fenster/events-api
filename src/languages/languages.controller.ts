@@ -1,5 +1,6 @@
 import { Get, Route, Tags } from "tsoa";
-import { SvfLanguage, svfLocales } from "../../settings/languages";
+import { svfLocales } from "./languages.config";
+import { SvfLanguage } from "./languages.types";
 
 export type LanguagesResponse = ReadonlyArray<SvfLanguage>;
 

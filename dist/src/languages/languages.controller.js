@@ -19,14 +19,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const tsoa_1 = require("tsoa");
-const languages_1 = require("../../settings/languages");
+const languages_config_1 = require("./languages.config");
 let LanguagesController = class LanguagesController {
     /**
      * Returns a list of languages supported by the app incl. all locales.
      */
     getLanguages() {
         return __awaiter(this, void 0, void 0, function* () {
-            return languages_1.svfLocales;
+            return languages_config_1.svfLocales;
         });
     }
 };

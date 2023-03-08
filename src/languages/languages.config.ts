@@ -1,16 +1,5 @@
+import { SvfLanguage } from "./languages.types";
 const languages = require("@cospired/i18n-iso-languages");
-
-type SvfLocale = "de" | "en" | "pl";
-
-interface SvfLanguageLocalization {
-  locale: SvfLocale;
-  name: string;
-}
-
-export interface SvfLanguage {
-  locale: SvfLocale;
-  localizations: SvfLanguageLocalization[];
-}
 
 export const svfLocales: ReadonlyArray<SvfLanguage> = [
   {
