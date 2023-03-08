@@ -1,9 +1,10 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response as Res } from "express";
+import { Delete, Response, Route, SuccessResponse, Tags } from "tsoa";
 import SchemaController from "./schema.controller";
 
 const SchemaRouter = express.Router();
 
-SchemaRouter.post("/:schema", async (_req: Request, res: Response) => {
+SchemaRouter.post("/:schema", async (_req: Request, res: Res) => {
   console.debug("POST: /schema/{schema}");
   console.debug(_req.params);
 
@@ -23,7 +24,7 @@ SchemaRouter.post("/:schema", async (_req: Request, res: Response) => {
   return res.send(response);
 });
 
-SchemaRouter.delete("/:schema", async (_req: Request, res: Response) => {
+SchemaRouter.delete("/:schema", async (_req: Request, res: Res) => {
   console.debug("DELETE: /schema/{schema}");
   console.debug(_req.params);
 
@@ -43,7 +44,7 @@ SchemaRouter.delete("/:schema", async (_req: Request, res: Response) => {
   return res.send(response);
 });
 
-SchemaRouter.get("/list", async (_req: Request, res: Response) => {
+SchemaRouter.get("/list", async (_req: Request, res: Res) => {
   console.debug("GET: /schema/list");
   console.debug(_req.params);
   const controller = new SchemaController();
