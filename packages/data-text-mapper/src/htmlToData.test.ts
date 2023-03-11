@@ -1,5 +1,4 @@
 import { dataToHtml } from "./dataToHtml";
-import { dataToText } from "./dataToText";
 import { htmlToData } from "./htmlToData";
 import { TextWithData } from "./types";
 

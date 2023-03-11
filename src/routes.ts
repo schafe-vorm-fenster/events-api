@@ -5,6 +5,7 @@ import * as swaggerDocument from "./swagger/swagger.json";
 import SchemaRouter from "./schema/schema.router";
 import CategoriesRouter from "./categories/categories.router";
 import LanguagesRouter from "./languages/languages.router";
+import AuthRouter from "./auth/auth.middleware";
 
 const router = express.Router();
 
@@ -13,7 +14,7 @@ router.use(express.static("public"));
 router.use("/api-docs", swaggerUi.serve);
 router.get("/api-docs", swaggerUi.setup(swaggerDocument));
 
-// TODO: Add auth token header handling
+router.use("*", AuthRouter);
 
 router.use("/languages", LanguagesRouter);
 

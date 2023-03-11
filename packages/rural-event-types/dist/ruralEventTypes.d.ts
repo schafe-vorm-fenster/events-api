@@ -1,1 +1,9 @@
-export type RuralEventScope = "community" | "municipality" | "county" | "state" | "country" | "global" | "neighborhood" | "region";
+export type RuralEventScope =
+  | "community"
+  | "nearby"
+  | "region"
+  | "municipality"
+  | "county"
+  | "state"
+  | "country"
+  | "global";

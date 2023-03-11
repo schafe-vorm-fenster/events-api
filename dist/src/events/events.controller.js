@@ -24,9 +24,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const http_errors_1 = __importDefault(require("http-errors"));
 const tsoa_1 = require("tsoa");
-const events_mock_1 = require("./events.mock");
+const uuid_by_string_1 = __importDefault(require("uuid-by-string"));
+const classifyContent_1 = require("./classify/classifyContent");
+const getMetadataFromContent_1 = require("./classify/getMetadataFromContent");
+const geoCodeLocation_1 = require("./geocode/geoCodeLocation");
+const buildIndexableEvent_1 = require("./helpers/buildIndexableEvent");
+const checkIfJsonObject_1 = require("./helpers/checkIfJsonObject");
+const getUniqueIdStringForEvent_1 = require("./helpers/getUniqueIdStringForEvent");
+const validateEventJsonObject_1 = require("./helpers/validateEventJsonObject");
+const mapScopes_1 = require("./scopes/mapScopes");
 const client_1 = __importDefault(require("./search/client"));
+const translateContent_1 = require("./translate/translateContent");
 let EventsController = class EventsController {
     /**
      * Returns a list of events for a given community.
@@ -105,20 +115,61 @@ let EventsController = class EventsController {
             return result;
         });
     }
-    createEvent(id
-    // @Body() requestBody: string
-    ) {
+    createEvent(eventObject) {
         return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // check incoming data
+                (0, checkIfJsonObject_1.checkIfJsonObject)(eventObject);
+                (0, validateEventJsonObject_1.validateEventJsonObject)(eventObject);
+            }
+            catch (error) {
+                throw (0, http_errors_1.default)(422, "request data is not valid: " + error.message);
+            }
+            // enhance event data
+            let uuid;
+            let geolocation;
+            let metadata;
+            let scope;
+            let classification;
+            let translatedContent;
+            try {
+                // create uuid based on the event data
+                uuid = (0, uuid_by_string_1.default)((0, getUniqueIdStringForEvent_1.getUniqueIdStringForEvent)(eventObject)); // low runtime
+                metadata = (0, getMetadataFromContent_1.getMetadataFromContent)(eventObject === null || eventObject === void 0 ? void 0 : eventObject.description); // data needed in the next steps
+                // do in parallel to save time
+                [geolocation, scope, classification, translatedContent] =
+                    yield Promise.all([
+                        (0, geoCodeLocation_1.geoCodeLocation)(eventObject === null || eventObject === void 0 ? void 0 : eventObject.location),
+                        (0, mapScopes_1.mapScopes)(metadata === null || metadata === void 0 ? void 0 : metadata.scopes),
+                        (0, classifyContent_1.classifyContent)(metadata === null || metadata === void 0 ? void 0 : metadata.tags, eventObject.summary, eventObject.description),
+                        (0, translateContent_1.translateContent)(eventObject.summary, eventObject.description),
+                    ]);
+            }
+            catch (error) {
+                throw (0, http_errors_1.default)(422, "could not process event data: " + error.message);
+            }
+            // TODO: build proper inexable object
+            const newEvent = yield (0, buildIndexableEvent_1.buildIndexableEvent)(eventObject, uuid, geolocation, metadata, scope, classification, translatedContent);
             const result = yield client_1.default
                 .collections("events")
                 .documents()
-                .create(events_mock_1.mockEventCommunity)
+                .create(newEvent)
                 .then((data) => {
                 return data;
             }, (err) => {
                 return err;
             });
-            return { name: "CREATE", debug: result };
+            return {
+                name: "CREATE",
+                newEvent: newEvent,
+                uuid: uuid,
+                scope: scope,
+                classification: classification,
+                translations: translatedContent,
+                meta: metadata || {},
+                geo: geolocation,
+                request: result,
+            };
         });
     }
 };
@@ -168,14 +219,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], EventsController.prototype, "getAllEvents", null);
 __decorate([
-    (0, tsoa_1.Post)("{id}") // TODO: maybe let the app set th id to ensure uniqueness?
+    (0, tsoa_1.Post)("/") // TODO: maybe let the app set the id to ensure uniqueness?
     ,
     (0, tsoa_1.SuccessResponse)("201", "Created"),
-    (0, tsoa_1.Response)(401, "Unauthorized"),
-    (0, tsoa_1.Response)(422, "Validation Failed"),
-    __param(0, (0, tsoa_1.Path)()),
+    (0, tsoa_1.Response)(422, "Unprocessable Entity"),
+    __param(0, (0, tsoa_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], EventsController.prototype, "createEvent", null);
 EventsController = __decorate([

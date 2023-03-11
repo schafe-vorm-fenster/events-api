@@ -33,11 +33,12 @@ const swaggerDocument = __importStar(require("./swagger/swagger.json"));
 const schema_router_1 = __importDefault(require("./schema/schema.router"));
 const categories_router_1 = __importDefault(require("./categories/categories.router"));
 const languages_router_1 = __importDefault(require("./languages/languages.router"));
+const auth_middleware_1 = __importDefault(require("./auth/auth.middleware"));
 const router = express_1.default.Router();
 router.use(express_1.default.static("public"));
 router.use("/api-docs", swagger_ui_express_1.default.serve);
 router.get("/api-docs", swagger_ui_express_1.default.setup(swaggerDocument));
-// TODO: Add auth token header handling
+router.use("*", auth_middleware_1.default);
 router.use("/languages", languages_router_1.default);
 router.use("/categories", categories_router_1.default);
 router.use("/events", events_router_1.default);

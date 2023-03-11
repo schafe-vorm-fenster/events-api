@@ -1,4 +1,4 @@
-import { RuralEventCategory } from "./ruralEventCategoryTypes";
+import { RuralEventCategory } from "./ruralEventCategory.types";
 
 /**
  * The list of all rural event categories incl. localizations.

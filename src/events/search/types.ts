@@ -3,12 +3,14 @@ import {
   GoogleNaturalLanguageL2,
   GoogleNaturalLanguageL3,
 } from "../../../packages/rural-event-categories/src/types/googleNaturalLanguageCategories";
-import { RuralEventCategoryId } from "../../../packages/rural-event-categories/src/types/ruralEventCategoryTypes";
+import { RuralEventCategoryId } from "../../../packages/rural-event-categories/src/types/ruralEventCategory.types";
 import { RuralEventScope } from "../../../packages/rural-event-types/dist/ruralEventTypes";
 
 type url = string;
 type geopoint = [number, number];
 export interface IndexedEvent {
+  id?: string;
+
   // content
   "summary.de": string;
   "summary.en": string;

@@ -18,6 +18,8 @@ const LanguagesRouter = express_1.default.Router();
 LanguagesRouter.get("/", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const controller = new languages_controller_1.default();
     const response = yield controller.getLanguages();
+    console.debug("languages: ", _req.headers["read-access"]);
+    console.debug("languages: ", _req.headers["write-access"]);
     res.set("Cache-Control", "public, max-age=300, s-maxage=300, stale-while-revalidate=60, stale-if-error=60");
     return res.send(response);
 }));

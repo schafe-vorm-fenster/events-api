@@ -1,3 +1,4 @@
+import createHttpError from "http-errors";
 import {
   Get,
   Path,
@@ -7,11 +8,33 @@ import {
   Response,
   SuccessResponse,
   Tags,
+  Body,
 } from "tsoa";
-import { RuralEventCategory } from "../../packages/rural-event-categories/src/types/ruralEventCategoryTypes";
-import { RuralEventScope } from "../../packages/rural-event-types/dist/ruralEventTypes";
+import getUuidByString from "uuid-by-string";
+import { RuralEventCategory } from "../../packages/rural-event-categories/src/types/ruralEventCategory.types";
+import { RuralEventScope } from "../../packages/rural-event-types/src/ruralEventScopes";
+import { classifyContent } from "./classify/classifyContent";
+import { getMetadataFromContent } from "./classify/getMetadataFromContent";
 import { mockEventCommunity } from "./events.mock";
+import {
+  EventClassification,
+  EventMetadata,
+  PostEventRequestBody,
+} from "./events.types";
+import { geoCodeLocation } from "./geocode/geoCodeLocation";
+import { GeoLocation } from "./geocode/types/GeoLocation";
+import { buildIndexableEvent } from "./helpers/buildIndexableEvent";
+import { checkIfJsonObject } from "./helpers/checkIfJsonObject";
+import { getUniqueIdStringForEvent } from "./helpers/getUniqueIdStringForEvent";
+import { validateEventJsonObject } from "./helpers/validateEventJsonObject";
+import { mapScopes } from "./scopes/mapScopes";
 import client from "./search/client";
+import { IndexedEvent } from "./search/types";
+import {
+  translateContent,
+  TranslatedContent,
+} from "./translate/translateContent";
+
 type ScopeFilter = RuralEventScope | undefined;
 type CategoryFilter = RuralEventCategory | undefined;
 
@@ -130,18 +153,70 @@ export default class EventsController {
     return result;
   }
 
-  @Post("{id}") // TODO: maybe let the app set th id to ensure uniqueness?
+  @Post("/") // TODO: maybe let the app set the id to ensure uniqueness?
   @SuccessResponse("201", "Created")
-  @Response<Error>(401, "Unauthorized")
-  @Response<Error>(422, "Validation Failed")
+  @Response<Error>(422, "Unprocessable Entity")
   public async createEvent(
-    @Path() id: string
-    // @Body() requestBody: string
+    @Body() eventObject: PostEventRequestBody
   ): Promise<any> {
+    try {
+      // check incoming data
+      checkIfJsonObject(eventObject);
+      validateEventJsonObject(eventObject);
+    } catch (error: any) {
+      throw createHttpError(422, "request data is not valid: " + error.message);
+    }
+
+    // enhance event data
+    let uuid: string;
+    let geolocation: GeoLocation;
+    let metadata: EventMetadata | null;
+    let scope: RuralEventScope;
+    let classification: EventClassification | null;
+    let translatedContent: TranslatedContent | null;
+
+    try {
+      // create uuid based on the event data
+      uuid = getUuidByString(getUniqueIdStringForEvent(eventObject)); // low runtime
+      metadata = getMetadataFromContent(eventObject?.description as string); // data needed in the next steps
+
+      // do in parallel to save time
+      [geolocation, scope, classification, translatedContent] =
+        await Promise.all([
+          geoCodeLocation(eventObject?.location as string),
+          mapScopes(metadata?.scopes as string[]),
+          classifyContent(
+            metadata?.tags as string[],
+            eventObject.summary as string,
+            eventObject.description as string
+          ),
+          translateContent(
+            eventObject.summary as string,
+            eventObject.description as string
+          ),
+        ]);
+    } catch (error: any) {
+      throw createHttpError(
+        422,
+        "could not process event data: " + error.message
+      );
+    }
+
+    // TODO: build proper inexable object
+    const newEvent: IndexedEvent = await buildIndexableEvent(
+      eventObject,
+      uuid,
+      geolocation,
+      metadata,
+      scope,
+      classification,
+      translatedContent
+    );
+
     const result: any = await client
       .collections("events")
       .documents()
-      .create(mockEventCommunity)
+      .create(newEvent)
       .then(
         (data: any) => {
           return data;
@@ -151,6 +226,16 @@ export default class EventsController {
         }
       );
 
-    return { name: "CREATE", debug: result };
+    return {
+      name: "CREATE",
+      newEvent: newEvent,
+      uuid: uuid,
+      scope: scope,
+      classification: classification,
+      translations: translatedContent,
+      meta: metadata || {},
+      geo: geolocation,
+      request: result,
+    };
   }
 }

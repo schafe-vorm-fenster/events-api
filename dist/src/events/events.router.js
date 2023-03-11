@@ -62,20 +62,18 @@ router.get("/", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     return res.send(response);
 }));
-router.post("/:id", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.debug("POST: /events/:id");
-    console.log(_req.params);
+router.post("/", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.debug("POST: /events");
     const controller = new events_controller_1.default();
-    let response = undefined;
-    try {
-        response = yield controller.createEvent("123");
-    }
-    catch (error) {
-        return res.status(400).json(error);
-    }
-    if (!response) {
-        return res.status(404).json({ message: "Di not work" });
-    }
-    return res.send(response);
+    yield controller
+        .createEvent(_req.body)
+        .then((data) => {
+        return res.status(200).json(data);
+    })
+        .catch((error) => {
+        return res
+            .status(error.status || 400)
+            .json({ status: error.status || 400, error: error.message });
+    });
 }));
 exports.default = router;

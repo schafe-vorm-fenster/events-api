@@ -1,7 +1,6 @@
 import express, { Request, Response } from "express";
+import { HttpError } from "http-errors";
 import EventsController from "./events.controller";
-import eventsSchema from "./search/schema";
-import client from "./search/client";
 
 const router = express.Router();
 
@@ -71,23 +70,19 @@ router.get("/", async (_req: Request, res: Response) => {
   return res.send(response);
 });
 
-router.post("/:id", async (_req: Request, res: Response) => {
-  console.debug("POST: /events/:id");
-  console.log(_req.params);
+router.post("/", async (_req: Request, res: Response) => {
+  console.debug("POST: /events");
   const controller = new EventsController();
-  let response = undefined;
-
-  try {
-    response = await controller.createEvent("123");
-  } catch (error) {
-    return res.status(400).json(error);
-  }
-
-  if (!response) {
-    return res.status(404).json({ message: "Di not work" });
-  }
-
-  return res.send(response);
+  await controller
+    .createEvent(_req.body)
+    .then((data) => {
+      return res.status(200).json(data);
+    })
+    .catch((error) => {
+      return res
+        .status(error.status || 400)
+        .json({ status: error.status || 400, error: error.message });
+    });
 });
 
 export default router;
