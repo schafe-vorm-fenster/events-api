@@ -4,6 +4,7 @@ exports.buildIndexableEvent = void 0;
 const buildIndexableEvent = (rawEvent, uuid, geolocation, metadata, scope, classification, translatedContent) => {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9;
     const indexableEvent = {
+        id: uuid,
         "summary.de": ((_a = translatedContent === null || translatedContent === void 0 ? void 0 : translatedContent.de) === null || _a === void 0 ? void 0 : _a.title) || "",
         "summary.en": ((_b = translatedContent === null || translatedContent === void 0 ? void 0 : translatedContent.en) === null || _b === void 0 ? void 0 : _b.title) || "",
         "summary.pl": ((_c = translatedContent === null || translatedContent === void 0 ? void 0 : translatedContent.pl) === null || _c === void 0 ? void 0 : _c.title) || "",
@@ -45,8 +46,8 @@ const buildIndexableEvent = (rawEvent, uuid, geolocation, metadata, scope, class
         "calendar.id": ((_7 = rawEvent.organizer) === null || _7 === void 0 ? void 0 : _7.id) || ((_8 = rawEvent.organizer) === null || _8 === void 0 ? void 0 : _8.email) || "",
         "calendar.name": ((_9 = rawEvent.organizer) === null || _9 === void 0 ? void 0 : _9.displayName) || "",
         created: 0,
-        changed: undefined,
-        deleted: undefined,
+        changed: 0,
+        deleted: 0,
     };
     return indexableEvent;
 };

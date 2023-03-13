@@ -19,6 +19,7 @@ export const buildIndexableEvent = (
   translatedContent: TranslatedContent | null
 ): IndexedEvent => {
   const indexableEvent: IndexedEvent = {
+    id: uuid,
     "summary.de": translatedContent?.de?.title || "",
     "summary.en": translatedContent?.en?.title || "",
     "summary.pl": translatedContent?.pl?.title || "",
@@ -63,8 +64,8 @@ export const buildIndexableEvent = (
     "calendar.id": rawEvent.organizer?.id || rawEvent.organizer?.email || "", // TODO: calendar from crm?
     "calendar.name": rawEvent.organizer?.displayName || "",
     created: 0,
-    changed: undefined,
-    deleted: undefined,
+    changed: 0,
+    deleted: 0,
   };
 
   return indexableEvent;

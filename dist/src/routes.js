@@ -30,7 +30,7 @@ const express_1 = __importDefault(require("express"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const events_router_1 = __importDefault(require("./events/events.router"));
 const swaggerDocument = __importStar(require("./swagger/swagger.json"));
-const schema_router_1 = __importDefault(require("./schema/schema.router"));
+const schema_router_1 = __importDefault(require("./schemas/schema.router"));
 const categories_router_1 = __importDefault(require("./categories/categories.router"));
 const languages_router_1 = __importDefault(require("./languages/languages.router"));
 const auth_middleware_1 = __importDefault(require("./auth/auth.middleware"));
@@ -42,6 +42,5 @@ router.use("*", auth_middleware_1.default);
 router.use("/languages", languages_router_1.default);
 router.use("/categories", categories_router_1.default);
 router.use("/events", events_router_1.default);
-// TODO: Add specific auth token handling for admin functions
 router.use("/schema", schema_router_1.default);
 exports.default = router;

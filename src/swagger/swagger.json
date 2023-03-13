@@ -712,7 +712,7 @@
 			"LanguagesResponse": {
 				"$ref": "#/components/schemas/ReadonlyArray_SvfLanguage_"
 			},
-			"ListSchemasResponse": {},
+			"GetSchemaResponse": {},
 			"DeleteSchemaResponse": {}
 		},
 		"securitySchemes": {}
@@ -945,7 +945,7 @@
 						"description": "Invalid Parameters"
 					}
 				},
-				"description": "Returns a list of events for a given community.",
+				"description": "Returns a list of all events. TODO: remove this method in production.",
 				"tags": [
 					"Events"
 				],
@@ -955,6 +955,14 @@
 			"post": {
 				"operationId": "CreateEvent",
 				"responses": {
+					"200": {
+						"description": "Updated",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
 					"201": {
 						"description": "Created",
 						"content": {
@@ -974,6 +982,46 @@
 						}
 					}
 				},
+				"description": "Creates or updates an event.",
+				"tags": [
+					"Events"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/PostEventRequestBody"
+							}
+						}
+					}
+				}
+			},
+			"patch": {
+				"operationId": "UpdateEvent",
+				"responses": {
+					"200": {
+						"description": "Updated",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"422": {
+						"description": "Unprocessable Entity",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				},
+				"description": "Update an event.",
 				"tags": [
 					"Events"
 				],
@@ -1014,16 +1062,16 @@
 				"parameters": []
 			}
 		},
-		"/schema/list": {
+		"/schema": {
 			"get": {
-				"operationId": "ListSchemas",
+				"operationId": "GetSchema",
 				"responses": {
-					"201": {
-						"description": "Found",
+					"200": {
+						"description": "OK",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ListSchemasResponse"
+									"$ref": "#/components/schemas/GetSchemaResponse"
 								}
 							}
 						}
@@ -1038,8 +1086,18 @@
 							}
 						}
 					},
-					"422": {
-						"description": "Validation Failed",
+					"404": {
+						"description": "Not Found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Server Error",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -1049,14 +1107,13 @@
 						}
 					}
 				},
+				"description": "Get the schema for the events collection.",
 				"tags": [
 					"Schema"
 				],
 				"security": [],
 				"parameters": []
-			}
-		},
-		"/schema/{schema}": {
+			},
 			"post": {
 				"operationId": "CreateSchema",
 				"responses": {
@@ -1089,37 +1146,19 @@
 								}
 							}
 						}
-					},
-					"422": {
-						"description": "Validation Failed",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/Error"
-								}
-							}
-						}
 					}
 				},
+				"description": "Create the schema for the events collection.",
 				"tags": [
 					"Schema"
 				],
 				"security": [],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "schema",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
+				"parameters": []
 			},
 			"delete": {
 				"operationId": "DeleteSchema",
 				"responses": {
-					"201": {
+					"200": {
 						"description": "Deleted",
 						"content": {
 							"application/json": {
@@ -1160,20 +1199,12 @@
 						}
 					}
 				},
+				"description": "Delete the schema incl. all data of the events collection.",
 				"tags": [
 					"Schema"
 				],
 				"security": [],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "schema",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
+				"parameters": []
 			}
 		}
 	},

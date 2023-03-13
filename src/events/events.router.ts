@@ -70,11 +70,32 @@ router.get("/", async (_req: Request, res: Response) => {
   return res.send(response);
 });
 
-router.post("/", async (_req: Request, res: Response) => {
-  console.debug("POST: /events");
+router.post("", async (_req: Request, res: Response) => {
+  console.debug("POST: events");
+  if (!_req.headers["write-access"])
+    return res.status(401).send("Unauthorized");
+
   const controller = new EventsController();
   await controller
     .createEvent(_req.body)
+    .then((data) => {
+      return res.status(201).json(data);
+    })
+    .catch((error) => {
+      return res
+        .status(error.status || 400)
+        .json({ status: error.status || 400, error: error.message });
+    });
+});
+
+router.patch("", async (_req: Request, res: Response) => {
+  console.debug("PATCH: events");
+  if (!_req.headers["write-access"])
+    return res.status(401).send("Unauthorized");
+
+  const controller = new EventsController();
+  await controller
+    .updateEvent(_req.body)
     .then((data) => {
       return res.status(200).json(data);
     })

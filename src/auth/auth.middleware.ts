@@ -13,6 +13,16 @@ AuthRouter.use(
     if (!token || token.length <= 2)
       return res.status(401).send("Unauthorized");
 
+    // evealuate admin access
+    const adminTokens: String[] | undefined =
+      process.env.ADMIN_ACCESS_TOKENS?.split(",").map((t) => t.trim());
+    let adminAccess: boolean = false;
+    if (adminTokens?.includes(token as string)) {
+      adminAccess = true;
+      _req.headers["admin-access"] = "true";
+    }
+    console.debug("adminAccess: ", adminAccess);
+
     // evaluate write access
     const writeTokens: String[] | undefined =
       process.env.WRITE_ACCESS_TOKENS?.split(",").map((t) => t.trim());
@@ -32,7 +42,7 @@ AuthRouter.use(
       _req.headers["read-access"] = "true";
     }
 
-    if (readAccess || writeAccess) {
+    if (readAccess || writeAccess || adminAccess) {
       next();
     } else {
       return res.status(401).send("Unauthorized");

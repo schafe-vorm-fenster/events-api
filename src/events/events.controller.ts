@@ -9,7 +9,9 @@ import {
   SuccessResponse,
   Tags,
   Body,
+  Patch,
 } from "tsoa";
+import { TypesenseError } from "typesense/lib/Typesense/Errors";
 import getUuidByString from "uuid-by-string";
 import { RuralEventCategory } from "../../packages/rural-event-categories/src/types/ruralEventCategory.types";
 import { RuralEventScope } from "../../packages/rural-event-types/src/ruralEventScopes";
@@ -123,7 +125,7 @@ export default class EventsController {
   }
 
   /**
-   * Returns a list of events for a given community.
+   * Returns a list of all events. TODO: remove this method in production.
    * @param community Geonames.org id of the community, e.g. "geoname-2838887".
    * @param days Number of days to look ahead for events. If no value is provided, 30 days will be used.
    */
@@ -136,6 +138,9 @@ export default class EventsController {
       q: "*",
       query_by: "summary.de",
       sort_by: "start:desc",
+      exclude_fields: "description.en, description.pl, summary.en, summary.pl",
+      per_page: 100,
+      limit_hits: 100,
     };
 
     const result: any = await client
@@ -153,8 +158,12 @@ export default class EventsController {
     return result;
   }
 
-  @Post("/") // TODO: maybe let the app set the id to ensure uniqueness?
-  @SuccessResponse("201", "Created")
+  /**
+   * Creates or updates an event.
+   */
+  @Post("")
+  @SuccessResponse(201, "Created") // TODO: use proper type
+  @Response<any>(200, "Updated") // TODO: use proper type
   @Response<Error>(422, "Unprocessable Entity")
   public async createEvent(
     @Body() eventObject: PostEventRequestBody
@@ -202,7 +211,7 @@ export default class EventsController {
       );
     }
 
-    // TODO: build proper inexable object
+    // TODO: build proper indexable object
     const newEvent: IndexedEvent = await buildIndexableEvent(
       eventObject,
       uuid,
@@ -213,29 +222,104 @@ export default class EventsController {
       translatedContent
     );
 
-    const result: any = await client
+    return await client
       .collections("events")
       .documents()
       .create(newEvent)
       .then(
         (data: any) => {
+          console.debug("data: ", data);
           return data;
         },
-        (err: any) => {
-          return err;
+        (err: TypesenseError) => {
+          console.error(err);
+          throw createHttpError(
+            err.httpStatus || 500,
+            err.message || "could not create event without known reason"
+          );
         }
       );
+  }
 
-    return {
-      name: "CREATE",
-      newEvent: newEvent,
-      uuid: uuid,
-      scope: scope,
-      classification: classification,
-      translations: translatedContent,
-      meta: metadata || {},
-      geo: geolocation,
-      request: result,
-    };
+  /**
+   * Update an event.
+   */
+  @Patch("")
+  @SuccessResponse(200, "Updated") // TODO: use proper type
+  @Response<Error>(422, "Unprocessable Entity")
+  public async updateEvent(
+    @Body() eventObject: PostEventRequestBody
+  ): Promise<any> {
+    try {
+      // check incoming data
+      checkIfJsonObject(eventObject);
+      validateEventJsonObject(eventObject);
+    } catch (error: any) {
+      throw createHttpError(422, "request data is not valid: " + error.message);
+    }
+
+    // enhance event data
+    let uuid: string;
+    let geolocation: GeoLocation;
+    let metadata: EventMetadata | null;
+    let scope: RuralEventScope;
+    let classification: EventClassification | null;
+    let translatedContent: TranslatedContent | null;
+
+    try {
+      // create uuid based on the event data
+      uuid = getUuidByString(getUniqueIdStringForEvent(eventObject)); // low runtime
+      metadata = getMetadataFromContent(eventObject?.description as string); // data needed in the next steps
+
+      // do in parallel to save time
+      [geolocation, scope, classification, translatedContent] =
+        await Promise.all([
+          geoCodeLocation(eventObject?.location as string),
+          mapScopes(metadata?.scopes as string[]),
+          classifyContent(
+            metadata?.tags as string[],
+            eventObject.summary as string,
+            eventObject.description as string
+          ),
+          translateContent(
+            eventObject.summary as string,
+            eventObject.description as string
+          ),
+        ]);
+    } catch (error: any) {
+      throw createHttpError(
+        422,
+        "could not process event data: " + error.message
+      );
+    }
+
+    // TODO: build proper indexable object
+    const newEvent: IndexedEvent = await buildIndexableEvent(
+      eventObject,
+      uuid,
+      geolocation,
+      metadata,
+      scope,
+      classification,
+      translatedContent
+    );
+
+    return await client
+      .collections("events")
+      .documents(uuid)
+      .update(newEvent)
+      .then(
+        (data: any) => {
+          console.debug("data: ", data);
+          return data;
+        },
+        (err: TypesenseError) => {
+          console.error(err);
+          throw createHttpError(
+            err.httpStatus || 500,
+            err.message || "could not create event without known reason"
+          );
+        }
+      );
   }
 }

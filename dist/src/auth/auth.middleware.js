@@ -17,13 +17,21 @@ const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const AuthRouter = express_1.default.Router();
 AuthRouter.use("*", (_req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a, _b, _c;
     const token = _req.get("Sheep-Token");
     // check if token is present
     if (!token || token.length <= 2)
         return res.status(401).send("Unauthorized");
+    // evealuate admin access
+    const adminTokens = (_a = process.env.ADMIN_ACCESS_TOKENS) === null || _a === void 0 ? void 0 : _a.split(",").map((t) => t.trim());
+    let adminAccess = false;
+    if (adminTokens === null || adminTokens === void 0 ? void 0 : adminTokens.includes(token)) {
+        adminAccess = true;
+        _req.headers["admin-access"] = "true";
+    }
+    console.debug("adminAccess: ", adminAccess);
     // evaluate write access
-    const writeTokens = (_a = process.env.WRITE_ACCESS_TOKENS) === null || _a === void 0 ? void 0 : _a.split(",").map((t) => t.trim());
+    const writeTokens = (_b = process.env.WRITE_ACCESS_TOKENS) === null || _b === void 0 ? void 0 : _b.split(",").map((t) => t.trim());
     let writeAccess = false;
     if (writeTokens === null || writeTokens === void 0 ? void 0 : writeTokens.includes(token)) {
         writeAccess = true;
@@ -31,13 +39,13 @@ AuthRouter.use("*", (_req, res, next) => __awaiter(void 0, void 0, void 0, funct
     }
     console.debug("writeAccess: ", writeAccess);
     // evaluate read access
-    const readTokens = (_b = process.env.READ_ACCESS_TOKENS) === null || _b === void 0 ? void 0 : _b.split(",").map((t) => t.trim());
+    const readTokens = (_c = process.env.READ_ACCESS_TOKENS) === null || _c === void 0 ? void 0 : _c.split(",").map((t) => t.trim());
     let readAccess = false;
     if (writeAccess || (readTokens === null || readTokens === void 0 ? void 0 : readTokens.includes(token))) {
         readAccess = true;
         _req.headers["read-access"] = "true";
     }
-    if (readAccess || writeAccess) {
+    if (readAccess || writeAccess || adminAccess) {
         next();
     }
     else {

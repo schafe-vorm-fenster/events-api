@@ -62,11 +62,29 @@ router.get("/", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     return res.send(response);
 }));
-router.post("/", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.debug("POST: /events");
+router.post("", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.debug("POST: events");
+    if (!_req.headers["write-access"])
+        return res.status(401).send("Unauthorized");
     const controller = new events_controller_1.default();
     yield controller
         .createEvent(_req.body)
+        .then((data) => {
+        return res.status(201).json(data);
+    })
+        .catch((error) => {
+        return res
+            .status(error.status || 400)
+            .json({ status: error.status || 400, error: error.message });
+    });
+}));
+router.patch("", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.debug("PATCH: events");
+    if (!_req.headers["write-access"])
+        return res.status(401).send("Unauthorized");
+    const controller = new events_controller_1.default();
+    yield controller
+        .updateEvent(_req.body)
         .then((data) => {
         return res.status(200).json(data);
     })

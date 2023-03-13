@@ -92,7 +92,7 @@ let EventsController = class EventsController {
         });
     }
     /**
-     * Returns a list of events for a given community.
+     * Returns a list of all events. TODO: remove this method in production.
      * @param community Geonames.org id of the community, e.g. "geoname-2838887".
      * @param days Number of days to look ahead for events. If no value is provided, 30 days will be used.
      */
@@ -102,6 +102,9 @@ let EventsController = class EventsController {
                 q: "*",
                 query_by: "summary.de",
                 sort_by: "start:desc",
+                exclude_fields: "description.en, description.pl, summary.en, summary.pl",
+                per_page: 100,
+                limit_hits: 100,
             };
             const result = yield client_1.default
                 .collections("events")
@@ -115,6 +118,9 @@ let EventsController = class EventsController {
             return result;
         });
     }
+    /**
+     * Creates or updates an event.
+     */
     createEvent(eventObject) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -148,28 +154,70 @@ let EventsController = class EventsController {
             catch (error) {
                 throw (0, http_errors_1.default)(422, "could not process event data: " + error.message);
             }
-            // TODO: build proper inexable object
+            // TODO: build proper indexable object
             const newEvent = yield (0, buildIndexableEvent_1.buildIndexableEvent)(eventObject, uuid, geolocation, metadata, scope, classification, translatedContent);
-            const result = yield client_1.default
+            return yield client_1.default
                 .collections("events")
                 .documents()
                 .create(newEvent)
                 .then((data) => {
+                console.debug("data: ", data);
                 return data;
             }, (err) => {
-                return err;
+                console.error(err);
+                throw (0, http_errors_1.default)(err.httpStatus || 500, err.message || "could not create event without known reason");
             });
-            return {
-                name: "CREATE",
-                newEvent: newEvent,
-                uuid: uuid,
-                scope: scope,
-                classification: classification,
-                translations: translatedContent,
-                meta: metadata || {},
-                geo: geolocation,
-                request: result,
-            };
+        });
+    }
+    /**
+     * Update an event.
+     */
+    updateEvent(eventObject) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // check incoming data
+                (0, checkIfJsonObject_1.checkIfJsonObject)(eventObject);
+                (0, validateEventJsonObject_1.validateEventJsonObject)(eventObject);
+            }
+            catch (error) {
+                throw (0, http_errors_1.default)(422, "request data is not valid: " + error.message);
+            }
+            // enhance event data
+            let uuid;
+            let geolocation;
+            let metadata;
+            let scope;
+            let classification;
+            let translatedContent;
+            try {
+                // create uuid based on the event data
+                uuid = (0, uuid_by_string_1.default)((0, getUniqueIdStringForEvent_1.getUniqueIdStringForEvent)(eventObject)); // low runtime
+                metadata = (0, getMetadataFromContent_1.getMetadataFromContent)(eventObject === null || eventObject === void 0 ? void 0 : eventObject.description); // data needed in the next steps
+                // do in parallel to save time
+                [geolocation, scope, classification, translatedContent] =
+                    yield Promise.all([
+                        (0, geoCodeLocation_1.geoCodeLocation)(eventObject === null || eventObject === void 0 ? void 0 : eventObject.location),
+                        (0, mapScopes_1.mapScopes)(metadata === null || metadata === void 0 ? void 0 : metadata.scopes),
+                        (0, classifyContent_1.classifyContent)(metadata === null || metadata === void 0 ? void 0 : metadata.tags, eventObject.summary, eventObject.description),
+                        (0, translateContent_1.translateContent)(eventObject.summary, eventObject.description),
+                    ]);
+            }
+            catch (error) {
+                throw (0, http_errors_1.default)(422, "could not process event data: " + error.message);
+            }
+            // TODO: build proper indexable object
+            const newEvent = yield (0, buildIndexableEvent_1.buildIndexableEvent)(eventObject, uuid, geolocation, metadata, scope, classification, translatedContent);
+            return yield client_1.default
+                .collections("events")
+                .documents(uuid)
+                .update(newEvent)
+                .then((data) => {
+                console.debug("data: ", data);
+                return data;
+            }, (err) => {
+                console.error(err);
+                throw (0, http_errors_1.default)(err.httpStatus || 500, err.message || "could not create event without known reason");
+            });
         });
     }
 };
@@ -219,15 +267,27 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], EventsController.prototype, "getAllEvents", null);
 __decorate([
-    (0, tsoa_1.Post)("/") // TODO: maybe let the app set the id to ensure uniqueness?
+    (0, tsoa_1.Post)(""),
+    (0, tsoa_1.SuccessResponse)(201, "Created") // TODO: use proper type
     ,
-    (0, tsoa_1.SuccessResponse)("201", "Created"),
+    (0, tsoa_1.Response)(200, "Updated") // TODO: use proper type
+    ,
     (0, tsoa_1.Response)(422, "Unprocessable Entity"),
     __param(0, (0, tsoa_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], EventsController.prototype, "createEvent", null);
+__decorate([
+    (0, tsoa_1.Patch)(""),
+    (0, tsoa_1.SuccessResponse)(200, "Updated") // TODO: use proper type
+    ,
+    (0, tsoa_1.Response)(422, "Unprocessable Entity"),
+    __param(0, (0, tsoa_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EventsController.prototype, "updateEvent", null);
 EventsController = __decorate([
     (0, tsoa_1.Route)("events"),
     (0, tsoa_1.Tags)("Events")

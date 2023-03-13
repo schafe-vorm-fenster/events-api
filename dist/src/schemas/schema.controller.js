@@ -8,9 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -27,71 +24,97 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tsoa_1 = require("tsoa");
 const schema_1 = __importDefault(require("../events/search/schema"));
 const client_1 = __importDefault(require("../events/search/client"));
+const http_errors_1 = require("http-errors");
+const http_errors_2 = __importDefault(require("http-errors"));
+const Errors_1 = require("typesense/lib/Typesense/Errors");
 let SchemaController = class SchemaController {
-    listSchemas() {
+    /**
+     * Get the schema for the events collection.
+     */
+    getSchema() {
         return __awaiter(this, void 0, void 0, function* () {
-            const collections = yield client_1.default.collections().retrieve();
-            return { name: "jan", debug: collections };
+            return yield client_1.default
+                .collections()
+                .retrieve()
+                .then((data) => {
+                const eventSchema = data.filter((schema) => schema.name === eventSchema.name)[0];
+                if (data.length === 0 || !eventSchema) {
+                    throw (0, http_errors_2.default)(404, "Schema not found.");
+                }
+                else {
+                    return eventSchema;
+                }
+            })
+                .catch((error) => {
+                let httpCode;
+                if (error instanceof Errors_1.TypesenseError)
+                    httpCode = error === null || error === void 0 ? void 0 : error.httpStatus;
+                if (error instanceof http_errors_1.HttpError)
+                    httpCode = error === null || error === void 0 ? void 0 : error.status;
+                throw (0, http_errors_2.default)(httpCode || 500, error.message || "Could not fetch schema for unknown reason.");
+            });
         });
     }
-    createSchema(schema) {
+    /**
+     * Create the schema for the events collection.
+     */
+    createSchema() {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield client_1.default
+            return yield client_1.default
                 .collections()
                 .create(schema_1.default)
                 .then((data) => {
-                console.debug(data);
                 return data;
-            }, (err) => {
-                return err;
+            })
+                .catch((error) => {
+                throw (0, http_errors_2.default)((error === null || error === void 0 ? void 0 : error.httpStatus) || 500, error.message || "Could not create schema for unknown reason.");
             });
-            return { name: "jan", debug: result };
         });
     }
-    deleteSchema(schema) {
+    /**
+     * Delete the schema incl. all data of the events collection.
+     */
+    deleteSchema() {
         return __awaiter(this, void 0, void 0, function* () {
-            const result = yield client_1.default
-                .collections(schema)
+            return yield client_1.default
+                .collections(schema_1.default.name)
                 .delete()
                 .then((data) => {
-                console.debug(data);
                 return data;
-            }, (err) => {
-                return err;
+            })
+                .catch((error) => {
+                throw (0, http_errors_2.default)((error === null || error === void 0 ? void 0 : error.httpStatus) || 500, error.message || "Could not delete schema for unknown reason.");
             });
-            return { name: "DELETE", debug: result };
         });
     }
 };
 __decorate([
-    (0, tsoa_1.Get)("list"),
-    (0, tsoa_1.SuccessResponse)("201", "Found"),
+    (0, tsoa_1.Get)(""),
+    (0, tsoa_1.SuccessResponse)(200, "OK"),
+    (0, tsoa_1.Response)(404, "Not Found"),
     (0, tsoa_1.Response)(401, "Unauthorized"),
-    (0, tsoa_1.Response)(422, "Validation Failed"),
+    (0, tsoa_1.Response)(500, "Server Error"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], SchemaController.prototype, "listSchemas", null);
+], SchemaController.prototype, "getSchema", null);
 __decorate([
-    (0, tsoa_1.Post)("{schema}"),
-    (0, tsoa_1.SuccessResponse)("201", "Created"),
+    (0, tsoa_1.Post)(""),
+    (0, tsoa_1.SuccessResponse)(201, "Created"),
     (0, tsoa_1.Response)(401, "Unauthorized"),
-    (0, tsoa_1.Response)(422, "Validation Failed"),
     (0, tsoa_1.Response)(409, "ObjectAlreadyExists"),
-    __param(0, (0, tsoa_1.Path)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], SchemaController.prototype, "createSchema", null);
 __decorate([
-    (0, tsoa_1.Delete)("{schema}"),
-    (0, tsoa_1.SuccessResponse)("201", "Deleted"),
+    (0, tsoa_1.Delete)(""),
+    (0, tsoa_1.SuccessResponse)("200", "Deleted"),
     (0, tsoa_1.Response)(401, "Unauthorized"),
     (0, tsoa_1.Response)(404, "ObjectNotFound"),
     (0, tsoa_1.Response)(422, "Validation Failed"),
-    __param(0, (0, tsoa_1.Path)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], SchemaController.prototype, "deleteSchema", null);
 SchemaController = __decorate([

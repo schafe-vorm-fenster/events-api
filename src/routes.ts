@@ -2,7 +2,7 @@ import express from "express";
 import swaggerUi from "swagger-ui-express";
 import EventsRouter from "./events/events.router";
 import * as swaggerDocument from "./swagger/swagger.json";
-import SchemaRouter from "./schema/schema.router";
+import SchemaRouter from "./schemas/schema.router";
 import CategoriesRouter from "./categories/categories.router";
 import LanguagesRouter from "./languages/languages.router";
 import AuthRouter from "./auth/auth.middleware";
@@ -22,7 +22,6 @@ router.use("/categories", CategoriesRouter);
 
 router.use("/events", EventsRouter);
 
-// TODO: Add specific auth token handling for admin functions
 router.use("/schema", SchemaRouter);
 
 export default router;

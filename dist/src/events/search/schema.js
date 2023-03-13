@@ -45,7 +45,6 @@ const eventsSchema = {
         { name: "calendar.id", type: "string" },
         { name: "calendar.name", type: "string" },
         // document meta data
-        // { name: "id", type: "int64" },
         { name: "created", type: "int64" },
         { name: "changed", type: "int64" },
         { name: "deleted", type: "int64" },

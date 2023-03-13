@@ -1,4 +1,4 @@
-const eventsSchema: object = {
+const eventsSchema: any = {
   name: "events",
   fields: [
     // content
@@ -47,7 +47,6 @@ const eventsSchema: object = {
     { name: "calendar.name", type: "string" },
 
     // document meta data
-    // { name: "id", type: "int64" },
     { name: "created", type: "int64" },
     { name: "changed", type: "int64" },
     { name: "deleted", type: "int64" },
