@@ -23,7 +23,7 @@ export const mockEventCommunity: IndexedEvent = {
   "location.name": "Gemeindehaus Schlatkow",
   "location.address": "Schlatkow 9, 17390 Schmatzin, Deutschland",
   "location.geopoint": [53.9217, 13.5816],
-  scope: "neighborhood",
+  scope: "nearby",
   "community.id": "geoname.2838887",
   "community.geopoint": [53.7, 14.2],
   "community.name": "Schlatkow",
