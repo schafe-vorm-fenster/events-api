@@ -17,7 +17,6 @@ export const mapScopes = async (scopes: string[]): Promise<RuralEventScope> => {
   });
 
   // return the scope with the highest range
-  if (mappedScopes.includes("global")) return "global";
   if (mappedScopes.includes("country")) return "country";
   if (mappedScopes.includes("state")) return "state";
   if (mappedScopes.includes("county")) return "county";

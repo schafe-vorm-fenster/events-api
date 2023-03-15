@@ -27,6 +27,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const http_errors_1 = __importDefault(require("http-errors"));
 const tsoa_1 = require("tsoa");
 const uuid_by_string_1 = __importDefault(require("uuid-by-string"));
+const ruralEventScopes_1 = require("../../packages/rural-event-types/src/ruralEventScopes");
 const classifyContent_1 = require("./classify/classifyContent");
 const getMetadataFromContent_1 = require("./classify/getMetadataFromContent");
 const geoCodeLocation_1 = require("./geocode/geoCodeLocation");
@@ -36,6 +37,8 @@ const getUniqueIdStringForEvent_1 = require("./helpers/getUniqueIdStringForEvent
 const validateEventJsonObject_1 = require("./helpers/validateEventJsonObject");
 const mapScopes_1 = require("./scopes/mapScopes");
 const client_1 = __importDefault(require("./search/client"));
+const schema_1 = __importDefault(require("./search/schema"));
+const searchEvents_1 = require("./search/searchEvents");
 const translateContent_1 = require("./translate/translateContent");
 let EventsController = class EventsController {
     /**
@@ -64,14 +67,41 @@ let EventsController = class EventsController {
      */
     getEventsForCommunityFilteredByScope(community, scope, days) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!community) {
-                throw new Error("Community is required");
+            // check community parameter
+            if (!community || !community.match(/^geoname.\d+$/)) {
+                throw (0, http_errors_1.default)(400, "community must match the pattern 'geoname.1234567'");
             }
-            // check, if parameter "community" matches the pattern "geoname-1234567"
-            if (!community.match(/^geoname-\d+$/)) {
-                throw new Error("Community must match the pattern 'geoname-1234567'");
+            // check scope parameter
+            if (!scope || !(0, ruralEventScopes_1.isRuralEventScope)(scope)) {
+                throw (0, http_errors_1.default)(400, "scope is not a valid rural scope, has to be one of [" +
+                    ruralEventScopes_1.AllRuralEventScopes.join("|") +
+                    "]");
             }
-            return { name: "jan" };
+            // TODO: get geopoint, geonamesId and municipalityId for given community from geo-api
+            const center = [53.9206, 13.5802];
+            const communityId = "geoname.2838887";
+            const municipalityId = "geoname.6548320";
+            const countyId = "geoname.8648415";
+            const stateId = "geoname.2872567";
+            const countryId = "geoname.2921044";
+            return yield (0, searchEvents_1.searchEvents)({
+                center: {
+                    geopint: center,
+                    communityId: communityId,
+                    municipalityId: municipalityId,
+                    countyId: countyId,
+                    stateId: stateId,
+                    countryId: countryId,
+                },
+                scope: scope,
+                containTighterScopes: true,
+            })
+                .then((result) => {
+                return result;
+            })
+                .catch((error) => {
+                throw (0, http_errors_1.default)(error.httpStatus || 500, error.message || "Error while searching for events");
+            });
         });
     }
     /**
@@ -102,12 +132,13 @@ let EventsController = class EventsController {
                 q: "*",
                 query_by: "summary.de",
                 sort_by: "start:desc",
+                facet_by: "categories,occurrence,scope",
                 exclude_fields: "description.en, description.pl, summary.en, summary.pl",
                 per_page: 100,
                 limit_hits: 100,
             };
             const result = yield client_1.default
-                .collections("events")
+                .collections(schema_1.default.name)
                 .documents()
                 .search(searchParameters)
                 .then(function (searchResults) {

@@ -22,7 +22,6 @@ export const mapScope = (scope: string | undefined | null): RuralEventScope => {
   if (scopeSynonymsLowercase.county.includes(scopeLowercase)) return "county";
   if (scopeSynonymsLowercase.state.includes(scopeLowercase)) return "state";
   if (scopeSynonymsLowercase.country.includes(scopeLowercase)) return "country";
-  if (scopeSynonymsLowercase.global.includes(scopeLowercase)) return "global";
 
   return defaultScope;
 };

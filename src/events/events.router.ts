@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import { HttpError } from "http-errors";
 import EventsController from "./events.controller";
+import { SearchEventsResult } from "./search/searchEvents";
 
 const router = express.Router();
 
@@ -41,10 +42,23 @@ router.get(
 );
 
 router.get("/:community/:scope", async (_req: Request, res: Response) => {
-  const controller = new EventsController();
-  let response = undefined;
   console.log(_req.params);
-  return res.send({ debug: "scope filtered events for community" });
+  console.debug("scope filtered events for community");
+
+  const community: string = _req.params.community;
+  const scope: string = _req.params.scope;
+
+  const controller = new EventsController();
+  await controller
+    .getEventsForCommunityFilteredByScope(community, scope)
+    .then((result) => {
+      res.status(200).json(result);
+    })
+    .catch((error) => {
+      return res
+        .status(error.status || 500)
+        .json({ status: error.status || 500, error: error.message });
+    });
 });
 
 router.get("/:community", async (_req: Request, res: Response) => {

@@ -9,7 +9,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "rm -Rf dist && tsoa spec && tsc",
+    "build": "rm -Rf dist && tsc",
     "swagger": "tsoa spec",
     "start": "node dist/index.js",
     "dev": "concurrently \"tsc --watch\" \"nodemon -q dist/src/app.js\"",

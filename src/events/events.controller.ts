@@ -14,7 +14,16 @@ import {
 import { TypesenseError } from "typesense/lib/Typesense/Errors";
 import getUuidByString from "uuid-by-string";
 import { RuralEventCategory } from "../../packages/rural-event-categories/src/types/ruralEventCategory.types";
-import { RuralEventScope } from "../../packages/rural-event-types/src/ruralEventScopes";
+
+import {
+  AllRuralEventScopes,
+  isRuralEventAdminScope,
+  isRuralEventDistanceScope,
+  isRuralEventScope,
+  RuralEventAdminScope,
+  RuralEventDistanceScope,
+  RuralEventScope,
+} from "../../packages/rural-event-types/src/ruralEventScopes";
 import { classifyContent } from "./classify/classifyContent";
 import { getMetadataFromContent } from "./classify/getMetadataFromContent";
 import { mockEventCommunity } from "./events.mock";
@@ -30,7 +39,10 @@ import { checkIfJsonObject } from "./helpers/checkIfJsonObject";
 import { getUniqueIdStringForEvent } from "./helpers/getUniqueIdStringForEvent";
 import { validateEventJsonObject } from "./helpers/validateEventJsonObject";
 import { mapScopes } from "./scopes/mapScopes";
+import { getScopeDistance } from "./scopes/scopeDistances";
 import client from "./search/client";
+import eventsSchema from "./search/schema";
+import { searchEvents, SearchEventsResult } from "./search/searchEvents";
 import { IndexedEvent } from "./search/types";
 import {
   translateContent,
@@ -88,16 +100,54 @@ export default class EventsController {
     @Path() community: string,
     @Path() scope: string,
     @Query() days?: number
-  ): Promise<EventsResponse> {
-    if (!community) {
-      throw new Error("Community is required");
-    }
-    // check, if parameter "community" matches the pattern "geoname-1234567"
-    if (!community.match(/^geoname-\d+$/)) {
-      throw new Error("Community must match the pattern 'geoname-1234567'");
+  ): Promise<SearchEventsResult> {
+    // check community parameter
+    if (!community || !community.match(/^geoname.\d+$/)) {
+      throw createHttpError(
+        400,
+        "community must match the pattern 'geoname.1234567'"
+      );
     }
 
-    return { name: "jan" };
+    // check scope parameter
+    if (!scope || !isRuralEventScope(scope)) {
+      throw createHttpError(
+        400,
+        "scope is not a valid rural scope, has to be one of [" +
+          AllRuralEventScopes.join("|") +
+          "]"
+      );
+    }
+
+    // TODO: get geopoint, geonamesId and municipalityId for given community from geo-api
+    const center: [number, number] = [53.9206, 13.5802];
+    const communityId: string = "geoname.2838887";
+    const municipalityId: string = "geoname.6548320";
+    const countyId: string = "geoname.8648415";
+    const stateId: string = "geoname.2872567";
+    const countryId: string = "geoname.2921044";
+
+    return await searchEvents({
+      center: {
+        geopint: center,
+        communityId: communityId,
+        municipalityId: municipalityId,
+        countyId: countyId,
+        stateId: stateId,
+        countryId: countryId,
+      },
+      scope: scope as RuralEventScope,
+      containTighterScopes: true,
+    })
+      .then((result) => {
+        return result;
+      })
+      .catch((error) => {
+        throw createHttpError(
+          error.httpStatus || 500,
+          error.message || "Error while searching for events"
+        );
+      });
   }
 
   /**
@@ -138,13 +188,14 @@ export default class EventsController {
       q: "*",
       query_by: "summary.de",
       sort_by: "start:desc",
+      facet_by: "categories,occurrence,scope",
       exclude_fields: "description.en, description.pl, summary.en, summary.pl",
       per_page: 100,
       limit_hits: 100,
     };
 
     const result: any = await client
-      .collections("events")
+      .collections(eventsSchema.name)
       .documents()
       .search(searchParameters)
       .then(

@@ -28,8 +28,6 @@ const mapScopes = (scopes) => __awaiter(void 0, void 0, void 0, function* () {
         return (0, mapScope_1.mapScope)(scope);
     });
     // return the scope with the highest range
-    if (mappedScopes.includes("global"))
-        return "global";
     if (mappedScopes.includes("country"))
         return "country";
     if (mappedScopes.includes("state"))

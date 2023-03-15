@@ -26,8 +26,6 @@ const mapScope = (scope) => {
         return "state";
     if (scopeSynonyms_1.scopeSynonymsLowercase.country.includes(scopeLowercase))
         return "country";
-    if (scopeSynonyms_1.scopeSynonymsLowercase.global.includes(scopeLowercase))
-        return "global";
     return exports.defaultScope;
 };
 exports.mapScope = mapScope;

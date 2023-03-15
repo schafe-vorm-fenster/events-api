@@ -10,6 +10,7 @@ export const validateEventJsonObject = (
 ): boolean => {
   const errors: string[] = [];
   if (!eventJson.summary) errors.push("summary is required");
+  // TODO: description can be empty, but maybe log a warning?
   // TODO: add more checks
   if (errors.length > 0) throw new Error(errors.join(", "));
   return true;

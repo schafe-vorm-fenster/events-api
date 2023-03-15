@@ -4,10 +4,10 @@ import {
   GoogleNaturalLanguageL3,
 } from "../../../packages/rural-event-categories/src/types/googleNaturalLanguageCategories";
 import { RuralEventCategoryId } from "../../../packages/rural-event-categories/src/types/ruralEventCategory.types";
-import { RuralEventScope } from "../../../packages/rural-event-types/dist/ruralEventTypes";
+import { RuralEventScope } from "../../../packages/rural-event-types/src/ruralEventScopes";
 
 type url = string;
-type geopoint = [number, number];
+type geopoint = any; // [number, number]
 export interface IndexedEvent {
   id?: string;
 

@@ -38,10 +38,21 @@ router.get("/:community/:scope/:category", (_req, res) => __awaiter(void 0, void
     return res.send(response);
 }));
 router.get("/:community/:scope", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const controller = new events_controller_1.default();
-    let response = undefined;
     console.log(_req.params);
-    return res.send({ debug: "scope filtered events for community" });
+    console.debug("scope filtered events for community");
+    const community = _req.params.community;
+    const scope = _req.params.scope;
+    const controller = new events_controller_1.default();
+    yield controller
+        .getEventsForCommunityFilteredByScope(community, scope)
+        .then((result) => {
+        res.status(200).json(result);
+    })
+        .catch((error) => {
+        return res
+            .status(error.status || 500)
+            .json({ status: error.status || 500, error: error.message });
+    });
 }));
 router.get("/:community", (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const controller = new events_controller_1.default();
