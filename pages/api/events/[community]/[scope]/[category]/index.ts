@@ -3,6 +3,8 @@ import { isValidGeonameId } from "../../../../../../src/events/geocode/helpers/i
 import { isRuralEventScope } from "../../../../../../packages/rural-event-types/src/helpers/isRuralEventScope";
 import { isRuralEventCategory } from "../../../../../../packages/rural-event-categories/src/helpers/isRuralEventCategory";
 import { CacheControlHeader } from "../../../../../../src/config/CacheControlHeader";
+import { getLogger } from "../../../../../../logging/logger";
+import { api } from "../../../../../../logging/loggerApps.config";
 
 /**
  * @swagger
@@ -22,6 +24,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>
 ) {
+  const log = getLogger(api.events.category);
   const communityParam: string = req?.query?.community as string;
   if (!isValidGeonameId(communityParam)) {
     res

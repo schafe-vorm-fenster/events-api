@@ -2,7 +2,7 @@ import Axios from "axios";
 import { setupCache } from "axios-cache-interceptor";
 import { GeoLocation } from "./types/GeoLocation";
 import axios from "axios";
-import { getLogger } from "../../../logging/log-util";
+import { getLogger } from "../../../logging/logger";
 // const axios = setupCache(Axios);
 
 /**

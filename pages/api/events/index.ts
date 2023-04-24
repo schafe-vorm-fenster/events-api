@@ -21,7 +21,7 @@ import { classifyContent } from "../../../src/events/classify/classifyContent";
 import { buildIndexableEvent } from "../../../src/events/helpers/buildIndexableEvent";
 import { IndexedEvent } from "../../../src/events/search/types";
 import { HttpError } from "http-errors";
-import { getLogger } from "../../../logging/log-util";
+import { getLogger } from "../../../logging/logger";
 import eventsSchema from "../../../src/events/search/schema";
 
 export type CreateSchemaResponse = any;

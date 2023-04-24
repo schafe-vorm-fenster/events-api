@@ -3,6 +3,8 @@ import { TypesenseError } from "typesense/lib/Typesense/Errors";
 import client from "../../../src/events/search/client";
 import eventsSchema from "../../../src/events/search/schema";
 import { HttpError } from "http-errors";
+import { getLogger } from "../../../logging/logger";
+import { api } from "../../../logging/loggerApps.config";
 
 export type CreateSchemaResponse = any;
 
@@ -24,6 +26,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<CreateSchemaResponse>
 ) {
+  const log = getLogger(api.schema.create);
   return await client
     .collections()
     .create(eventsSchema)

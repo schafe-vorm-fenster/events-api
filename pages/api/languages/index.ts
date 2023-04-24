@@ -2,6 +2,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { SvfLanguage } from "../../../src/languages/languages.types";
 import { svfLocales } from "../../../src/languages/languages.config";
 import { ConfigCacheControlHeader } from "../../../src/config/ConfigCacheControlHeader";
+import { api } from "../../../logging/loggerApps.config";
+import { getLogger } from "../../../logging/logger";
 
 export type LanguagesResponse = ReadonlyArray<SvfLanguage>;
 
@@ -23,6 +25,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<LanguagesResponse>
 ) {
+  const log = getLogger(api.languages.get);
   return res
     .status(200)
     .setHeader("Cache-Control", ConfigCacheControlHeader)

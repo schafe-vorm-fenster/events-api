@@ -4,6 +4,8 @@ import createHttpError, { HttpError } from "http-errors";
 import client from "../../../src/events/search/client";
 import { MinimalCacheControlHeader } from "../../../src/config/MinimalCacheControlHeader";
 import eventsSchema from "../../../src/events/search/schema";
+import { getLogger } from "../../../logging/logger";
+import { api } from "../../../logging/loggerApps.config";
 
 export type GetSchemaResponse = any;
 
@@ -25,6 +27,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<GetSchemaResponse>
 ) {
+  const log = getLogger(api.schema.get);
   return await client
     .collections(eventsSchema.name)
     .retrieve()

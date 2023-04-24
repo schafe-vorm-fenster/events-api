@@ -2,6 +2,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { isValidGeonameId } from "../../../../../src/events/geocode/helpers/isValidGeonameId";
 import { isRuralEventScope } from "../../../../../packages/rural-event-types/src/helpers/isRuralEventScope";
 import { CacheControlHeader } from "../../../../../src/config/CacheControlHeader";
+import { getLogger } from "../../../../../logging/logger";
+import { api } from "../../../../../logging/loggerApps.config";
 
 /**
  * @swagger
@@ -21,6 +23,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<any>
 ) {
+  const log = getLogger(api.events.category);
   const communityParam: string = req?.query?.community as string;
   if (!isValidGeonameId(communityParam)) {
     res
