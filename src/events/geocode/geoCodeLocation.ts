@@ -1,6 +1,5 @@
 import Axios from "axios";
 import { setupCache } from "axios-cache-interceptor";
-import { checkIfJsonObject } from "../helpers/checkIfJsonObject";
 import { GeoLocation } from "./types/GeoLocation";
 const axios = setupCache(Axios);
 
@@ -23,8 +22,8 @@ export const geoCodeLocation = async (
       },
     })
     .then((response) => {
-      checkIfJsonObject(response.data);
-      return response.data;
+      if (response.data?.json) return response.data.json as GeoLocation;
+      throw new Error("got no json response");
     })
     .catch((error) => {
       throw error;

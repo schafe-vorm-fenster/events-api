@@ -8,6 +8,7 @@ import { RuralEventScope } from "../../../packages/rural-event-types/src/ruralEv
 
 type url = string;
 type geopoint = any; // [number, number]
+type occurrence = "once" | "recurring" | "series" | "openinghours";
 export interface IndexedEvent {
   id?: string;
 
@@ -20,7 +21,9 @@ export interface IndexedEvent {
   "description.pl": string;
   link: url;
   image: url;
+  "image.exists": boolean;
   document: url;
+  "document.exists": boolean;
   categories: RuralEventCategoryId[];
   "classification.l1": GoogleNaturalLanguageL1[];
   "classification.l2": GoogleNaturalLanguageL2[];
@@ -30,9 +33,11 @@ export interface IndexedEvent {
   start: number;
   end: number;
   allday: boolean;
-  occurrence: string;
+  occurrence: occurrence;
+  "series.id": string;
   "location.raw": string;
   "location.name": string;
+  "location.localname": string;
   "location.address": string;
   "location.geopoint": geopoint;
   scope: RuralEventScope;

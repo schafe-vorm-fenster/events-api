@@ -52,6 +52,10 @@ router.get("/:community/:scope", async (_req: Request, res: Response) => {
   await controller
     .getEventsForCommunityFilteredByScope(community, scope)
     .then((result) => {
+      res.set(
+        "Cache-Control",
+        "public, max-age=300, s-maxage=300, stale-while-revalidate=60, stale-if-error=60"
+      );
       res.status(200).json(result);
     })
     .catch((error) => {
@@ -94,24 +98,6 @@ router.post("", async (_req: Request, res: Response) => {
     .createEvent(_req.body)
     .then((data) => {
       return res.status(201).json(data);
-    })
-    .catch((error) => {
-      return res
-        .status(error.status || 400)
-        .json({ status: error.status || 400, error: error.message });
-    });
-});
-
-router.patch("", async (_req: Request, res: Response) => {
-  console.debug("PATCH: events");
-  if (!_req.headers["write-access"])
-    return res.status(401).send("Unauthorized");
-
-  const controller = new EventsController();
-  await controller
-    .updateEvent(_req.body)
-    .then((data) => {
-      return res.status(200).json(data);
     })
     .catch((error) => {
       return res

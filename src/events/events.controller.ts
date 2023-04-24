@@ -9,37 +9,28 @@ import {
   SuccessResponse,
   Tags,
   Body,
-  Patch,
 } from "tsoa";
 import { TypesenseError } from "typesense/lib/Typesense/Errors";
-import getUuidByString from "uuid-by-string";
 import { RuralEventCategory } from "../../packages/rural-event-categories/src/types/ruralEventCategory.types";
-
 import {
   AllRuralEventScopes,
-  isRuralEventAdminScope,
-  isRuralEventDistanceScope,
   isRuralEventScope,
-  RuralEventAdminScope,
-  RuralEventDistanceScope,
   RuralEventScope,
 } from "../../packages/rural-event-types/src/ruralEventScopes";
 import { classifyContent } from "./classify/classifyContent";
 import { getMetadataFromContent } from "./classify/getMetadataFromContent";
-import { mockEventCommunity } from "./events.mock";
 import {
   EventClassification,
-  EventMetadata,
+  EventContentWithMetadata,
   PostEventRequestBody,
 } from "./events.types";
 import { geoCodeLocation } from "./geocode/geoCodeLocation";
+import { isValidGeonameId } from "./geocode/helpers/isValidGeonameId";
 import { GeoLocation } from "./geocode/types/GeoLocation";
 import { buildIndexableEvent } from "./helpers/buildIndexableEvent";
-import { checkIfJsonObject } from "./helpers/checkIfJsonObject";
-import { getUniqueIdStringForEvent } from "./helpers/getUniqueIdStringForEvent";
-import { validateEventJsonObject } from "./helpers/validateEventJsonObject";
+import { isValidGoogleEvent } from "./helpers/json/isValidGoogleEvent";
+import { isValidJson } from "./helpers/json/isValidJson";
 import { mapScopes } from "./scopes/mapScopes";
-import { getScopeDistance } from "./scopes/scopeDistances";
 import client from "./search/client";
 import eventsSchema from "./search/schema";
 import { searchEvents, SearchEventsResult } from "./search/searchEvents";
@@ -75,13 +66,11 @@ export default class EventsController {
     @Path() category: string,
     @Query() days?: number
   ): Promise<EventsResponse> {
-    if (!community) {
-      throw new Error("Community is required");
-    }
-    // check, if parameter "community" matches the pattern "geoname-1234567"
-    if (!community.match(/^geoname-\d+$/)) {
-      throw new Error("Community must match the pattern 'geoname-1234567'");
-    }
+    if (!isValidGeonameId(community))
+      throw createHttpError(
+        400,
+        "community id is required and must match the pattern 'geoname.1234567'"
+      );
 
     return { name: "jan" };
   }
@@ -102,12 +91,11 @@ export default class EventsController {
     @Query() days?: number
   ): Promise<SearchEventsResult> {
     // check community parameter
-    if (!community || !community.match(/^geoname.\d+$/)) {
+    if (!isValidGeonameId(community))
       throw createHttpError(
         400,
-        "community must match the pattern 'geoname.1234567'"
+        "community id is required and must match the pattern 'geoname.1234567'"
       );
-    }
 
     // check scope parameter
     if (!scope || !isRuralEventScope(scope)) {
@@ -129,7 +117,7 @@ export default class EventsController {
 
     return await searchEvents({
       center: {
-        geopint: center,
+        geopoint: center,
         communityId: communityId,
         municipalityId: municipalityId,
         countyId: countyId,
@@ -138,6 +126,7 @@ export default class EventsController {
       },
       scope: scope as RuralEventScope,
       containTighterScopes: true,
+      // category: "culture-tourism", TODO: use if query contains a category filter path segment
     })
       .then((result) => {
         return result;
@@ -219,25 +208,24 @@ export default class EventsController {
   public async createEvent(
     @Body() eventObject: PostEventRequestBody
   ): Promise<any> {
+    if (!isValidJson(eventObject))
+      throw createHttpError(422, "request json is not valid");
+
     try {
-      // check incoming data
-      checkIfJsonObject(eventObject);
-      validateEventJsonObject(eventObject);
-    } catch (error: any) {
-      throw createHttpError(422, "request data is not valid: " + error.message);
+      isValidGoogleEvent(eventObject);
+    } catch {
+      throw createHttpError(422, "request json is not valid");
     }
 
     // enhance event data
-    let uuid: string;
     let geolocation: GeoLocation;
-    let metadata: EventMetadata | null;
+    let metadata: EventContentWithMetadata | null;
     let scope: RuralEventScope;
     let classification: EventClassification | null;
     let translatedContent: TranslatedContent | null;
 
     try {
       // create uuid based on the event data
-      uuid = getUuidByString(getUniqueIdStringForEvent(eventObject)); // low runtime
       metadata = getMetadataFromContent(eventObject?.description as string); // data needed in the next steps
 
       // do in parallel to save time
@@ -255,6 +243,8 @@ export default class EventsController {
             eventObject.description as string
           ),
         ]);
+
+      // TODO: fetch detailled geo data for community --- or not??
     } catch (error: any) {
       throw createHttpError(
         422,
@@ -265,7 +255,6 @@ export default class EventsController {
     // TODO: build proper indexable object
     const newEvent: IndexedEvent = await buildIndexableEvent(
       eventObject,
-      uuid,
       geolocation,
       metadata,
       scope,
@@ -283,94 +272,36 @@ export default class EventsController {
           return data;
         },
         (err: TypesenseError) => {
-          console.error(err);
+          throw err as TypesenseError;
+        }
+      )
+      .catch((error: TypesenseError) => {
+        // if error is an already exists
+        if (error.httpStatus === 400) {
+          return client
+            .collections("events")
+            .documents(newEvent.id)
+            .update(newEvent)
+            .then(
+              (data: any) => {
+                console.debug("data: ", data);
+                return data;
+              },
+              (err: TypesenseError) => {
+                console.error(err);
+                throw createHttpError(
+                  err.httpStatus || 500,
+                  err.message ||
+                    "could not create or update event without known reason"
+                );
+              }
+            );
+        } else {
           throw createHttpError(
-            err.httpStatus || 500,
-            err.message || "could not create event without known reason"
+            500,
+            "could not create or update event without known reason"
           );
         }
-      );
-  }
-
-  /**
-   * Update an event.
-   */
-  @Patch("")
-  @SuccessResponse(200, "Updated") // TODO: use proper type
-  @Response<Error>(422, "Unprocessable Entity")
-  public async updateEvent(
-    @Body() eventObject: PostEventRequestBody
-  ): Promise<any> {
-    try {
-      // check incoming data
-      checkIfJsonObject(eventObject);
-      validateEventJsonObject(eventObject);
-    } catch (error: any) {
-      throw createHttpError(422, "request data is not valid: " + error.message);
-    }
-
-    // enhance event data
-    let uuid: string;
-    let geolocation: GeoLocation;
-    let metadata: EventMetadata | null;
-    let scope: RuralEventScope;
-    let classification: EventClassification | null;
-    let translatedContent: TranslatedContent | null;
-
-    try {
-      // create uuid based on the event data
-      uuid = getUuidByString(getUniqueIdStringForEvent(eventObject)); // low runtime
-      metadata = getMetadataFromContent(eventObject?.description as string); // data needed in the next steps
-
-      // do in parallel to save time
-      [geolocation, scope, classification, translatedContent] =
-        await Promise.all([
-          geoCodeLocation(eventObject?.location as string),
-          mapScopes(metadata?.scopes as string[]),
-          classifyContent(
-            metadata?.tags as string[],
-            eventObject.summary as string,
-            eventObject.description as string
-          ),
-          translateContent(
-            eventObject.summary as string,
-            eventObject.description as string
-          ),
-        ]);
-    } catch (error: any) {
-      throw createHttpError(
-        422,
-        "could not process event data: " + error.message
-      );
-    }
-
-    // TODO: build proper indexable object
-    const newEvent: IndexedEvent = await buildIndexableEvent(
-      eventObject,
-      uuid,
-      geolocation,
-      metadata,
-      scope,
-      classification,
-      translatedContent
-    );
-
-    return await client
-      .collections("events")
-      .documents(uuid)
-      .update(newEvent)
-      .then(
-        (data: any) => {
-          console.debug("data: ", data);
-          return data;
-        },
-        (err: TypesenseError) => {
-          console.error(err);
-          throw createHttpError(
-            err.httpStatus || 500,
-            err.message || "could not create event without known reason"
-          );
-        }
-      );
+      });
   }
 }

@@ -4,9 +4,11 @@ import {
   TextWithData,
 } from "../../../packages/data-text-mapper/src";
 import { containsHtml } from "../../../packages/data-text-mapper/src/helpers/containsHtml";
-import { EventMetadata } from "../events.types";
+import { EventContentWithMetadata } from "../events.types";
 
-export const getMetadataFromContent = (body: string): EventMetadata | null => {
+export const getMetadataFromContent = (
+  body: string
+): EventContentWithMetadata | null => {
   if (!body) throw new Error("body is required");
 
   // extract tags from body
@@ -18,6 +20,7 @@ export const getMetadataFromContent = (body: string): EventMetadata | null => {
   }
 
   return {
+    description: textWithData?.description || "",
     url: textWithData?.url || "",
     tags: textWithData?.tags || [],
     scopes: textWithData?.scopes || [],

@@ -1,17 +1,18 @@
 import createHttpError from "http-errors";
+import { RuralEventCategoryId } from "../../../packages/rural-event-categories/src/types/ruralEventCategory.types";
 import {
   isRuralEventScope,
-  RuralEventAdminScope,
-  RuralEventDistanceScope,
   RuralEventScope,
 } from "../../../packages/rural-event-types/src/ruralEventScopes";
 import { getScopeDistance } from "../scopes/scopeDistances";
 import client from "./client";
+import { getCommunityFilter } from "./filters/getCommunityFilter";
+import { getMunicipalityFilter } from "./filters/getMunicipalityFilter";
 import eventsSchema from "./schema";
 import { IndexedEvent } from "./types";
 
 export interface CommunityCenterQuery {
-  geopint: [number, number];
+  geopoint: [number, number];
   communityId: string;
   municipalityId: string;
   countyId: string;
@@ -23,6 +24,7 @@ export interface SearchEventsQuery {
   center: CommunityCenterQuery;
   scope: RuralEventScope;
   containTighterScopes?: boolean;
+  category?: RuralEventCategoryId;
 }
 
 // TODO: maybe use an existing type from typesense
@@ -41,7 +43,7 @@ export const searchEvents = async (
   // validate geo center
   if (
     !query.center ||
-    !query.center.geopint ||
+    !query.center.geopoint ||
     !query.center.communityId ||
     !query.center.municipalityId ||
     !query.center.countyId ||
@@ -63,21 +65,23 @@ export const searchEvents = async (
   }
 
   // pre-define admin filters
-  const communityFilter: string = `community.id: ${query.center.communityId}`;
-  const municipalityFilter: string = `municipality.id: ${query.center.municipalityId} && scope: [municipality,nearby,region,county,state,country]`;
+  const communityFilter: string = getCommunityFilter(query.center.communityId);
+  const municipalityFilter: string = getMunicipalityFilter(
+    query.center.municipalityId
+  );
   const countyFilter: string = `county.id: ${query.center.countyId} && scope: [county,state,country]`;
   const stateFilter: string = `state.id: ${query.center.stateId} && scope: [state,country]`;
   const countryFilter: string = `country.id: ${query.center.countryId} && scope: country`;
 
   // pre-define distance filters
   const nearbyFilter: string = `community.geopoint:(${
-    query.center.geopint[0]
-  }, ${query.center.geopint[1]}, ${getScopeDistance(
+    query.center.geopoint[0]
+  }, ${query.center.geopoint[1]}, ${getScopeDistance(
     "nearby"
   )} km) && scope: [nearby,region,county,state,country]`;
   const regionFilter: string = `community.geopoint:(${
-    query.center.geopint[0]
-  }, ${query.center.geopint[1]}, ${getScopeDistance(
+    query.center.geopoint[0]
+  }, ${query.center.geopoint[1]}, ${getScopeDistance(
     "region"
   )} km) && scope: [region,county,state,country]`;
 
@@ -164,9 +168,18 @@ export const searchEvents = async (
 
   console.log("scopeBasedFilters", scopeBasedFilters);
 
+  /**
+   * generate category filter
+   */
+  const categoryFilter: string | undefined = query.category
+    ? `categories: ${query.category}`
+    : undefined;
+
   const searchParameters = {
     q: "*",
-    filter_by: scopeBasedFilters.map((f) => `(${f})`).join(" || "),
+    filter_by:
+      scopeBasedFilters.map((f) => `(${f})`).join(" || ") +
+      (categoryFilter ? ` && (${categoryFilter})` : ""),
     facet_by: "categories,occurrence,scope",
     sort_by: "start:desc",
     exclude_fields: "description.en, description.pl, summary.en, summary.pl",

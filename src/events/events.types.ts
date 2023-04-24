@@ -10,10 +10,7 @@ import Schema$Event = calendar_v3.Schema$Event;
 
 export type PostEventRequestBody = Schema$Event;
 
-export type EventMetadata = Pick<
-  TextWithData,
-  "url" | "tags" | "scopes" | "image"
->;
+export type EventContentWithMetadata = TextWithData;
 
 export interface EventClassification {
   categories: RuralEventCategoryId[];
