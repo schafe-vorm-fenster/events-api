@@ -10,6 +10,8 @@ import { isValidJson } from "./isValidJson";
 export const isValidGoogleEvent = (json: object): boolean => {
   if (!isValidJson(json)) return false;
 
+  // TODO: refactor using zod
+
   let errors: string[] = new Array();
   const event: Schema$Event = json as Schema$Event;
 

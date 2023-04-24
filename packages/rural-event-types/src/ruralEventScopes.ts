@@ -18,13 +18,8 @@ export type RuralEventDistanceScopes = typeof DistanceRuralEventScopes;
 export type RuralEventDistanceScope = RuralEventDistanceScopes[number];
 
 export const AllRuralEventScopes = [
-  "community",
-  "municipality",
-  "county",
-  "state",
-  "country",
-  "nearby", // nearby the current location approximately 5-7km
-  "region", // in the greater region of the current location approximately 20-30km
+  ...AdminRuralEventScopes,
+  ...DistanceRuralEventScopes,
 ] as const;
 
 export type RuralEventScopes = typeof AllRuralEventScopes;
@@ -40,8 +35,4 @@ export function isRuralEventAdminScope(scopeInQuestion: string): boolean {
   return AdminRuralEventScopes.includes(
     scopeInQuestion as RuralEventAdminScope
   );
-}
-
-export function isRuralEventScope(scopeInQuestion: string): boolean {
-  return AllRuralEventScopes.includes(scopeInQuestion as RuralEventScope);
 }

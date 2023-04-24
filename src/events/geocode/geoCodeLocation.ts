@@ -1,7 +1,9 @@
 import Axios from "axios";
 import { setupCache } from "axios-cache-interceptor";
 import { GeoLocation } from "./types/GeoLocation";
-const axios = setupCache(Axios);
+import axios from "axios";
+import { getLogger } from "../../../logging/log-util";
+// const axios = setupCache(Axios);
 
 /**
  * geocode location using the svf geoapi
@@ -11,8 +13,10 @@ const axios = setupCache(Axios);
 export const geoCodeLocation = async (
   location: string
 ): Promise<GeoLocation> => {
+  const log = getLogger("api.events.geocode");
+  log.debug("geocoding location: ", location);
   return await axios
-    .get(`${process.env.SVF_GEOAPI_URL}findbyaddress`, {
+    .get(`${process.env.SVF_GEOAPI_URL}api/findbyaddress/`, {
       params: {
         location: location,
       },
@@ -22,10 +26,15 @@ export const geoCodeLocation = async (
       },
     })
     .then((response) => {
-      if (response.data?.json) return response.data.json as GeoLocation;
-      throw new Error("got no json response");
+      if (response.data) {
+        return response.data as GeoLocation;
+      } else {
+        log.warn("got no json response");
+        throw new Error("got no json response");
+      }
     })
     .catch((error) => {
+      log.error("error while geocoding location: ", error);
       throw error;
     });
 };

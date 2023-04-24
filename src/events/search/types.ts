@@ -57,6 +57,6 @@ export interface IndexedEvent {
   "calendar.id": string;
   "calendar.name": string;
   created: number;
-  changed: number | undefined;
-  deleted: number | undefined;
+  changed: number;
+  deleted: number;
 }

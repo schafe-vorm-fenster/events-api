@@ -1,7 +1,7 @@
 /**
  * Type to structure typical metadata. Text as description and optional data.
  */
-interface TextWithData {
+export interface TextWithData {
   description: string;
   url?: string;
   tags?: string[];
@@ -9,5 +9,3 @@ interface TextWithData {
   image?: string;
   document?: string;
 }
-
-export { TextWithData };

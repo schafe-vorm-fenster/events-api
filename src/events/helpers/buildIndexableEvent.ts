@@ -134,11 +134,11 @@ export const buildIndexableEvent = (
      * systeme data
      */
     created: googleDatetimeToTimestamp(rawEvent?.created) || 0,
-    changed: googleDatetimeToTimestamp(rawEvent?.updated) || undefined,
+    changed: googleDatetimeToTimestamp(rawEvent?.updated) || 0,
     deleted:
       rawEvent?.status === "cancelled"
-        ? googleDatetimeToTimestamp(rawEvent?.updated) || undefined
-        : undefined,
+        ? googleDatetimeToTimestamp(rawEvent?.updated) || 0
+        : 0,
   };
 
   return indexableEvent;

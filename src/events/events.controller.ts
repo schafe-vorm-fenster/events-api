@@ -262,7 +262,7 @@ export default class EventsController {
       translatedContent
     );
 
-    return await client
+    return client
       .collections("events")
       .documents()
       .create(newEvent)

@@ -1,14 +1,14 @@
 {
-  "name": "events-api",
+  "name": "@schafevormfenster/events-api",
   "description": "An API to manage events structured in a search engine database.",
   "version": "0.1.0",
   "homepage": "https://events.api.schafe-vorm-fenster.de/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/schafevormfenster/events-api"
+    "url": "https://github.com/schafe-vorm-fenster/events-api"
   },
   "bugs": {
-    "url": "https://github.com/schafevormfenster/events-api/issues"
+    "url": "https://github.com/schafe-vorm-fenster/events-api/issues"
   },
   "author": {
     "name": "Jan-Henrik Hempel",
@@ -17,9 +17,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 8200",
+    "dev": "next dev -p 8000",
     "build": "next build",
-    "start": "next start -p 8200",
+    "start": "next start -p 8000",
     "lint": "next lint",
     "test": "jest --maxWorkers=25%",
     "test:watch": "jest --watch --maxWorkers=25%",
