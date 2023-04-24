@@ -1,18 +1,20 @@
 {
   "compilerOptions": {
-    "target": "es2016",
-    "esModuleInterop": true,
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "commonjs",
-    "outDir": "./dist",
-    "jsx": "preserve",
-    "skipLibCheck": false,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
-    "lib": ["ES2021.String"]
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true
   },
-  "include": ["**/*.ts", "**/*.tsx", "src/*.json"],
-  "exclude": ["node_modules", "dist", "src/**/*.mock.json"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
 }
