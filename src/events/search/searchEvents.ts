@@ -1,15 +1,16 @@
 import createHttpError from "http-errors";
 import { RuralEventCategoryId } from "../../../packages/rural-event-categories/src/types/ruralEventCategory.types";
-import {
-  isRuralEventScope,
-  RuralEventScope,
-} from "../../../packages/rural-event-types/src/ruralEventScopes";
+import { RuralEventScope } from "../../../packages/rural-event-types/src/ruralEventScopes";
 import { getScopeDistance } from "../scopes/scopeDistances";
 import client from "./client";
 import { getCommunityFilter } from "./filters/getCommunityFilter";
 import { getMunicipalityFilter } from "./filters/getMunicipalityFilter";
 import eventsSchema from "./schema";
 import { IndexedEvent } from "./types";
+import { isRuralEventScope } from "../../../packages/rural-event-types/src/helpers/isRuralEventScope";
+import { getLogger } from "../../../logging/logger";
+import { api } from "../../../logging/loggerApps.config";
+import { TypesenseError } from "typesense/lib/Typesense/Errors";
 
 export interface CommunityCenterQuery {
   geopoint: [number, number];
@@ -38,7 +39,8 @@ export interface SearchEventsResult {
 export const searchEvents = async (
   query: SearchEventsQuery
 ): Promise<SearchEventsResult> => {
-  console.log("query: ", query);
+  const log = getLogger(api.events.search);
+  log.debug("query: ", query);
 
   // validate geo center
   if (
@@ -166,7 +168,7 @@ export const searchEvents = async (
       throw createHttpError(400, "invalid scope");
   }
 
-  console.log("scopeBasedFilters", scopeBasedFilters);
+  log.debug("scopeBasedFilters", scopeBasedFilters);
 
   /**
    * generate category filter
@@ -180,27 +182,31 @@ export const searchEvents = async (
     filter_by:
       scopeBasedFilters.map((f) => `(${f})`).join(" || ") +
       (categoryFilter ? ` && (${categoryFilter})` : ""),
-    facet_by: "categories,occurrence,scope",
+    facet_by: "categories,occurrence,scope", // TODO: check facets, maybe add more?
     sort_by: "start:desc",
-    exclude_fields: "description.en, description.pl, summary.en, summary.pl",
+    exclude_fields: "description.en, description.pl, summary.en, summary.pl", // TODO: optimize for i18n
     per_page: 100,
     limit_hits: 100,
   };
 
-  console.log("searchParameters: ", searchParameters);
+  log.debug("searchParameters: ", searchParameters);
 
-  // TODO: put into one generic function?
-  const result: any = await client
+  // TODO: maybe put into one generic function? Only for error handling reasons?
+  const result: SearchEventsResult = await client
     .collections(eventsSchema.name)
     .documents()
     .search(searchParameters)
-    .then(
-      function (searchResults: any) {
-        return searchResults;
-      },
-      (err: any) => {
-        return err;
-      }
-    );
+    .then(function (searchResults: SearchEventsResult) {
+      log.debug(`Found ${searchResults.found} events`);
+      return searchResults;
+    })
+    .catch((error: TypesenseError | any) => {
+      let httpCode: number | undefined;
+      if (error instanceof TypesenseError) httpCode = error?.httpStatus;
+      throw createHttpError(
+        httpCode || 500,
+        error?.message || "Error while searching for events"
+      );
+    });
   return result;
 };

@@ -4,6 +4,7 @@ export namespace api {
     community = "api.events.community",
     scope = "api.events.community.scope",
     category = "api.events.community.scope.category",
+    search = "api.events.search",
   }
   export enum categories {
     get = "api.categories.get",

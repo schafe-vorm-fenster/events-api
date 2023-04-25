@@ -5,6 +5,10 @@ import { isRuralEventCategory } from "../../../../../../packages/rural-event-cat
 import { CacheControlHeader } from "../../../../../../src/config/CacheControlHeader";
 import { getLogger } from "../../../../../../logging/logger";
 import { api } from "../../../../../../logging/loggerApps.config";
+import { searchEvents } from "../../../../../../src/events/search/searchEvents";
+import { RuralEventScope } from "../../../../../../packages/rural-event-types/src/ruralEventScopes";
+import { HttpError } from "http-errors";
+import { RuralEventCategoryId } from "../../../../../../packages/rural-event-categories/src/types/ruralEventCategory.types";
 
 /**
  * @swagger
@@ -44,8 +48,39 @@ export default async function handler(
       .json({ status: 400, message: "Invalid category parameter" });
   }
 
-  return res
-    .status(200)
-    .setHeader("Cache-Control", CacheControlHeader)
-    .json({ query: req?.query });
+  // TODO: get geopoint, geonamesId and municipalityId for given community from geo-api
+  const center: [number, number] = [53.9206, 13.5802];
+  const communityId: string = "geoname.2838887";
+  const municipalityId: string = "geoname.6548320";
+  const countyId: string = "geoname.8648415";
+  const stateId: string = "geoname.2872567";
+  const countryId: string = "geoname.2921044";
+
+  return await searchEvents({
+    center: {
+      geopoint: center,
+      communityId: communityId,
+      municipalityId: municipalityId,
+      countyId: countyId,
+      stateId: stateId,
+      countryId: countryId,
+    },
+    scope: scopeParam as RuralEventScope,
+    containTighterScopes: true,
+    category: categoryParam as RuralEventCategoryId,
+  })
+    .then((result) => {
+      return res
+        .status(200)
+        .setHeader("Cache-Control", CacheControlHeader)
+        .json(result);
+    })
+    .catch((error: HttpError | any) => {
+      let httpCode: number | undefined;
+      if (error instanceof HttpError) httpCode = error?.status;
+      return res.status(httpCode || 500).json({
+        status: httpCode || 500,
+        message: error.message || "Error while searching for events",
+      });
+    });
 }
