@@ -18,3 +18,17 @@ export namespace api {
     delete = "api.schema.delete",
   }
 }
+
+export namespace client {
+  export enum translation {
+    translate = "client.translation.translate",
+  }
+  export enum classification {
+    classify = "client.classification.classify",
+    bytag = "client.classification.bytag",
+    bytext = "client.classification.bytext",
+  }
+  export enum geocode {
+    findbyaddress = "client.geocode.findbyaddress",
+  }
+}

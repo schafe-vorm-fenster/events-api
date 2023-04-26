@@ -1,5 +1,5 @@
 import { Level } from "pino";
-import { api } from "./loggerApps.config";
+import { api, client } from "./loggerApps.config";
 
 interface LogLevelConfig {
   app: string;
@@ -37,6 +37,14 @@ export const logLevelConfig: LogLevelConfig[] = [
   },
   {
     app: api.schema.get,
+    level: "info",
+  },
+  {
+    app: client.classification.bytag,
+    level: "debug",
+  },
+  {
+    app: client.geocode.findbyaddress,
     level: "info",
   },
 ];

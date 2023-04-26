@@ -15,7 +15,7 @@ import { recurringEventUuid } from "./uuids/recurringEventUuid";
 
 export const buildIndexableEvent = (
   rawEvent: PostEventRequestBody,
-  geolocation: GeoLocation,
+  geolocation: GeoLocation | null,
   contentWithMetadata: EventContentWithMetadata | null,
   scope: RuralEventScope,
   classification: EventClassification | null,

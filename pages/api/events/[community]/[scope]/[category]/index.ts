@@ -78,6 +78,10 @@ export default async function handler(
     .catch((error: HttpError | any) => {
       let httpCode: number | undefined;
       if (error instanceof HttpError) httpCode = error?.status;
+      log.error(
+        { status: httpCode, message: error.message },
+        "searching for events failed"
+      );
       return res.status(httpCode || 500).json({
         status: httpCode || 500,
         message: error.message || "Error while searching for events",

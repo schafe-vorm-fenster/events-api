@@ -13,8 +13,8 @@ export type PostEventRequestBody = Schema$Event;
 export type EventContentWithMetadata = TextWithData;
 
 export interface EventClassification {
-  categories: RuralEventCategoryId[];
-  "classification.l1": GoogleNaturalLanguageL1[];
-  "classification.l2": GoogleNaturalLanguageL2[];
-  "classification.l3": GoogleNaturalLanguageL3[];
+  categories: RuralEventCategoryId[] | undefined;
+  "classification.l1": GoogleNaturalLanguageL1[] | undefined;
+  "classification.l2": GoogleNaturalLanguageL2[] | undefined;
+  "classification.l3": GoogleNaturalLanguageL3[] | undefined;
 }

@@ -71,7 +71,7 @@ export default async function handler(
   const eventObject: PostEventRequestBody = req.body as PostEventRequestBody;
 
   // prepare enhancement of the event data
-  let geolocation: GeoLocation;
+  let geolocation: GeoLocation | null;
   let metadata: EventContentWithMetadata | null;
   let scope: RuralEventScope;
   let classification: EventClassification | null;
@@ -90,8 +90,7 @@ export default async function handler(
         mapScopes(metadata?.scopes as string[]),
         classifyContent(
           metadata?.tags as string[],
-          eventObject.summary as string,
-          eventObject.description as string
+          ((eventObject.summary as string) + eventObject.description) as string
         ),
         translateContent(
           eventObject.summary as string,
@@ -100,74 +99,100 @@ export default async function handler(
       ]
     );
 
-    // build proper indexable object
-    const newEvent: IndexedEvent = buildIndexableEvent(
-      eventObject,
-      geolocation,
-      metadata,
-      scope,
-      classification,
-      translatedContent
+    log.debug(
+      { geolocation, scope, classification, translatedContent },
+      "Enhanced event data"
     );
+  } catch (error: TypesenseError | any) {
+    let httpCode: number | undefined;
+    if (error instanceof TypesenseError) httpCode = error?.httpStatus;
+    log.warn("Could not enrich event data: ", error.message);
+    return res.status(httpCode || 500).json({
+      status: httpCode || 500,
+      message:
+        error.message || "Could not enrich event data for unknown reason.",
+    });
+  }
 
-    return client
-      .collections(eventsSchema.name)
-      .documents()
-      .create(newEvent)
-      .then((data: any) => {
+  // TODO: check enrichment results
+  if (!geolocation) {
+    log.warn(
+      { eventId: eventObject.id },
+      "Could not enrich event data: ",
+      "No geolocation found"
+    );
+  }
+
+  // build proper indexable object
+  const newEvent: IndexedEvent = buildIndexableEvent(
+    eventObject,
+    geolocation,
+    metadata,
+    scope,
+    classification,
+    translatedContent
+  );
+
+  return client
+    .collections(eventsSchema.name)
+    .documents()
+    .create(newEvent)
+    .then((data: any) => {
+      log.debug(
+        {
+          eventId: newEvent.id,
+        },
+        "Event created successfully"
+      );
+      return res.status(201).json({
+        status: 201,
+        message: "Event created successfully",
+        data: data,
+      });
+    })
+    .catch((error: TypesenseError) => {
+      // if error is an already exists, try to update instead
+      if (error.httpStatus === 409) {
         log.debug(
           {
             eventId: newEvent.id,
           },
-          "Event created successfully"
+          "Event already exists, trying to update instead"
         );
-        return res.status(201).json({
-          status: 201,
-          message: "Event created successfully",
-          data: data,
-        });
-      })
-      .catch((error: TypesenseError) => {
-        // if error is an already exists, try to update instead
-        if (error.httpStatus === 409) {
-          log.debug(
-            {
-              eventId: newEvent.id,
-            },
-            "Event already exists, trying to update instead"
-          );
-          return client
-            .collections(eventsSchema.name)
-            .documents(newEvent.id)
-            .update(newEvent)
-            .then((data: any) => {
-              log.debug(
-                {
-                  eventId: newEvent.id,
-                },
-                "Event updated successfully"
-              );
-              return res.status(201).json({
-                status: 201,
-                message: "Event updated successfully",
-                data: data,
-              });
-            })
-            .catch((error: TypesenseError) => {
-              throw error;
+        return client
+          .collections(eventsSchema.name)
+          .documents(newEvent.id)
+          .update(newEvent)
+          .then((data: any) => {
+            log.debug(
+              {
+                eventId: newEvent.id,
+              },
+              "Event updated successfully"
+            );
+            return res.status(201).json({
+              status: 201,
+              message: "Event updated successfully",
+              data: data,
             });
-        } else {
-          throw error;
-        }
-      });
-  } catch (error: TypesenseError | any) {
-    let httpCode: number | undefined;
-    if (error instanceof TypesenseError) httpCode = error?.httpStatus;
-    log.warn("Could not create or update event: ", error.message);
-    return res.status(httpCode || 500).json({
-      status: httpCode || 500,
-      message:
-        error.message || "Could not create or update event for unknown reason.",
+          })
+          .catch((error: TypesenseError) => {
+            log.debug(
+              {
+                eventId: newEvent.id,
+              },
+              "Event could not be updated"
+            );
+            throw error;
+          });
+      } else {
+        log.debug(
+          {
+            eventId: newEvent.id,
+          },
+          "Event cloud not be created"
+        );
+        throw error;
+      }
     });
-  }
 }
