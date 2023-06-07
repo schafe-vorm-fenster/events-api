@@ -53,12 +53,12 @@ export default async function handler(
   if (!isValidGeonameId(communityParam)) {
     res
       .status(400)
-      .json({ status: 400, message: "Invalid community parameter" });
+      .json({ status: 400, message: "invalid community parameter" });
   }
 
   const scopeParam: string = req?.query?.scope as RuralEventScope;
   if (!isRuralEventScope(scopeParam)) {
-    res.status(400).json({ status: 400, message: "Invalid scope parameter" });
+    res.status(400).json({ status: 400, message: "invalid scope parameter" });
   }
 
   // extract after and before
@@ -67,7 +67,7 @@ export default async function handler(
   if (afterParam && !isISO8601(afterParam)) {
     res
       .status(400)
-      .json({ status: 400, message: "Invalid date format for after param" });
+      .json({ status: 400, message: "invalid date format for after param" });
   }
 
   const beforeParam: string | undefined =
@@ -75,7 +75,7 @@ export default async function handler(
   if (beforeParam && !isISO8601(beforeParam)) {
     res
       .status(400)
-      .json({ status: 400, message: "Invalid date format for before param" });
+      .json({ status: 400, message: "invalid date format for before param" });
   }
 
   // TODO: get geopoint, geonamesId and municipalityId for given community from geo-api
@@ -111,7 +111,7 @@ export default async function handler(
       if (error instanceof HttpError) httpCode = error?.status;
       return res.status(httpCode || 500).json({
         status: httpCode || 500,
-        message: error.message || "Error while searching for events",
+        message: error.message || "error while searching for events",
       });
     });
 }

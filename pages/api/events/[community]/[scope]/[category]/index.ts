@@ -130,7 +130,7 @@ export default async function handler(
       );
       return res.status(httpCode || 500).json({
         status: httpCode || 500,
-        message: error.message || "Error while searching for events",
+        message: error.message || "error while searching for events",
       });
     });
 }
