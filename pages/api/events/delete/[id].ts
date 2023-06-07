@@ -27,7 +27,11 @@ export type DeleteEventResponse = DeleteEventsResult;
  *       - application/json
  *     responses:
  *       200:
- *         description: 200 ok on success.
+ *         description: Number of deleted events.
+ *       400:
+ *         description: Invalid date format for before param.
+ *       404:
+ *         description: No events deleted.
  */
 export default async function handler(
   req: NextApiRequest,

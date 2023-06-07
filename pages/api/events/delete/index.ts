@@ -20,7 +20,7 @@ export type DeleteEventResponse = DeleteEventsResult;
  *       - Events
  *     parameters:
  *       - name: before
- *         description: Datetime in ISO8601 format to delete events occurring before this point in time. Only events starting and ending before, will be deleted.
+ *         description: now or datetime in ISO8601 format to delete events occurring before this point in time. Only events starting and ending before, will be deleted.
  *         in: query
  *         required: false
  *         type: string
@@ -28,7 +28,11 @@ export type DeleteEventResponse = DeleteEventsResult;
  *       - application/json
  *     responses:
  *       200:
- *         description: List of deleted events.
+ *         description: Number of deleted events.
+ *       400:
+ *         description: Invalid date format for before param.
+ *       404:
+ *         description: No events deleted.
  */
 export default async function handler(
   req: NextApiRequest,
@@ -38,7 +42,11 @@ export default async function handler(
 
   const beforeParam: string | undefined =
     (req.query?.before as string) || undefined;
-  if (beforeParam && !isISO8601(beforeParam)) {
+  if (
+    beforeParam &&
+    !isISO8601(beforeParam) &&
+    beforeParam.toLowerCase() !== "now"
+  ) {
     res
       .status(400)
       .json({ status: 400, message: "invalid date format for before param" });

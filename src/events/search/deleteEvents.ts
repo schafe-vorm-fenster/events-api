@@ -21,8 +21,6 @@ export const deleteEvents = async (
 ): Promise<DeleteEventsResult> => {
   const log = getLogger(api.events.delete);
 
-  log.debug({ query: query }, "deleteEvents query");
-
   // validate params
   if (!query.id && !query.ids && !query.before) {
     throw createHttpError(
