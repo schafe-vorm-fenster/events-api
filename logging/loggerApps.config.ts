@@ -5,6 +5,9 @@ export namespace api {
     scope = "api.events.community.scope",
     category = "api.events.community.scope.category",
     search = "api.events.search",
+    delete = "api.events.delete",
+    "delete-by-id" = "api.events.delete.byid",
+    "delete-by-date" = "api.events.delete.bydate",
   }
   export enum categories {
     get = "api.categories.get",

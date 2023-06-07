@@ -9,7 +9,7 @@ interface LogLevelConfig {
 export const logLevelConfig: LogLevelConfig[] = [
   {
     app: "*",
-    level: "info",
+    level: "debug",
   },
   {
     app: api.events.post,
