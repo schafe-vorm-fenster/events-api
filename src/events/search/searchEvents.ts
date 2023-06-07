@@ -11,6 +11,9 @@ import { isRuralEventScope } from "../../../packages/rural-event-types/src/helpe
 import { getLogger } from "../../../logging/logger";
 import { api } from "../../../logging/loggerApps.config";
 import { TypesenseError } from "typesense/lib/Typesense/Errors";
+import { isISO8601 } from "../helpers/datetime/isISO8601";
+import { getAfterFilter } from "./filters/getAfterFilter";
+import { getBeforeFilter } from "./filters/getBeforeFilter";
 
 export interface CommunityCenterQuery {
   geopoint: [number, number];
@@ -26,6 +29,8 @@ export interface SearchEventsQuery {
   scope: RuralEventScope;
   containTighterScopes?: boolean;
   category?: RuralEventCategoryId;
+  after?: string;
+  before?: string;
 }
 
 // TODO: maybe use an existing type from typesense
@@ -64,6 +69,22 @@ export const searchEvents = async (
       400,
       "invalid scope param, event search requires a valid scope"
     );
+  }
+
+  // validate after
+  let afterFilter: string | undefined = undefined;
+  try {
+    afterFilter = getAfterFilter(query.after);
+  } catch (err: any) {
+    throw createHttpError(400, err?.message || "cannot build an after filter");
+  }
+
+  // validate before
+  let beforeFilter: string | undefined = undefined;
+  try {
+    beforeFilter = getBeforeFilter(query.before);
+  } catch (err: any) {
+    throw createHttpError(400, err?.message || "cannot build a before filter");
   }
 
   // pre-define admin filters
@@ -181,7 +202,10 @@ export const searchEvents = async (
     q: "*",
     filter_by:
       scopeBasedFilters.map((f) => `(${f})`).join(" || ") +
-      (categoryFilter ? ` && (${categoryFilter})` : ""),
+      (categoryFilter ? ` && (${categoryFilter})` : "") +
+      (afterFilter ? ` && (${afterFilter})` : "") +
+      (beforeFilter ? ` && (${beforeFilter})` : ""),
+
     facet_by: "categories,occurrence,scope", // TODO: check facets, maybe add more?
     sort_by: "start:desc",
     exclude_fields: "description.en, description.pl, summary.en, summary.pl", // TODO: optimize for i18n
@@ -189,7 +213,7 @@ export const searchEvents = async (
     limit_hits: 100,
   };
 
-  log.debug("searchParameters: ", searchParameters);
+  log.debug(searchParameters, "searchParameters");
 
   // TODO: maybe put into one generic function? Only for error handling reasons?
   const result: SearchEventsResult = await client

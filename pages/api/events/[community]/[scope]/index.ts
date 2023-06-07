@@ -7,6 +7,7 @@ import { api } from "../../../../../logging/loggerApps.config";
 import { searchEvents } from "../../../../../src/events/search/searchEvents";
 import { HttpError } from "http-errors";
 import { RuralEventScope } from "../../../../../packages/rural-event-types/src/ruralEventScopes";
+import { isISO8601 } from "../../../../../src/events/helpers/datetime/isISO8601";
 
 /**
  * @swagger
@@ -16,6 +17,27 @@ import { RuralEventScope } from "../../../../../packages/rural-event-types/src/r
  *     description: Returns a list of events for a given community and a specific scope.
  *     tags:
  *       - Events
+ *     parameters:
+ *       - name: community
+ *         description: Geoname id of a community in the format "geoname.2838887".
+ *         in: path
+ *         required: true
+ *         type: string
+ *       - name: scope
+ *         description: Scope filter.
+ *         in: path
+ *         required: true
+ *         type: string
+ *       - name: after
+ *         description: Datetime in ISO8601 format to filter for events occurring after this point in time. Events starting before but ending after, will be included.
+ *         in: query
+ *         required: false
+ *         type: string
+ *       - name: before
+ *         description: Datetime in ISO8601 format to filter for events occurring before this point in time. Events starting before but ending after, will be included.
+ *         in: query
+ *         required: false
+ *         type: string
  *     produces:
  *       - application/json
  *     responses:
@@ -39,6 +61,23 @@ export default async function handler(
     res.status(400).json({ status: 400, message: "Invalid scope parameter" });
   }
 
+  // extract after and before
+  const afterParam: string | undefined =
+    (req.query?.after as string) || undefined;
+  if (afterParam && !isISO8601(afterParam)) {
+    res
+      .status(400)
+      .json({ status: 400, message: "Invalid date format for after param" });
+  }
+
+  const beforeParam: string | undefined =
+    (req.query?.before as string) || undefined;
+  if (beforeParam && !isISO8601(beforeParam)) {
+    res
+      .status(400)
+      .json({ status: 400, message: "Invalid date format for before param" });
+  }
+
   // TODO: get geopoint, geonamesId and municipalityId for given community from geo-api
   const center: [number, number] = [53.9206, 13.5802];
   const communityId: string = "geoname.2838887";
@@ -58,6 +97,8 @@ export default async function handler(
     },
     scope: scopeParam as RuralEventScope,
     containTighterScopes: true,
+    after: afterParam,
+    before: beforeParam,
   })
     .then((result) => {
       return res
