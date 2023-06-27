@@ -1,12 +1,17 @@
 import {
-  GoogleNaturalLanguageCategory,
-  GoogleNaturalLanguageSection,
-} from "./googleNaturalLanguageCategories";
+  GoogleNaturalLanguageL1,
+  GoogleNaturalLanguageL2,
+  GoogleNaturalLanguageL3,
+} from "../../rural-event-categories/src/types/googleNaturalLanguageCategories";
 
+type GoogleNaturalLanguageClassification =
+  | GoogleNaturalLanguageL1
+  | GoogleNaturalLanguageL2
+  | GoogleNaturalLanguageL3;
 interface categoryMapping {
   category: string;
-  section: GoogleNaturalLanguageSection;
-  classifications: GoogleNaturalLanguageCategory[];
+  section: GoogleNaturalLanguageL1;
+  classifications: GoogleNaturalLanguageClassification[];
 }
 
 export const categoryMappings: categoryMapping[] = [
