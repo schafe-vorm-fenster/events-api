@@ -126,7 +126,7 @@ export default async function handler(
   // build proper indexable object
   const newEvent: IndexedEvent = buildIndexableEvent(
     eventObject,
-    geolocation,
+    geolocation as GeoLocation,
     metadata,
     scope,
     classification,
