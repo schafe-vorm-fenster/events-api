@@ -1,11 +1,1 @@
-type SvfLocale = "de" | "en" | "pl";
-
-interface SvfLanguageLocalization {
-  locale: SvfLocale;
-  name: string;
-}
-
-export interface SvfLanguage {
-  locale: SvfLocale;
-  localizations: SvfLanguageLocalization[];
-}
+export type SvfLocale = "de" | "en" | "pl" | "uk" | "ru";

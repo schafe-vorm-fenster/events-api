@@ -14,6 +14,7 @@ import { TypesenseError } from "typesense/lib/Typesense/Errors";
 import { isISO8601 } from "../helpers/datetime/isISO8601";
 import { getAfterFilter } from "./filters/getAfterFilter";
 import { getBeforeFilter } from "./filters/getBeforeFilter";
+import { SvfLocale } from "../../languages/languages.types";
 
 export interface CommunityCenterQuery {
   geopoint: [number, number];
@@ -31,6 +32,7 @@ export interface SearchEventsQuery {
   category?: RuralEventCategoryId;
   after?: string;
   before?: string;
+  language?: SvfLocale;
 }
 
 // TODO: maybe use an existing type from typesense
@@ -38,7 +40,7 @@ export interface SearchEventsResult {
   found: number;
   page: number;
   out_of: number;
-  hits: IndexedEvent[];
+  hits: IndexedEvent[]; // TODO: refactor to search result event
 }
 
 export const searchEvents = async (
@@ -198,6 +200,37 @@ export const searchEvents = async (
     ? `categories: ${query.category}`
     : undefined;
 
+  /**
+   * build locale based exclude fields
+   */
+  let localizedExcludeFields: string = "";
+
+  switch (query?.language as string) {
+    case "de":
+      localizedExcludeFields =
+        "summary.en, summary.pl, summary.uk, summary.ru, description.en, description.pl, description.uk, description.ru";
+      break;
+    case "en":
+      localizedExcludeFields =
+        "summary.de, summary.pl, summary.uk, summary.ru, description.de, description.pl, description.uk, description.ru";
+      break;
+    case "pl":
+      localizedExcludeFields =
+        "summary.de, summary.en, summary.uk, summary.ru, description.de, description.en, description.uk, description.ru";
+      break;
+    case "uk":
+      localizedExcludeFields =
+        "summary.de, summary.en, summary.pl, summary.ru, description.de, description.en, description.pl, description.ru";
+      break;
+    case "ru":
+      localizedExcludeFields =
+        "summary.de, summary.en, summary.pl, summary.uk, description.de, description.en, description.pl, description.uk";
+      break;
+    default:
+      localizedExcludeFields = "";
+      break;
+  }
+
   const searchParameters = {
     q: "*",
     filter_by:
@@ -208,7 +241,7 @@ export const searchEvents = async (
 
     facet_by: "categories,occurrence,scope", // TODO: check facets, maybe add more?
     sort_by: "start:desc",
-    exclude_fields: "description.en, description.pl, summary.en, summary.pl", // TODO: optimize for i18n
+    exclude_fields: localizedExcludeFields,
     per_page: 100,
     limit_hits: 100,
   };

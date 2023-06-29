@@ -7,6 +7,8 @@ export interface TranslatedContent {
   de: Content;
   en: Content;
   pl: Content;
+  uk: Content;
+  ru: Content;
 }
 
 export const translateContent = async (
@@ -27,6 +29,14 @@ export const translateContent = async (
     pl: {
       title: "PL:" + title,
       body: "PL:" + body,
+    },
+    uk: {
+      title: "UK:" + title,
+      body: "UK:" + body,
+    },
+    ru: {
+      title: "RU:" + title,
+      body: "RU:" + body,
     },
   };
 };

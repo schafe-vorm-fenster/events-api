@@ -8,6 +8,7 @@ import { searchEvents } from "../../../../../src/events/search/searchEvents";
 import { HttpError } from "http-errors";
 import { RuralEventScope } from "../../../../../packages/rural-event-types/src/ruralEventScopes";
 import { isISO8601 } from "../../../../../src/events/helpers/datetime/isISO8601";
+import { SvfLocale } from "../../../../../src/languages/languages.types";
 
 /**
  * @swagger
@@ -35,6 +36,10 @@ import { isISO8601 } from "../../../../../src/events/helpers/datetime/isISO8601"
  *         type: string
  *       - name: before
  *         description: Datetime in ISO8601 format to filter for events occurring before this point in time. Events starting before but ending after, will be included.
+ *         in: query
+ *         required: false
+ *         type: string
+ *       - name: language
  *         in: query
  *         required: false
  *         type: string
@@ -78,6 +83,10 @@ export default async function handler(
       .json({ status: 400, message: "invalid date format for before param" });
   }
 
+  // extract language
+  const language: string | undefined =
+    (req.query?.language as string) || undefined;
+
   // TODO: get geopoint, geonamesId and municipalityId for given community from geo-api
   const center: [number, number] = [53.9206, 13.5802];
   const communityId: string = "geoname.2838887";
@@ -99,6 +108,7 @@ export default async function handler(
     containTighterScopes: true,
     after: afterParam,
     before: beforeParam,
+    language: language as SvfLocale,
   })
     .then((result) => {
       return res

@@ -30,6 +30,8 @@ export const buildIndexableEvent = (
     "summary.de": translatedContent?.de?.title || rawEvent.summary || "",
     "summary.en": translatedContent?.en?.title || rawEvent.summary || "",
     "summary.pl": translatedContent?.pl?.title || rawEvent.summary || "",
+    "summary.uk": translatedContent?.uk?.title || rawEvent.summary || "",
+    "summary.ru": translatedContent?.ru?.title || rawEvent.summary || "",
     "description.de":
       translatedContent?.de?.body ||
       contentWithMetadata?.description ||
@@ -42,6 +44,16 @@ export const buildIndexableEvent = (
       "",
     "description.pl":
       translatedContent?.pl?.body ||
+      contentWithMetadata?.description ||
+      rawEvent.description ||
+      "",
+    "description.uk":
+      translatedContent?.uk?.body ||
+      contentWithMetadata?.description ||
+      rawEvent.description ||
+      "",
+    "description.ru":
+      translatedContent?.ru?.body ||
       contentWithMetadata?.description ||
       rawEvent.description ||
       "",

@@ -8,7 +8,7 @@ import { RuralEventScope } from "../../../packages/rural-event-types/src/ruralEv
 
 type url = string;
 type geopoint = any; // [number, number]
-type occurrence = "once" | "recurring" | "series" | "openinghours";
+type occurrence = "once" | "recurring" | "series" | "openinghours" | "schedule";
 export interface IndexedEvent {
   id?: string;
 
@@ -16,9 +16,13 @@ export interface IndexedEvent {
   "summary.de": string;
   "summary.en": string;
   "summary.pl": string;
+  "summary.uk": string;
+  "summary.ru": string;
   "description.de": string;
   "description.en": string;
   "description.pl": string;
+  "description.uk": string;
+  "description.ru": string;
   link: url;
   image: url;
   "image.exists": boolean;

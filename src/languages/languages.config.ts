@@ -1,56 +1,41 @@
-import { SvfLanguage } from "./languages.types";
 const languages = require("@cospired/i18n-iso-languages");
 
-export const svfLocales: ReadonlyArray<SvfLanguage> = [
-  {
-    locale: "de",
-    localizations: [
-      {
-        locale: "de",
-        name: languages.getName("de", "de"),
-      },
-      {
-        locale: "en",
-        name: languages.getName("de", "en"),
-      },
-      {
-        locale: "pl",
-        name: languages.getName("de", "pl"),
-      },
-    ],
+// TODO: add typing instead of any
+export const svfLocales: any = {
+  de: {
+    de: languages.getName("de", "de"),
+    en: languages.getName("de", "en"),
+    pl: languages.getName("de", "pl"),
+    uk: languages.getName("de", "uk"),
+    ru: languages.getName("de", "ru"),
   },
-  {
-    locale: "en",
-    localizations: [
-      {
-        locale: "de",
-        name: languages.getName("en", "de"),
-      },
-      {
-        locale: "en",
-        name: languages.getName("en", "en"),
-      },
-      {
-        locale: "pl",
-        name: languages.getName("en", "pl"),
-      },
-    ],
+  en: {
+    de: languages.getName("en", "de"),
+    en: languages.getName("en", "en"),
+    pl: languages.getName("en", "pl"),
+    uk: languages.getName("en", "uk"),
+    ru: languages.getName("en", "ru"),
   },
-  {
-    locale: "pl",
-    localizations: [
-      {
-        locale: "de",
-        name: languages.getName("pl", "de"),
-      },
-      {
-        locale: "en",
-        name: languages.getName("pl", "en"),
-      },
-      {
-        locale: "pl",
-        name: languages.getName("pl", "pl"),
-      },
-    ],
+  pl: {
+    de: languages.getName("pl", "de"),
+    en: languages.getName("pl", "en"),
+    pl: languages.getName("pl", "pl"),
+    uk: languages.getName("pl", "uk"),
+    ru: languages.getName("pl", "ru"),
   },
-];
+  uk: {
+    de: languages.getName("uk", "de"),
+    en: languages.getName("uk", "en"),
+    pl: languages.getName("uk", "pl"),
+    uk: languages.getName("uk", "uk"),
+    ru: languages.getName("uk", "ru"),
+  },
+
+  ru: {
+    de: languages.getName("ru", "de"),
+    en: languages.getName("ru", "en"),
+    pl: languages.getName("ru", "pl"),
+    uk: languages.getName("ru", "uk"),
+    ru: languages.getName("ru", "ru"),
+  },
+};

@@ -5,9 +5,13 @@ const eventsSchema: any = {
     { name: "summary.de", type: "string" },
     { name: "summary.en", type: "string" },
     { name: "summary.pl", type: "string" },
+    { name: "summary.uk", type: "string" },
+    { name: "summary.ru", type: "string" },
     { name: "description.de", type: "string" },
     { name: "description.en", type: "string" },
     { name: "description.pl", type: "string" },
+    { name: "description.uk", type: "string" },
+    { name: "description.ru", type: "string" },
     { name: "link", type: "string" }, // detail link
     { name: "image", type: "string" }, // image link
     { name: "image.exists", type: "bool", facet: true },
