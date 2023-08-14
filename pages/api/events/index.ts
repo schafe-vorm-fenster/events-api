@@ -5,7 +5,6 @@ import { isValidGoogleEvent } from "../../../src/events/helpers/json/isValidGoog
 import { isValidJson } from "../../../src/events/helpers/json/isValidJson";
 import { GeoLocation } from "../../../src/events/geocode/types/GeoLocation";
 import {
-  EventClassification,
   EventContentWithMetadata,
   PostEventRequestBody,
 } from "../../../src/events/events.types";
@@ -23,6 +22,7 @@ import { IndexedEvent } from "../../../src/events/search/types";
 import { HttpError } from "http-errors";
 import { getLogger } from "../../../logging/logger";
 import eventsSchema from "../../../src/events/search/schema";
+import { RuralEventClassification } from "../../../packages/rural-event-categories/src/types/ruralEventClassification.types";
 
 export type CreateSchemaResponse = any;
 
@@ -74,7 +74,7 @@ export default async function handler(
   let geolocation: GeoLocation | null;
   let metadata: EventContentWithMetadata | null;
   let scope: RuralEventScope;
-  let classification: EventClassification | null;
+  let classification: RuralEventClassification | null;
   let translatedContent: TranslatedContent | null;
 
   try {

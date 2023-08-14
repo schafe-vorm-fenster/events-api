@@ -51,4 +51,5 @@ export const mockEventCommunity: IndexedEvent = {
   "summary.ru": "",
   "description.uk": "",
   "description.ru": "",
+  tags: [],
 };

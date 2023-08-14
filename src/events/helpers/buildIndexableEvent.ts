@@ -1,3 +1,4 @@
+import { RuralEventClassification } from "../../../packages/rural-event-categories/src/types/ruralEventClassification.types";
 import { RuralEventScope } from "../../../packages/rural-event-types/src/ruralEventScopes";
 import {
   EventClassification,
@@ -18,7 +19,7 @@ export const buildIndexableEvent = (
   geolocation: GeoLocation,
   contentWithMetadata: EventContentWithMetadata | null,
   scope: RuralEventScope,
-  classification: EventClassification | null,
+  classification: RuralEventClassification | null,
   translatedContent: TranslatedContent | null
 ): IndexedEvent => {
   const indexableEvent: IndexedEvent = {
@@ -84,10 +85,13 @@ export const buildIndexableEvent = (
     /**
      * classification and scope
      */
-    categories: classification?.categories || [],
-    "classification.l1": classification?.["classification.l1"] || [],
-    "classification.l2": classification?.["classification.l2"] || [],
-    "classification.l3": classification?.["classification.l3"] || [],
+    categories: classification?.category
+      ? [classification?.category]
+      : ["unknown"],
+    tags: classification?.tags || [],
+    "classification.l1": [], // TODO: implement in classify api
+    "classification.l2": [], // TODO: implement in classify api
+    "classification.l3": [], // TODO: implement in classify api
     scope: scope,
 
     /**
@@ -122,7 +126,7 @@ export const buildIndexableEvent = (
     "community.geopoint": [
       geolocation.geo?.point.lat || 0,
       geolocation.geo?.point.lng || 0,
-    ], // TODO: we nee the geo point of the community
+    ], // TODO: we need the geo point of the community
     "community.name": geolocation.hierarchy?.community?.name || "",
     "municipality.id":
       "geoname." + geolocation.hierarchy?.municipality?.geonameId,

@@ -28,7 +28,10 @@ export interface IndexedEvent {
   "image.exists": boolean;
   document: url;
   "document.exists": boolean;
+
+  // classification
   categories: RuralEventCategoryId[];
+  tags: string[];
   "classification.l1": GoogleNaturalLanguageL1[];
   "classification.l2": GoogleNaturalLanguageL2[];
   "classification.l3": GoogleNaturalLanguageL3[];

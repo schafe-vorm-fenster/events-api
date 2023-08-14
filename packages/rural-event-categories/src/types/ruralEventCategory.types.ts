@@ -5,7 +5,8 @@ export type RuralEventCategoryId =
   | "community-life"
   | "education-health"
   | "everyday-supply"
-  | "culture-tourism";
+  | "culture-tourism"
+  | "unknown";
 
 /**
  * Type for a localization of a rural event category for display purpose.

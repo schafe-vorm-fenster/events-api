@@ -18,6 +18,7 @@ const eventsSchema: any = {
     { name: "document", type: "string" }, // pdf link
     { name: "document.exists", type: "bool", facet: true },
     { name: "categories", type: "string[]", facet: true }, // svf categories
+    { name: "tags", type: "string[]", facet: true }, // free tags to display
     { name: "classification.l1", type: "string[]", facet: true }, // googles classification
     { name: "classification.l2", type: "string[]", facet: true }, // googles classification
     { name: "classification.l3", type: "string[]", facet: true }, // googles classification

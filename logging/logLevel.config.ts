@@ -29,15 +29,15 @@ export const logLevelConfig: LogLevelConfig[] = [
   },
   {
     app: api.categories.get,
-    level: "info",
+    level: "debug",
   },
   {
     app: api.languages.get,
-    level: "info",
+    level: "debug",
   },
   {
     app: api.schema.get,
-    level: "info",
+    level: "debug",
   },
   {
     app: client.classification.bytag,
@@ -45,6 +45,6 @@ export const logLevelConfig: LogLevelConfig[] = [
   },
   {
     app: client.geocode.findbyaddress,
-    level: "info",
+    level: "debug",
   },
 ];
