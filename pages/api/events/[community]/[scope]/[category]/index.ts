@@ -49,7 +49,6 @@ import { SvfLocale } from "../../../../../../src/languages/languages.types";
  *         in: query
  *         required: false
  *         type: string
- *         type: string
  *     produces:
  *       - application/json
  *     responses:

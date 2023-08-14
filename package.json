@@ -26,7 +26,7 @@
     "test:ci": "jest --runInBand --ci"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": "18.x"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
