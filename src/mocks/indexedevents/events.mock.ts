@@ -47,4 +47,8 @@ export const mockEventCommunity: IndexedEvent = {
   created: 1678280400,
   changed: 1678374000,
   deleted: 0,
+  "summary.uk": "",
+  "summary.ru": "",
+  "description.uk": "",
+  "description.ru": "",
 };
