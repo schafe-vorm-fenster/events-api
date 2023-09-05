@@ -23,6 +23,8 @@ import { HttpError } from "http-errors";
 import { getLogger } from "../../../logging/logger";
 import eventsSchema from "../../../src/events/search/schema";
 import { RuralEventClassification } from "../../../packages/rural-event-categories/src/types/ruralEventClassification.types";
+import { isCancelledEvent } from "../../../src/events/helpers/json/isCancelledEvent";
+import { isGoogleEvent } from "../../../src/events/helpers/json/isGoogleEvent";
 
 export type CreateSchemaResponse = any;
 
@@ -46,21 +48,39 @@ export default async function handler(
 ) {
   const log = getLogger("api.events.post");
 
-  if (!isValidJson(req.body)) {
-    log.warn("Request json is not valid");
-    res.status(422).json({ error: "Request json is not valid" });
+  // check if the body contains a valid google event including json check
+  try {
+    isGoogleEvent(req.body);
+  } catch (error: any) {
+    log.warn({ body: req.body }, "Request body is no valid google event.");
+    res.status(400).json({
+      status: 400,
+      error: error?.message || "Request json is not a valid google event.",
+    });
   }
 
+  // handle cancelled event first
+  if (isCancelledEvent(req.body)) {
+    return res.status(422).json({
+      status: 422,
+      message:
+        "Request json indicates a cancelled event. Please use the delete endpoint instead.",
+    });
+  }
   try {
     isValidGoogleEvent(req.body);
-    log.debug("Request json is valid");
+    log.debug({ body: req.body }, "Request json is valid");
   } catch (error: HttpError | any) {
     let httpCode: number | undefined;
     if (error instanceof TypesenseError) httpCode = error?.httpStatus;
     if (error instanceof HttpError) httpCode = error?.status;
-    log.warn("Request json is not valid: ", error.message);
+    log.warn(
+      { body: req.body, error: error },
+      "Request json is not valid: ",
+      error.message
+    );
     return res.status(httpCode || 500).json({
-      status: httpCode || 422,
+      status: httpCode || 400,
       message: error.message
         ? `Request json is not valid: ${error.message}`
         : "Request json is not valid",
@@ -77,9 +97,13 @@ export default async function handler(
   let classification: RuralEventClassification | null;
   let translatedContent: TranslatedContent | null;
 
+  // let organizerMetadata: OrganizerMetadata | null;
+
   try {
     // create uuid based on the event data
     metadata = getMetadataFromContent(eventObject?.description as string); // data needed in the next steps
+
+    // TODO: fetch calendar metadata and organizer metadata to use defaults for tags, location, scope, classification, etc.
 
     // TODO: fetch detailled geo data for community --- or not??
 
@@ -87,11 +111,12 @@ export default async function handler(
     [geolocation, scope, classification, translatedContent] = await Promise.all(
       [
         geoCodeLocation(eventObject?.location as string),
-        mapScopes(metadata?.scopes as string[]),
-        classifyContent(
-          metadata?.tags as string[],
-          ((eventObject.summary as string) + eventObject.description) as string
-        ),
+        mapScopes(metadata?.scopes as string[]), // TODO: enhance by using recurrence, classifications and so on
+        classifyContent({
+          summary: eventObject.summary as string,
+          description: (eventObject.description as string) || "",
+          tags: metadata?.tags as string[],
+        }),
         translateContent(
           eventObject.summary as string,
           eventObject.description as string
@@ -113,6 +138,8 @@ export default async function handler(
         error.message || "Could not enrich event data for unknown reason.",
     });
   }
+
+  // TODO: check status if canceeled, if so, update the event in the index with a deleted flag, if not existing, just ignore
 
   // TODO: check enrichment results
   if (!geolocation) {

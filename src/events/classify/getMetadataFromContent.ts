@@ -1,3 +1,4 @@
+import { getLogger } from "../../../logging/logger";
 import {
   htmlToData,
   textToData,
@@ -9,7 +10,11 @@ import { EventContentWithMetadata } from "../events.types";
 export const getMetadataFromContent = (
   body: string
 ): EventContentWithMetadata | null => {
-  if (!body) throw new Error("body is required");
+  const log = getLogger("events.classify.getMetadataFromContent");
+  if (!body) {
+    log.info("No body to extract metadata from");
+    return null;
+  }
 
   // extract tags from body
   let textWithData: TextWithData | null;

@@ -10,20 +10,16 @@ interface Property {
 const requiredProperties: Property[] = [
   { key: "id" },
   { key: "kind", value: "calendar#event" },
-  { key: "summary" },
   { key: "start" },
-  { key: "location" },
 ];
 
 /**
- * Check if the input is a valid json object.
+ * Check if the input is a google event.
  * @param obj: any
  * @returns boolean
  */
-export const isValidGoogleEvent = (json: object): boolean => {
-  if (!isValidJson(json)) return false;
-
-  // TODO: refactor using zod
+export const isGoogleEvent = (json: object): boolean => {
+  if (!isValidJson(json)) throw new Error("Request body is no valid json.");
 
   let errors: string[] = new Array();
   const event: any = json as Schema$Event;
@@ -35,11 +31,9 @@ export const isValidGoogleEvent = (json: object): boolean => {
       errors.push(`invalid ${property.key}`);
   });
 
-  const explanation: string = `The following properties are required: ${requiredProperties
-    .map((property: Property) => property.key)
-    .join(", ")}`;
-
-  const errorMessage: string = `${errors.join(", ")}. ${explanation}.`;
+  const errorMessage: string = `Request json is not a valid google event object: ${errors.join(
+    ", "
+  )}.`;
   if (errors.length > 0) throw new Error(errorMessage);
   return true;
 };

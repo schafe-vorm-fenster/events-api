@@ -28,11 +28,16 @@ export const buildIndexableEvent = (
     /**
      * contents
      */
-    "summary.de": translatedContent?.de?.title || rawEvent.summary || "",
-    "summary.en": translatedContent?.en?.title || rawEvent.summary || "",
-    "summary.pl": translatedContent?.pl?.title || rawEvent.summary || "",
-    "summary.uk": translatedContent?.uk?.title || rawEvent.summary || "",
-    "summary.ru": translatedContent?.ru?.title || rawEvent.summary || "",
+    "summary.de":
+      translatedContent?.de?.title?.trim() || rawEvent.summary || "",
+    "summary.en":
+      translatedContent?.en?.title?.trim() || rawEvent.summary || "",
+    "summary.pl":
+      translatedContent?.pl?.title?.trim() || rawEvent.summary || "",
+    "summary.uk":
+      translatedContent?.uk?.title?.trim() || rawEvent.summary || "",
+    "summary.ru":
+      translatedContent?.ru?.title?.trim() || rawEvent.summary || "",
     "description.de":
       translatedContent?.de?.body ||
       contentWithMetadata?.description ||
@@ -100,6 +105,7 @@ export const buildIndexableEvent = (
     start: googleDatetimeToTimestamp(rawEvent?.start) || 0,
     end: googleDatetimeToTimestamp(rawEvent?.end) || 0,
     allday: rawEvent?.start?.date ? true : false,
+    // TODO: check as well for recurrence[] and sequence, both could indicate a recurrency
     occurrence: rawEvent?.recurringEventId ? "recurring" : "once",
     "series.id": rawEvent?.recurringEventId
       ? recurringEventUuid(rawEvent) || ""
@@ -108,7 +114,7 @@ export const buildIndexableEvent = (
     /**
      * location infos
      */
-    "location.raw": rawEvent.location || "",
+    "location.raw": rawEvent.location?.trim() || "",
     "location.name": geolocation.name || rawEvent.location || "",
     "location.localname":
       geolocation.localName || geolocation.name || rawEvent.location || "",
@@ -141,10 +147,14 @@ export const buildIndexableEvent = (
     /**
      * hierarchy data
      */
-    "organizer.id": rawEvent.organizer?.id || rawEvent.organizer?.email || "",
-    "organizer.name": rawEvent.organizer?.displayName || "",
-    "calendar.id": rawEvent.creator?.id || rawEvent.creator?.email || "",
-    "calendar.name": rawEvent.creator?.displayName || "",
+    "organizer.id": rawEvent.creator?.id || rawEvent.creator?.email || "",
+    "organizer.name":
+      rawEvent.creator?.displayName?.trim() || rawEvent.creator?.email || "",
+    "calendar.id": rawEvent.organizer?.id || rawEvent.organizer?.email || "",
+    "calendar.name":
+      rawEvent.organizer?.displayName?.trim() ||
+      rawEvent.creator?.displayName?.trim() ||
+      "",
 
     /**
      * systeme data
