@@ -21,7 +21,7 @@ export type ClassifyContentResponse = RuralEventClassification | null;
 const validRuralEventClassification = (
   classification: ClassifyContentResponse
 ): ClassifyContentResponse => {
-  if (classification && classification.category) {
+  if (classification && classification?.category && classification?.scope) {
     return classification;
   }
 
@@ -34,51 +34,70 @@ export const classifyContent = async (
 ): Promise<ClassifyContentResponse> => {
   const log = getLogger("events.classify.classifyContent");
 
-  // prepare result object
-  let classificationResult: ClassifyContentResponse = null;
+  // check incoming params
+  if (!query) {
+    log.error("No query given.");
+    return null;
+  }
+  if (!query.tags || !query.summary || query.summary.length <= 0) {
+    log.error("No tags or summary given.");
+    return null;
+  }
 
   // if tags, then use classifyByTags
   if (query.tags && query.tags.length > 0) {
     const classificationByTags: RuralEventClassification | null =
       await classifyByTags(query.tags);
-    log.debug("classificationByTag: " + JSON.stringify(classificationByTags));
-    classificationResult = validRuralEventClassification(classificationByTags);
+    // check classification for category and scope
+    const classificationResult: ClassifyContentResponse =
+      validRuralEventClassification(classificationByTags);
+    // if classification found with category and scope, then just return it
+    if (classificationResult) {
+      log.debug(
+        { tags: query.tags, classification: classificationResult },
+        "Classification done by tags."
+      );
+      return classificationResult;
+    }
   }
 
-  // if no tags, then use classifyByText
-  if (!classificationResult && query.summary && query.summary.length > 0) {
-    // classify by using the classification api with axios post at SVF_CLASSIFICATIONAPI_URL
-    const hash: string = getUuidByString(query.summary + query.description);
-    const url: string =
-      process.env.SVF_CLASSIFICATIONAPI_HOST + "api/classify/byobject/" + hash;
+  // if no tags, then classify by using the classification api with axios post at SVF_CLASSIFICATIONAPI_URL
+  const url: string =
+    process.env.SVF_CLASSIFICATIONAPI_HOST + "api/classify/byobject";
 
-    log.debug("url: " + url, url);
+  return axios
+    .post(
+      url,
+      { title: query.summary || "", content: query?.description || "" },
+      {
+        headers: {
+          "Sheep-Token": process.env.SVF_CLASSIFICATIONAPI_TOKEN,
+          Accept: "application/json",
+        },
+      }
+    )
+    .then((response) => {
+      log.debug(
+        "classification api response: " + JSON.stringify(response.data)
+      );
 
-    const classificationResult: any = await axios
-      .post(
-        url,
-        { summary: query.summary || "", description: query.description || "" },
-        {
-          headers: {
-            "Sheep-Token": process.env.SVF_CLASSIFICATIONAPI_TOKEN,
-            Accept: "application/json",
-          },
-        }
-      )
-      .then((response) => {
-        log.debug(
-          "classification api response: " + JSON.stringify(response.data)
+      // check classification for category and scope
+      const classificationResult: ClassifyContentResponse =
+        validRuralEventClassification(
+          response.data as RuralEventClassification
         );
-        return response.data;
-      })
-      .catch((error) => {
-        log.error("classification api error: " + error, error);
-        return null;
-      });
 
-    return classificationResult;
-  }
+      // if not valid, delegate to error handling
+      if (!classificationResult)
+        throw new Error("Classification failed with no/invalid result.");
 
-  log.error("no classification found");
-  return null;
+      return classificationResult;
+    })
+    .catch((error) => {
+      log.error(
+        { query: query, error: error?.message },
+        "Classification failed."
+      );
+      return null;
+    });
 };

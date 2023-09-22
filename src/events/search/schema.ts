@@ -19,9 +19,6 @@ const eventsSchema: any = {
     { name: "document.exists", type: "bool", facet: true },
     { name: "categories", type: "string[]", facet: true }, // svf categories
     { name: "tags", type: "string[]", facet: true }, // free tags to display
-    { name: "classification.l1", type: "string[]", facet: true }, // googles classification
-    { name: "classification.l2", type: "string[]", facet: true }, // googles classification
-    { name: "classification.l3", type: "string[]", facet: true }, // googles classification
 
     // date and time
     { name: "start", type: "int64" },
@@ -32,22 +29,22 @@ const eventsSchema: any = {
 
     // location and geo data
     { name: "location.raw", type: "string" },
-    { name: "location.name", type: "string", facet: true },
-    { name: "location.localname", type: "string" },
+    { name: "location.name.de", type: "string", facet: true },
+    { name: "location.localname.de", type: "string" },
     { name: "location.address", type: "string" },
     { name: "location.geopoint", type: "geopoint" },
     { name: "scope", type: "string", facet: true },
     { name: "community.id", type: "string", facet: true },
     { name: "community.geopoint", type: "geopoint" },
-    { name: "community.name", type: "string" },
+    { name: "community.name.de", type: "string" },
     { name: "municipality.id", type: "string", facet: true },
-    { name: "municipality.name", type: "string" },
+    { name: "municipality.name.de", type: "string" },
     { name: "county.id", type: "string", facet: true },
-    { name: "county.name", type: "string" },
+    { name: "county.name.de", type: "string" },
     { name: "state.id", type: "string", facet: true },
-    { name: "state.name", type: "string" },
+    { name: "state.name.de", type: "string" },
     { name: "country.id", type: "string", facet: true },
-    { name: "country.name", type: "string" },
+    { name: "country.name.de", type: "string" },
 
     // ownership
     { name: "organizer.id", type: "string", facet: true },

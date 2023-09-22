@@ -48,21 +48,21 @@ export const classifyByTags = async (
       },
     })
     .then((response) => {
-      // TODO: better create json with type newly
-      log.debug(
-        "classification api response: " + JSON.stringify(response.data)
-      );
+      const classification: RuralEventClassification =
+        response.data as RuralEventClassification;
 
-      if (!response?.data?.category) {
-        log.info("classification api response did not contain any result");
-        return null;
-      } else {
-        log.debug("classified by tags with category " + response.data.category);
-        return response.data as RuralEventClassification;
-      }
+      // check response body for valid classification or delete to error handling
+      if (!classification || !classification?.category)
+        throw new Error("Classification failed with no/invalid result.");
+
+      log.debug(
+        { tags: tags, classification: classification },
+        "Successfully classified by tags."
+      );
+      return response.data as RuralEventClassification;
     })
     .catch((error) => {
-      log.error("classification api error: " + error);
+      log.error({ tags: tags, error: error?.message }, "Classification error.");
       return null;
     });
 };

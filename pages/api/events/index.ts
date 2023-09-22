@@ -32,7 +32,7 @@ export type CreateSchemaResponse = any;
  * @swagger
  * /api/events:
  *   post:
- *     summary: Creates an events.
+ *     summary: Creates an event.
  *     description: Based on an incoming google event json, the api creates a new event.
  *     tags:
  *       - Events
@@ -69,7 +69,7 @@ export default async function handler(
   }
   try {
     isValidGoogleEvent(req.body);
-    log.debug({ body: req.body }, "Request json is valid");
+    log.debug({ body: req.body }, "Request json is valid.");
   } catch (error: HttpError | any) {
     let httpCode: number | undefined;
     if (error instanceof TypesenseError) httpCode = error?.httpStatus;
@@ -83,7 +83,7 @@ export default async function handler(
       status: httpCode || 400,
       message: error.message
         ? `Request json is not valid: ${error.message}`
-        : "Request json is not valid",
+        : "Request json is not valid.",
     });
   }
 
@@ -111,7 +111,7 @@ export default async function handler(
     [geolocation, scope, classification, translatedContent] = await Promise.all(
       [
         geoCodeLocation(eventObject?.location as string),
-        mapScopes(metadata?.scopes as string[]), // TODO: enhance by using recurrence, classifications and so on
+        mapScopes(metadata?.scopes as string[]),
         classifyContent({
           summary: eventObject.summary as string,
           description: (eventObject.description as string) || "",
@@ -126,17 +126,15 @@ export default async function handler(
 
     log.debug(
       { geolocation, scope, classification, translatedContent },
-      "Enhanced event data"
+      "Enhanced event data."
     );
-  } catch (error: TypesenseError | any) {
-    let httpCode: number | undefined;
-    if (error instanceof TypesenseError) httpCode = error?.httpStatus;
-    log.warn("Could not enrich event data: ", error.message);
-    return res.status(httpCode || 500).json({
-      status: httpCode || 500,
+  } catch (error: any) {
+    log.warn({ error: error?.message }, "Could not enrich event data.");
+    return res.status(error?.httpCode || 500).json({
+      status: error?.httpCode || 500,
       message:
-        error.message || "Could not enrich event data for unknown reason.",
-    });
+        error?.message || "Could not enrich event data for unknown reason.",
+    } as HttpError);
   }
 
   // TODO: check status if canceeled, if so, update the event in the index with a deleted flag, if not existing, just ignore

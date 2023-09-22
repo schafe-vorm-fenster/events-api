@@ -32,9 +32,6 @@ export interface IndexedEvent {
   // classification
   categories: RuralEventCategoryId[];
   tags: string[];
-  "classification.l1": GoogleNaturalLanguageL1[];
-  "classification.l2": GoogleNaturalLanguageL2[];
-  "classification.l3": GoogleNaturalLanguageL3[];
 
   // date and time
   start: number;
@@ -43,22 +40,22 @@ export interface IndexedEvent {
   occurrence: occurrence;
   "series.id": string;
   "location.raw": string;
-  "location.name": string;
-  "location.localname": string;
+  "location.name.de": string;
+  "location.localname.de": string;
   "location.address": string;
   "location.geopoint": geopoint;
   scope: RuralEventScope;
   "community.id": string;
   "community.geopoint": geopoint;
-  "community.name": string;
+  "community.name.de": string;
   "municipality.id": string;
-  "municipality.name": string;
+  "municipality.name.de": string;
   "county.id": string;
-  "county.name": string;
+  "county.name.de": string;
   "state.id": string;
-  "state.name": string;
+  "state.name.de": string;
   "country.id": string;
-  "country.name": string;
+  "country.name.de": string;
   "organizer.id": string;
   "organizer.name": string;
   "calendar.id": string;

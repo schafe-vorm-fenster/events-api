@@ -94,10 +94,7 @@ export const buildIndexableEvent = (
       ? [classification?.category]
       : ["unknown"],
     tags: classification?.tags || [],
-    "classification.l1": [], // TODO: implement in classify api
-    "classification.l2": [], // TODO: implement in classify api
-    "classification.l3": [], // TODO: implement in classify api
-    scope: scope,
+    scope: scope || classification?.scope || "nearby",
 
     /**
      * dates and times
@@ -115,8 +112,8 @@ export const buildIndexableEvent = (
      * location infos
      */
     "location.raw": rawEvent.location?.trim() || "",
-    "location.name": geolocation.name || rawEvent.location || "",
-    "location.localname":
+    "location.name.de": geolocation.name || rawEvent.location || "",
+    "location.localname.de":
       geolocation.localName || geolocation.name || rawEvent.location || "",
     "location.address": geolocation.address || rawEvent.location || "",
     "location.geopoint": [
@@ -133,16 +130,16 @@ export const buildIndexableEvent = (
       geolocation.geo?.point.lat || 0,
       geolocation.geo?.point.lng || 0,
     ], // TODO: we need the geo point of the community
-    "community.name": geolocation.hierarchy?.community?.name || "",
+    "community.name.de": geolocation.hierarchy?.community?.name || "",
     "municipality.id":
       "geoname." + geolocation.hierarchy?.municipality?.geonameId,
-    "municipality.name": geolocation.hierarchy?.municipality?.name || "",
+    "municipality.name.de": geolocation.hierarchy?.municipality?.name || "",
     "county.id": "geoname." + geolocation.hierarchy?.county?.geonameId || "",
-    "county.name": geolocation.hierarchy?.county?.name || "",
+    "county.name.de": geolocation.hierarchy?.county?.name || "",
     "state.id": "geoname." + geolocation.hierarchy?.state?.geonameId || "",
-    "state.name": geolocation.hierarchy?.state?.name || "",
+    "state.name.de": geolocation.hierarchy?.state?.name || "",
     "country.id": "geoname." + geolocation.hierarchy?.country?.geonameId || "",
-    "country.name": geolocation.hierarchy?.country?.name || "",
+    "country.name.de": geolocation.hierarchy?.country?.name || "",
 
     /**
      * hierarchy data
