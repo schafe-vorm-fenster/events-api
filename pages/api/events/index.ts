@@ -116,6 +116,7 @@ export default async function handler(
           summary: eventObject.summary as string,
           description: (eventObject.description as string) || "",
           tags: metadata?.tags as string[],
+          occurrence: eventObject?.recurringEventId ? "recurring" : "once",
         }),
         translateContent(
           eventObject.summary as string,

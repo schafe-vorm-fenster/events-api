@@ -9,6 +9,7 @@ export interface ClassifyContentQuery {
   tags: string[];
   summary: string;
   description: string;
+  occurrence?: string;
 }
 
 export type ClassifyContentResponse = RuralEventClassification | null;
@@ -68,7 +69,11 @@ export const classifyContent = async (
   return axios
     .post(
       url,
-      { title: query.summary || "", content: query?.description || "" },
+      {
+        title: query.summary || "",
+        content: query?.description || "",
+        occourance: query?.occurrence || "",
+      },
       {
         headers: {
           "Sheep-Token": process.env.SVF_CLASSIFICATIONAPI_TOKEN,
