@@ -7,7 +7,8 @@ import {
 } from "../events.types";
 import { GeoLocation } from "../geocode/types/GeoLocation";
 import { IndexedEvent } from "../search/types";
-import { TranslatedContent } from "../translate/translateContent";
+import { TranslatedContents } from "../translate/translateContent";
+
 import { getDocumentLinkFromAttachments } from "./attachments/getDocumentLinkFromAttachments";
 import { getImageLinkFromAttachments } from "./attachments/getImageLinkFromAttachments";
 import { googleDatetimeToTimestamp } from "./datetime/googleDatetimeToTimestamp";
@@ -20,7 +21,7 @@ export const buildIndexableEvent = (
   contentWithMetadata: EventContentWithMetadata | null,
   scope: RuralEventScope,
   classification: RuralEventClassification | null,
-  translatedContent: TranslatedContent | null
+  translatedContents: TranslatedContents | null
 ): IndexedEvent => {
   const indexableEvent: IndexedEvent = {
     id: eventUuid(rawEvent),
@@ -28,38 +29,70 @@ export const buildIndexableEvent = (
     /**
      * contents
      */
+    // find item with language==de
     "summary.de":
-      translatedContent?.de?.title?.trim() || rawEvent.summary || "",
+      translatedContents?.translations
+        .find((translation) => translation.language === "de")
+        ?.title?.trim() ||
+      rawEvent.summary ||
+      "",
     "summary.en":
-      translatedContent?.en?.title?.trim() || rawEvent.summary || "",
+      translatedContents?.translations
+        .find((translation) => translation.language === "en")
+        ?.title?.trim() ||
+      rawEvent.summary ||
+      "",
     "summary.pl":
-      translatedContent?.pl?.title?.trim() || rawEvent.summary || "",
+      translatedContents?.translations
+        .find((translation) => translation.language === "pl")
+        ?.title?.trim() ||
+      rawEvent.summary ||
+      "",
     "summary.uk":
-      translatedContent?.uk?.title?.trim() || rawEvent.summary || "",
+      translatedContents?.translations
+        .find((translation) => translation.language === "uk")
+        ?.title?.trim() ||
+      rawEvent.summary ||
+      "",
     "summary.ru":
-      translatedContent?.ru?.title?.trim() || rawEvent.summary || "",
+      translatedContents?.translations
+        .find((translation) => translation.language === "ru")
+        ?.title?.trim() ||
+      rawEvent.summary ||
+      "",
     "description.de":
-      translatedContent?.de?.body ||
+      translatedContents?.translations
+        .find((translation) => translation.language === "de")
+        ?.text?.trim() ||
       contentWithMetadata?.description ||
       rawEvent.description ||
       "",
     "description.en":
-      translatedContent?.en?.body ||
+      translatedContents?.translations
+        .find((translation) => translation.language === "en")
+        ?.text?.trim() ||
       contentWithMetadata?.description ||
       rawEvent.description ||
       "",
     "description.pl":
-      translatedContent?.pl?.body ||
+      translatedContents?.translations
+        .find((translation) => translation.language === "pl")
+        ?.text?.trim() ||
       contentWithMetadata?.description ||
       rawEvent.description ||
       "",
     "description.uk":
-      translatedContent?.uk?.body ||
+      translatedContents?.translations
+        .find((translation) => translation.language === "uk")
+        ?.text?.trim() ||
       contentWithMetadata?.description ||
       rawEvent.description ||
       "",
+
     "description.ru":
-      translatedContent?.ru?.body ||
+      translatedContents?.translations
+        .find((translation) => translation.language === "ru")
+        ?.text?.trim() ||
       contentWithMetadata?.description ||
       rawEvent.description ||
       "",

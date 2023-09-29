@@ -9,10 +9,7 @@ import {
   PostEventRequestBody,
 } from "../../../src/events/events.types";
 import { RuralEventScope } from "../../../packages/rural-event-types/dist/ruralEventTypes";
-import {
-  TranslatedContent,
-  translateContent,
-} from "../../../src/events/translate/translateContent";
+
 import { getMetadataFromContent } from "../../../src/events/classify/getMetadataFromContent";
 import { geoCodeLocation } from "../../../src/events/geocode/geoCodeLocation";
 import { mapScopes } from "../../../src/events/scopes/mapScopes";
@@ -25,6 +22,10 @@ import eventsSchema from "../../../src/events/search/schema";
 import { RuralEventClassification } from "../../../packages/rural-event-categories/src/types/ruralEventClassification.types";
 import { isCancelledEvent } from "../../../src/events/helpers/json/isCancelledEvent";
 import { isGoogleEvent } from "../../../src/events/helpers/json/isGoogleEvent";
+import {
+  TranslatedContents,
+  translateContent,
+} from "../../../src/events/translate/translateContent";
 
 export type CreateSchemaResponse = any;
 
@@ -95,7 +96,7 @@ export default async function handler(
   let metadata: EventContentWithMetadata | null;
   let scope: RuralEventScope;
   let classification: RuralEventClassification | null;
-  let translatedContent: TranslatedContent | null;
+  let translatedContents: TranslatedContents | null;
 
   // let organizerMetadata: OrganizerMetadata | null;
 
@@ -108,8 +109,8 @@ export default async function handler(
     // TODO: fetch detailled geo data for community --- or not??
 
     // do in parallel to save time
-    [geolocation, scope, classification, translatedContent] = await Promise.all(
-      [
+    [geolocation, scope, classification, translatedContents] =
+      await Promise.all([
         geoCodeLocation(eventObject?.location as string),
         mapScopes(metadata?.scopes as string[]),
         classifyContent({
@@ -122,11 +123,10 @@ export default async function handler(
           eventObject.summary as string,
           eventObject.description as string
         ),
-      ]
-    );
+      ]);
 
     log.debug(
-      { geolocation, scope, classification, translatedContent },
+      { geolocation, scope, classification, translatedContents },
       "Enhanced event data."
     );
   } catch (error: any) {
@@ -156,7 +156,7 @@ export default async function handler(
     metadata,
     scope,
     classification,
-    translatedContent
+    translatedContents
   );
 
   return client
