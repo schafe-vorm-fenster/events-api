@@ -3,23 +3,20 @@ import axios from "axios";
 import { getLogger } from "../../../logging/logger";
 import { client } from "../../../logging/loggerApps.config";
 
-type GeoCodeLocationResponse = GeoLocation | null;
+type GetGeoLocationResponse = GeoLocation | null;
 
 /**
  * geocode location using the svf geoapi
- * @param location: string
+ * @param geonameId: number
  * @returns GeoLocation
  */
-export const geoCodeLocation = async (
-  location: string
-): Promise<GeoCodeLocationResponse> => {
-  const log = getLogger(client.geocode.findbyaddress);
-  log.debug({ location: location }, "geocoding location");
+export const getGeoLocation = async (
+  geonameId: number
+): Promise<GetGeoLocationResponse> => {
+  const log = getLogger(client.geocode.getcommunity);
+  log.debug({ geonameId }, "get geo location");
   return await axios
-    .get(`${process.env.SVF_GEOAPI_URL}api/findbyaddress/`, {
-      params: {
-        location: location,
-      },
+    .get(`${process.env.SVF_GEOAPI_URL}api/community/${geonameId}`, {
       headers: {
         "Sheep-Token": process.env.SVF_GEOAPI_TOKEN,
         Accept: "application/json",
@@ -34,7 +31,7 @@ export const geoCodeLocation = async (
       }
     })
     .catch((error) => {
-      log.error("error while geocoding location: ", error);
+      log.error("error while getting geo location: ", error);
       return null;
     });
 };

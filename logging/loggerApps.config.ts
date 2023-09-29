@@ -33,5 +33,6 @@ export namespace client {
   }
   export enum geocode {
     findbyaddress = "client.geocode.findbyaddress",
+    getcommunity = "client.geocode.getcommunity",
   }
 }

@@ -26,6 +26,7 @@ import {
   TranslatedContents,
   translateContent,
 } from "../../../src/events/translate/translateContent";
+import { getGeoLocation } from "../../../src/events/geocode/getGeoLocation";
 
 export type CreateSchemaResponse = any;
 
@@ -138,21 +139,31 @@ export default async function handler(
     } as HttpError);
   }
 
-  // TODO: check status if canceeled, if so, update the event in the index with a deleted flag, if not existing, just ignore
-
   // TODO: check enrichment results
-  if (!geolocation) {
-    log.warn(
-      { eventId: eventObject.id },
+  if (!geolocation || !classification || !scope || !translatedContents) {
+    log.error(
+      {
+        eventId: eventObject.id,
+        geolocation,
+        scope,
+        classification,
+        translatedContents,
+      },
       "Could not enrich event data: ",
       "No geolocation found"
     );
+    throw new Error("Could not enrich event data.");
   }
+
+  const community: GeoLocation = (await getGeoLocation(
+    geolocation?.geonamesId as number
+  )) as GeoLocation;
 
   // build proper indexable object
   const newEvent: IndexedEvent = buildIndexableEvent(
     eventObject,
     geolocation as GeoLocation,
+    community as GeoLocation,
     metadata,
     scope,
     classification,

@@ -18,6 +18,7 @@ import { recurringEventUuid } from "./uuids/recurringEventUuid";
 export const buildIndexableEvent = (
   rawEvent: PostEventRequestBody,
   geolocation: GeoLocation,
+  community: GeoLocation,
   contentWithMetadata: EventContentWithMetadata | null,
   scope: RuralEventScope,
   classification: RuralEventClassification | null,
@@ -160,8 +161,8 @@ export const buildIndexableEvent = (
     "community.id":
       "geoname." + geolocation.hierarchy?.community?.geonameId || "",
     "community.geopoint": [
-      geolocation.geo?.point.lat || 0,
-      geolocation.geo?.point.lng || 0,
+      community.geo?.point.lat || geolocation.geo?.point.lat || 0,
+      community.geo?.point.lng || geolocation.geo?.point.lng || 0,
     ], // TODO: we need the geo point of the community
     "community.name.de": geolocation.hierarchy?.community?.name || "",
     "municipality.id":
