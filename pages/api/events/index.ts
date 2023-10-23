@@ -173,7 +173,7 @@ export default async function handler(
   }
 
   const community: GeoLocation = (await getGeoLocation(
-    geolocation?.geonamesId as number
+    geolocation?.hierarchy?.community?.geonameId as number
   )) as GeoLocation;
 
   // build proper indexable object
