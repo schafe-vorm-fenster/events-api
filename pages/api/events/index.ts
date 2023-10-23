@@ -138,32 +138,37 @@ export default async function handler(
   }
 
   // check enrichment results
-  if (!geolocation || !classification || !scope || !translatedContents) {
-    const logObject: object = {
-      eventId: eventObject.id,
-      geolocation,
-      scope,
-      classification,
-      translatedContents,
-    };
-    if (!geolocation)
-      log.error(logObject, "Could not enrich event data: No geolocation found");
-    if (!classification)
-      log.error(
-        logObject,
-        "Could not enrich event data: No classification found"
-      );
-    if (!scope)
-      log.error(logObject, "Could not enrich event data: No scope found");
-    if (!translatedContents)
-      log.error(
-        logObject,
-        "Could not enrich event data: No translated contents found"
-      );
-
+  if (!geolocation) {
+    log.error(
+      {
+        eventId: eventObject.id,
+        geolocation,
+        scope,
+        classification,
+        translatedContents,
+      },
+      "Could not enrich event data: No geolocation found"
+    );
     return res.status(424).json({
       status: 424,
-      message: "Event data enrichment was not fully successful.",
+      message: "Could not enrich event data: No geolocation found",
+    } as HttpError);
+  }
+
+  if (!translatedContents) {
+    log.error(
+      {
+        eventId: eventObject.id,
+        geolocation,
+        scope,
+        classification,
+        translatedContents,
+      },
+      "Could not enrich event data: No translated contents found"
+    );
+    return res.status(424).json({
+      status: 424,
+      message: "Could not enrich event data: No translated contents found",
     } as HttpError);
   }
 
