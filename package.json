@@ -1,7 +1,7 @@
 {
   "name": "@schafevormfenster/events-api",
   "description": "An API to manage events structured in a search engine database.",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "homepage": "https://events.api.schafe-vorm-fenster.de/",
   "repository": {
     "type": "git",
