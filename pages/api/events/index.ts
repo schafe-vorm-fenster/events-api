@@ -107,8 +107,6 @@ export default async function handler(
 
     // TODO: fetch calendar metadata and organizer metadata to use defaults for tags, location, scope, classification, etc.
 
-    // TODO: fetch detailled geo data for community --- or not??
-
     // do in parallel to save time
     [geolocation, scope, classification, translatedContents] =
       await Promise.all([
@@ -139,20 +137,34 @@ export default async function handler(
     } as HttpError);
   }
 
-  // TODO: check enrichment results
+  // check enrichment results
   if (!geolocation || !classification || !scope || !translatedContents) {
-    log.error(
-      {
-        eventId: eventObject.id,
-        geolocation,
-        scope,
-        classification,
-        translatedContents,
-      },
-      "Could not enrich event data: ",
-      "No geolocation found"
-    );
-    throw new Error("Could not enrich event data.");
+    const logObject: object = {
+      eventId: eventObject.id,
+      geolocation,
+      scope,
+      classification,
+      translatedContents,
+    };
+    if (!geolocation)
+      log.error(logObject, "Could not enrich event data: No geolocation found");
+    if (!classification)
+      log.error(
+        logObject,
+        "Could not enrich event data: No classification found"
+      );
+    if (!scope)
+      log.error(logObject, "Could not enrich event data: No scope found");
+    if (!translatedContents)
+      log.error(
+        logObject,
+        "Could not enrich event data: No translated contents found"
+      );
+
+    return res.status(424).json({
+      status: 424,
+      message: "Event data enrichment was not fully successful.",
+    } as HttpError);
   }
 
   const community: GeoLocation = (await getGeoLocation(
@@ -214,22 +226,30 @@ export default async function handler(
             });
           })
           .catch((error: TypesenseError) => {
-            log.debug(
+            log.error(
               {
                 eventId: newEvent.id,
               },
               "Event could not be updated"
             );
-            throw error;
+            return res.status(500).json({
+              status: 500,
+              message: "Event could not be updated",
+              error: error,
+            });
           });
       } else {
-        log.debug(
+        log.error(
           {
             eventId: newEvent.id,
           },
           "Event cloud not be created"
         );
-        throw error;
+        res.status(500).json({
+          status: 500,
+          message: "Event could not be created",
+          error: error,
+        });
       }
     });
 }
