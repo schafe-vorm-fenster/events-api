@@ -240,7 +240,7 @@ export const searchEvents = async (
       (beforeFilter ? ` && (${beforeFilter})` : ""),
 
     facet_by: "categories,occurrence,scope", // TODO: check facets, maybe add more?
-    sort_by: "start:desc",
+    sort_by: "start:asc",
     exclude_fields: localizedExcludeFields,
     per_page: 100,
     limit_hits: 100,
