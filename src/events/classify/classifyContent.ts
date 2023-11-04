@@ -93,8 +93,17 @@ export const classifyContent = async (
         );
 
       // if not valid, delegate to error handling
-      if (!classificationResult)
+      if (!classificationResult) {
+        log.error(
+          {
+            title: query.summary || "",
+            content: query?.description || "",
+            occourance: query?.occurrence || "",
+          },
+          "Classification failed with no/invalid result."
+        );
         throw new Error("Classification failed with no/invalid result.");
+      }
 
       return classificationResult;
     })

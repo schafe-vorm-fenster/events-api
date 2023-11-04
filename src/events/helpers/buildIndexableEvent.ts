@@ -1,3 +1,4 @@
+import { getLogger } from "../../../logging/logger";
 import { RuralEventClassification } from "../../../packages/rural-event-categories/src/types/ruralEventClassification.types";
 import { RuralEventScope } from "../../../packages/rural-event-types/src/ruralEventScopes";
 import {
@@ -24,6 +25,8 @@ export const buildIndexableEvent = (
   classification: RuralEventClassification | null,
   translatedContents: TranslatedContents | null
 ): IndexedEvent => {
+  const log = getLogger("buildIndexableEvent");
+
   const indexableEvent: IndexedEvent = {
     id: eventUuid(rawEvent),
 
@@ -197,6 +200,15 @@ export const buildIndexableEvent = (
         ? googleDatetimeToTimestamp(rawEvent?.updated) || 0
         : 0,
   };
+
+  // log warnings
+
+  if (indexableEvent.categories.includes("unknown")) {
+    log.warn(
+      { event: { summary: rawEvent.summary }, classification: classification },
+      "Event has no category."
+    );
+  }
 
   return indexableEvent;
 };
