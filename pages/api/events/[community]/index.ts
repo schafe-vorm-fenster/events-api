@@ -3,13 +3,15 @@ import { isValidGeonameId } from "../../../../src/events/geocode/helpers/isValid
 import { CacheControlHeader } from "../../../../src/config/CacheControlHeader";
 import { getLogger } from "../../../../logging/logger";
 import { api } from "../../../../logging/loggerApps.config";
-import { searchEvents } from "../../../../src/events/search/searchEvents";
-import { RuralEventScope } from "../../../../packages/rural-event-types/dist/ruralEventTypes";
+import {
+  CommunityCenterQuery,
+  searchEvents,
+} from "../../../../src/events/search/searchEvents";
 import { HttpError } from "http-errors";
-import { TypesenseError } from "typesense/lib/Typesense/Errors";
 import { isISO8601 } from "../../../../src/events/helpers/datetime/isISO8601";
-import { after } from "node:test";
 import { SvfLocale } from "../../../../src/languages/languages.types";
+import { extractGeonameId } from "../../../../src/events/geocode/helpers/extractGeonameId";
+import { getCommunityCenter } from "../../../../src/events/search/helpers/getCommunityCenter";
 
 /**
  * @swagger
@@ -79,23 +81,13 @@ export default async function handler(
     (req.query?.language as string) || undefined;
   log.debug(language, "language");
 
-  // TODO: get geopoint, geonamesId and municipalityId for given community from geo-api
-  const center: [number, number] = [53.9206, 13.5802];
-  const communityId: string = communityParam;
-  const municipalityId: string = "geoname.6548320";
-  const countyId: string = "geoname.8648415";
-  const stateId: string = "geoname.2872567";
-  const countryId: string = "geoname.2921044";
+  // get community details to configure scoped search
+  const communityCenter: CommunityCenterQuery = await getCommunityCenter(
+    extractGeonameId(communityParam)
+  );
 
   return await searchEvents({
-    center: {
-      geopoint: center,
-      communityId: communityId,
-      municipalityId: municipalityId,
-      countyId: countyId,
-      stateId: stateId,
-      countryId: countryId,
-    },
+    center: communityCenter,
     scope: "community", // TODO: check which should be the default scope if not set
     after: afterParam,
     before: beforeParam,

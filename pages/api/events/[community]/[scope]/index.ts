@@ -4,11 +4,16 @@ import { isRuralEventScope } from "../../../../../packages/rural-event-types/src
 import { CacheControlHeader } from "../../../../../src/config/CacheControlHeader";
 import { getLogger } from "../../../../../logging/logger";
 import { api } from "../../../../../logging/loggerApps.config";
-import { searchEvents } from "../../../../../src/events/search/searchEvents";
+import {
+  CommunityCenterQuery,
+  searchEvents,
+} from "../../../../../src/events/search/searchEvents";
 import { HttpError } from "http-errors";
 import { RuralEventScope } from "../../../../../packages/rural-event-types/src/ruralEventScopes";
 import { isISO8601 } from "../../../../../src/events/helpers/datetime/isISO8601";
 import { SvfLocale } from "../../../../../src/languages/languages.types";
+import { getCommunityCenter } from "../../../../../src/events/search/helpers/getCommunityCenter";
+import { extractGeonameId } from "../../../../../src/events/geocode/helpers/extractGeonameId";
 
 /**
  * @swagger
@@ -87,23 +92,13 @@ export default async function handler(
   const language: string | undefined =
     (req.query?.language as string) || undefined;
 
-  // TODO: get geopoint, geonamesId and municipalityId for given community from geo-api
-  const center: [number, number] = [53.9206, 13.5802];
-  const communityId: string = "geoname.2838887";
-  const municipalityId: string = "geoname.6548320";
-  const countyId: string = "geoname.8648415";
-  const stateId: string = "geoname.2872567";
-  const countryId: string = "geoname.2921044";
+  // get community details to configure scoped search
+  const communityCenter: CommunityCenterQuery = await getCommunityCenter(
+    extractGeonameId(communityParam)
+  );
 
   return await searchEvents({
-    center: {
-      geopoint: center,
-      communityId: communityId,
-      municipalityId: municipalityId,
-      countyId: countyId,
-      stateId: stateId,
-      countryId: countryId,
-    },
+    center: communityCenter,
     scope: scopeParam as RuralEventScope,
     containTighterScopes: true,
     after: afterParam,

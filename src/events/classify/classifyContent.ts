@@ -1,9 +1,7 @@
-import getUuidByString from "uuid-by-string";
 import { getLogger } from "../../../logging/logger";
-import { client } from "../../../logging/loggerApps.config";
 import { RuralEventClassification } from "../../../packages/rural-event-categories/src/types/ruralEventClassification.types";
-import { classifyByTags } from "./classifyByTags";
 import axios from "axios";
+import { classifyByTags } from "./classifyByTags";
 
 export interface ClassifyContentQuery {
   tags: string[];
@@ -93,17 +91,8 @@ export const classifyContent = async (
         );
 
       // if not valid, delegate to error handling
-      if (!classificationResult) {
-        log.error(
-          {
-            title: query.summary || "",
-            content: query?.description || "",
-            occourance: query?.occurrence || "",
-          },
-          "Classification failed with no/invalid result."
-        );
+      if (!classificationResult)
         throw new Error("Classification failed with no/invalid result.");
-      }
 
       return classificationResult;
     })
