@@ -1,6 +1,6 @@
 # events api
 
-## express js
+API to manage events. This includes a high value import of incloning events as well as a high performance search API.
 
 ## typesense
 
