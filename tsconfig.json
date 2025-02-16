@@ -1,20 +1,57 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
-    "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "incremental": true
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "features/support/steps.js"
+  ],
+  // "exclude": ["node_modules", "./features/support/**/*"],
+  "ts-node": {
+    "transpileOnly": true,
+    "files": true,
+    "compilerOptions": {
+      "module": "CommonJS"
+    },
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "features",
+    "**./*.json"
+  ]
 }

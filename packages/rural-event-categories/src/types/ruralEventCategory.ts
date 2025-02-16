@@ -1,9 +1,9 @@
-import { RuralEventCategory } from "./ruralEventCategory.types";
+import { RuralEventCategory, RuralEventCategoryList } from "./ruralEventCategory.types";
 
 /**
  * The list of all rural event categories incl. localizations.
  */
-export const ruralEventCategories: ReadonlyArray<RuralEventCategory> = [
+export const ruralEventCategories: RuralEventCategoryList = [
   {
     id: "community-life",
     localizations: [

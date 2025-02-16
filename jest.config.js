@@ -1,6 +1,7 @@
-/** @type {import('ts-jest').JestConfigWithTsJest} */
+/** @type {import('ts-jest').JestConfigWithTsJest} **/
 module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  testPathIgnorePatterns: ["<rootDir>/.next/", "<rootDir>/node_modules/"]
+  testEnvironment: "node",
+  transform: {
+    "^.+.tsx?$": ["ts-jest",{}],
+  },
 };

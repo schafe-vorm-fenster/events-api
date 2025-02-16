@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export const config = {
-  matcher: ["/api/:path*"],
+  // match all /api/:path* except of /api/health
+  matcher: ["/api/((?!health).*)"],
 };
 
 export function middleware(req: NextRequest) {
