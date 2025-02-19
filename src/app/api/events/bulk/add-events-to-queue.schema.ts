@@ -4,10 +4,10 @@ import { z } from "zod";
 
 export const TaskList = z.array(Task);
 
-export const AddEventsSuccessfulSchema = ResultSchema.extend({
+export const AddEventsToQueueSuccessfulSchema = ResultSchema.extend({
   data: TaskList,
 });
 
-export type AddEventsSuccessfulSchema = z.infer<
-  typeof AddEventsSuccessfulSchema
+export type AddEventsToQueueSuccessfulSchema = z.infer<
+  typeof AddEventsToQueueSuccessfulSchema
 >;

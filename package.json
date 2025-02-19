@@ -38,6 +38,7 @@
     "@ts-rest/open-api": "^3.51.0",
     "axios": "^1.7.7",
     "axios-cache-interceptor": "^1.0.1",
+    "debug": "^4.4.0",
     "http-errors": "^2.0.0",
     "next": "14.2.16",
     "next-swagger-doc": "^0.3.6",
@@ -54,6 +55,7 @@
   "devDependencies": {
     "@ts-rest/serverless": "^3.51.0",
     "@types/axios": "^0.14.0",
+    "@types/debug": "^4.1.12",
     "@types/gapi.calendar": "^3.0.6",
     "@types/http-errors": "^2.0.1",
     "@types/jest": "^29.4.0",

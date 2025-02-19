@@ -1,8 +1,3 @@
-import {
-  GoogleNaturalLanguageL1,
-  GoogleNaturalLanguageL2,
-  GoogleNaturalLanguageL3,
-} from "../../../packages/rural-event-categories/src/types/googleNaturalLanguageCategories";
 import { RuralEventCategoryId } from "../../../packages/rural-event-categories/src/types/ruralEventCategory.types";
 import { RuralEventScope } from "../../../packages/rural-event-types/src/ruralEventScopes";
 

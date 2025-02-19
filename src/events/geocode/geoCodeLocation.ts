@@ -1,7 +1,7 @@
 import { GeoLocation } from "./types/GeoLocation";
 import axios from "axios";
 import { getLogger } from "../../../logging/logger";
-import { client } from "../../../logging/loggerApps.config";
+import { clientLogger } from "@/logging/loggerApps.config";
 
 type GeoCodeLocationResponse = GeoLocation | null;
 
@@ -13,10 +13,10 @@ type GeoCodeLocationResponse = GeoLocation | null;
 export const geoCodeLocation = async (
   location: string
 ): Promise<GeoCodeLocationResponse> => {
-  const log = getLogger(client.geocode.findbyaddress);
+  const log = getLogger(clientLogger.geocode.findbyaddress);
   log.debug({ location: location }, "geocoding location");
   return await axios
-    .get(`${process.env.SVF_GEOAPI_URL}api/findbyaddress/`, {
+    .get(`${process.env.SVF_GEOAPI_URL}/api/findbyaddress/`, {
       params: {
         location: location,
       },

@@ -1,0 +1,88 @@
+import { createNextHandler } from "@ts-rest/serverless/next";
+import { getLogger } from "@/logging/logger";
+import { handleZodError } from "@/src/rest/zod-error-handler";
+import { apiLogger } from "@/logging/loggerApps.config";
+import { deleteEvents } from "@/src/events/search/deleteEvents";
+import { HttpError } from "http-errors";
+import { ErrorSchema } from "@/src/rest/error.schema";
+import {
+  DeleteEventSuccessfulSchema,
+  GetEventSuccessfulSchema,
+} from "./single-event.schema";
+import { SingleEventContract } from "./single-event.contract";
+import { getEvent } from "@/src/events/search/get-event";
+
+const log = getLogger(apiLogger.events.post);
+
+const handler = createNextHandler(
+  SingleEventContract,
+  {
+    "get-event": async ({ params }) => {
+      try {
+        const event = await getEvent(params.uuid);
+        return {
+          status: 200,
+          body: {
+            status: 200,
+            timestamp: new Date().toISOString(),
+            data: event,
+          } as GetEventSuccessfulSchema,
+        };
+      } catch (error: any) {
+        const httpCode = error instanceof HttpError ? error.status : 500;
+        log.error(
+          { status: httpCode, message: error.message },
+          "retrieving an event failed"
+        );
+
+        return {
+          status: (httpCode as 404) || 500,
+          body: {
+            status: (httpCode as 404) || 500,
+            error: error.message || "Internal Server Error",
+          } as ErrorSchema,
+        };
+      }
+    },
+    "delete-event": async ({ params }, res) => {
+      try {
+        const result = await deleteEvents({
+          id: params.uuid,
+        });
+
+        log.debug({ result }, "event deleted - tried at least");
+        return {
+          status: 200,
+          body: {
+            status: 200,
+            timestamp: new Date().toISOString(),
+            message: "Event deleted successfully",
+            data: { id: params.uuid },
+          } as DeleteEventSuccessfulSchema,
+        };
+      } catch (error: any) {
+        const httpCode = error instanceof HttpError ? error.status : 500;
+        log.error(
+          { status: httpCode, message: error.message },
+          "deleting an event failed"
+        );
+
+        return {
+          status: (httpCode as 404) || 500,
+          body: {
+            status: (httpCode as 404) || 500,
+            error: error.message || "Internal Server Error",
+          } as ErrorSchema,
+        };
+      }
+    },
+  },
+  {
+    jsonQuery: true,
+    responseValidation: true,
+    handlerType: "app-router",
+    errorHandler: handleZodError,
+  }
+);
+
+export { handler as DELETE, handler as GET };

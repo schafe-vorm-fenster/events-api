@@ -1,6 +1,6 @@
 import axios from "axios";
 import { getLogger } from "../../../logging/logger";
-import { client } from "../../../logging/loggerApps.config";
+import { clientLogger } from "@/logging/loggerApps.config";
 
 export interface Content {
   title: string;
@@ -23,7 +23,7 @@ export const translateContent = async (
   title: string,
   body: string
 ): Promise<TranslatedContents | null> => {
-  const log = getLogger(client.translation.translate);
+  const log = getLogger(clientLogger.translation.translate);
 
   // check incoming data
   if (!title || title.length === 0) {
@@ -48,7 +48,7 @@ export const translateContent = async (
   }
 
   // translate by using the translation api with axios get at SVF_TRANSLATIONAPI_HOST
-  const url: string = process.env.SVF_TRANSLATIONAPI_HOST + "api/translate";
+  const url: string = process.env.SVF_TRANSLATIONAPI_HOST + "/api/translate";
 
   // send title and description to translation api
   return await axios

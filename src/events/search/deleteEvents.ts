@@ -2,9 +2,9 @@ import createHttpError from "http-errors";
 import client from "./client";
 import eventsSchema from "./schema";
 import { getLogger } from "../../../logging/logger";
-import { api } from "../../../logging/loggerApps.config";
 import { TypesenseError } from "typesense/lib/Typesense/Errors";
 import { getEndedBeforeFilter } from "./filters/getEndedBeforeFilter";
+import { apiLogger } from "@/logging/loggerApps.config";
 
 export interface DeleteEventsQuery {
   id?: string;
@@ -19,7 +19,7 @@ export interface DeleteEventsResult {
 export const deleteEvents = async (
   query: DeleteEventsQuery
 ): Promise<DeleteEventsResult> => {
-  const log = getLogger(api.events.delete);
+  const log = getLogger(apiLogger.events.delete);
 
   // validate params
   if (!query.id && !query.ids && !query.before) {

@@ -3,6 +3,7 @@ import { HealthContract } from "./health/health.contract";
 import { CategoriesContract } from "./categories/categories.contract";
 import { LanguagesContract } from "./languages/languages.contract";
 import { EventsContract } from "./events/events.contract";
+import { SchemaContract } from "./schema/schema.contract";
 
 const c = initContract();
 
@@ -11,4 +12,5 @@ export const ApiContract = c.router({
   categories: CategoriesContract,
   languages: LanguagesContract,
   events: EventsContract,
+  schema: SchemaContract,
 });

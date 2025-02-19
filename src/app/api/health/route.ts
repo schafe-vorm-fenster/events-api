@@ -12,10 +12,8 @@ const handler = createNextHandler(
   HealthContract,
   {
     health: async () => {
-
       // evaluate overall status code
       let status: number = 200;
-      
 
       if (status === 200) {
         const apiStatus: HealthyApiStatusSchema = {
@@ -30,7 +28,7 @@ const handler = createNextHandler(
 
       const apiStatus: UnhealthyApiStatusSchema = {
         status: 503,
-        error:"Unknown error",
+        error: "Unknown error",
         version: packageJson.version,
         name: packageJson.name,
         description: packageJson.description,
@@ -41,6 +39,8 @@ const handler = createNextHandler(
   },
 
   {
+    jsonQuery: true,
+    responseValidation: true,
     handlerType: "app-router",
   }
 );

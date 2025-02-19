@@ -1,13 +1,13 @@
 import axios from "axios";
 import { getLogger } from "../../../logging/logger";
-import { client } from "../../../logging/loggerApps.config";
 import { RuralEventCategoryId } from "../../../packages/rural-event-categories/src/types/ruralEventCategory.types";
 import { RuralEventClassification } from "../../../packages/rural-event-categories/src/types/ruralEventClassification.types";
+import { clientLogger } from "@/logging/loggerApps.config";
 
 export const classifyByTags = async (
   tags: string[]
 ): Promise<RuralEventClassification | null> => {
-  const log = getLogger(client.classification.bytag);
+  const log = getLogger(clientLogger.classification.bytag);
 
   // check env vars
   if (
@@ -38,7 +38,7 @@ export const classifyByTags = async (
   // classify by using the classification api with axios get at SVF_CLASSIFICATIONAPI_URL
   const url: string =
     process.env.SVF_CLASSIFICATIONAPI_HOST +
-    "api/classify/bytags/?tags=" +
+    "/api/classify/bytags/?tags=" +
     urlSafeTags;
   return await axios
     .get(url, {

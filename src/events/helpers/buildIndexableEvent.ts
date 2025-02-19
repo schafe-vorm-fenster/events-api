@@ -2,7 +2,6 @@ import { getLogger } from "../../../logging/logger";
 import { RuralEventClassification } from "../../../packages/rural-event-categories/src/types/ruralEventClassification.types";
 import { RuralEventScope } from "../../../packages/rural-event-types/src/ruralEventScopes";
 import {
-  EventClassification,
   EventContentWithMetadata,
   PostEventRequestBody,
 } from "../events.types";

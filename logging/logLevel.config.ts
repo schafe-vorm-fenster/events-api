@@ -1,5 +1,5 @@
 import { Level } from "pino";
-import { api, client } from "./loggerApps.config";
+import { apiLogger, clientLogger } from "./loggerApps.config";
 
 interface LogLevelConfig {
   app: string;
@@ -12,39 +12,39 @@ export const logLevelConfig: LogLevelConfig[] = [
     level: "debug",
   },
   {
-    app: api.events.post,
+    app: apiLogger.events.post,
     level: "debug",
   },
   {
-    app: api.events.community,
+    app: apiLogger.events.community,
     level: "debug",
   },
   {
-    app: api.events.scope,
+    app: apiLogger.events.scope,
     level: "debug",
   },
   {
-    app: api.events.category,
+    app: apiLogger.events.category,
     level: "debug",
   },
   {
-    app: api.categories.get,
+    app: apiLogger.categories.get,
     level: "debug",
   },
   {
-    app: api.languages.get,
+    app: apiLogger.languages.get,
     level: "debug",
   },
   {
-    app: api.schema.get,
+    app: apiLogger.schema.get,
     level: "debug",
   },
   {
-    app: client.classification.bytag,
+    app: clientLogger.classification.bytag,
     level: "debug",
   },
   {
-    app: client.geocode.findbyaddress,
+    app: clientLogger.geocode.findbyaddress,
     level: "debug",
   },
 ];

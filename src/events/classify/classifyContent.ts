@@ -62,7 +62,7 @@ export const classifyContent = async (
 
   // if no tags, then classify by using the classification api with axios post at SVF_CLASSIFICATIONAPI_URL
   const url: string =
-    process.env.SVF_CLASSIFICATIONAPI_HOST + "api/classify/byobject";
+    process.env.SVF_CLASSIFICATIONAPI_HOST + "/api/classify/byobject";
 
   return axios
     .post(
