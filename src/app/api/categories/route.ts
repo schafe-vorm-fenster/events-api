@@ -3,8 +3,8 @@ import { CategoriesContract } from "./categories.contract";
 import { getLogger } from "@/logging/logger";
 import { ruralEventCategories } from "@/packages/rural-event-types/src/rural-event-category";
 import { RuralEventCategoryList } from "@/packages/rural-event-types/src/rural-event-category.types";
-import { ConfigCacheControlHeader } from "@/src/config/config-cache-control-header";
 import { apiLogger } from "@/logging/loggerApps.config";
+import { getConfigCacheControlHeader } from "@/src/config/cache-control-header";
 
 const log = getLogger(apiLogger.categories.get);
 
@@ -41,7 +41,7 @@ const handler = createNextHandler(
         return category;
       });
 
-      res.responseHeaders.set("Cache-Control", ConfigCacheControlHeader);
+      res.responseHeaders.set("Cache-Control", getConfigCacheControlHeader());
 
       return {
         status: 200,

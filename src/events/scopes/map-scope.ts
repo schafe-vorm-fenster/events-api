@@ -1,5 +1,5 @@
 import { RuralEventScope } from "../../../packages/rural-event-types/src/rural-event-scope.types";
-import { scopeSynonymsLowercase } from "./scopeSynonyms";
+import { scopeSynonymsLowercase } from "./scope-synonyms";
 
 export const defaultScope: RuralEventScope = "nearby";
 

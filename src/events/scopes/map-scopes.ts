@@ -1,5 +1,5 @@
 import { RuralEventScope } from "../../../packages/rural-event-types/src/rural-event-scope.types";
-import { defaultScope, mapScope } from "./mapScope";
+import { defaultScope, mapScope } from "./map-scope";
 
 /**
  * Maps scopes from loose text to RuralEventScope.

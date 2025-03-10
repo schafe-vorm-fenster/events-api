@@ -6,7 +6,7 @@ import { RuralEventScope } from "../../../packages/rural-event-types/dist/ruralE
 import { RuralEventClassification } from "../../../packages/rural-event-types/src/rural-event-classification.types";
 import { TranslatedContents } from "../../clients/translation-api/translate-content";
 import { geoCodeLocation } from "../../clients/geo-api/geo-code-location";
-import { mapScopes } from "../scopes/mapScopes";
+import { mapScopes } from "../scopes/map-scopes";
 import { translateContent } from "../../clients/translation-api/translate-content";
 import { getGeoLocation } from "../../clients/geo-api/get-geo-location";
 import { buildIndexableEvent } from "../helpers/buildIndexableEvent";

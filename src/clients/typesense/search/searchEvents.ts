@@ -8,7 +8,7 @@ import { getAfterFilter } from "./filters/get-after-filter";
 import { getBeforeFilter } from "./filters/get-before-filter";
 import { getCommunityFilter } from "./filters/get-community-filter";
 import { getMunicipalityFilter } from "./filters/get-municipality-filter";
-import { getScopeDistance } from "@/src/events/scopes/scopeDistances";
+import { getScopeDistance } from "@/src/events/scopes/scope-distances";
 import client from "./client";
 import eventsSchema from "@/src/events/schema/typesense.schema";
 import { TypesenseError } from "typesense/lib/Typesense/Errors";
