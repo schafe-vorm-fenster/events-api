@@ -1,4 +1,4 @@
-import { IndexedEvent } from "../../events/search/types";
+import { IndexedEvent } from "../../events/types/indexed-event.types";
 
 export const mockEventCommunity: IndexedEvent = {
   "summary.de": "Verenstreffen",

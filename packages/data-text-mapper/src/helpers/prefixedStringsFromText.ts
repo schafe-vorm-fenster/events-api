@@ -1,35 +1,19 @@
-const prefixedStringsRegex = (prefix: string): RegExp => {
-  const regExpStr: string =
-    "(" + prefix + ".*?<)|(" + prefix + ".*?\\s" + ")|(" + prefix + ".*?$)";
-  return new RegExp(regExpStr, "g");
-};
-
-const prefixedStringsFromText = (
+export const prefixedStringsFromText = (
   text: string,
   prefix: string
 ): string[] | null => {
-  const regExp = prefixedStringsRegex(prefix);
-  const matches = text.match(regExp);
+  const regex = new RegExp(`${prefix}([\\w-]+)`, "g");
+  const matches = text.match(regex);
 
-  if (matches && matches?.length > 0)
-    return matches.map((tag) =>
-      tag.replace(prefix, "").replace("<", "").trim()
-    );
+  if (!matches) return null;
 
-  return null;
+  return matches.map((match) => match.slice(prefix.length));
 };
 
-const removePrefixedStringsFromText = (
+export const removePrefixedStringsFromText = (
   text: string,
   prefix: string
 ): string => {
-  const regExp = prefixedStringsRegex(prefix);
-  const reducedText: string = text.replace(regExp, "").trim();
-  return reducedText;
-};
-
-export {
-  prefixedStringsFromText,
-  removePrefixedStringsFromText,
-  prefixedStringsRegex,
+  const regex = new RegExp(`\\s*${prefix}[\\w-]+\\s*`, "g");
+  return text.replace(regex, " ").trim().replace(/\s+/g, " ");
 };

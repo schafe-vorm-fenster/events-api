@@ -4,7 +4,7 @@ import { apiLogger } from "@/logging/loggerApps.config";
 import { SchemaContract } from "./schema.contract";
 import { HttpError } from "http-errors";
 import client from "@/src/events/search/client";
-import eventsSchema from "@/src/events/search/schema";
+import eventsSchema from "@/src/events/schema/typesense.schema";
 import { TypesenseError } from "typesense/lib/Typesense/Errors";
 import {
   AddSchemaSuccessfulSchema,

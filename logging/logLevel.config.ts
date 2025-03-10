@@ -44,7 +44,7 @@ export const logLevelConfig: LogLevelConfig[] = [
     level: "debug",
   },
   {
-    app: clientLogger.geocode.findbyaddress,
+    app: clientLogger.geo.findbyaddress,
     level: "debug",
   },
 ];

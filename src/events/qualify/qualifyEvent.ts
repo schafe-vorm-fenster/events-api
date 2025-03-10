@@ -1,18 +1,18 @@
-import { GoogleEvent } from "../google-event.types";
-import { IndexedEvent } from "../search/types";
-import { GeoLocation } from "../geocode/types/GeoLocation";
+import { GoogleEvent } from "../types/google-event.types";
+import { IndexedEvent } from "../types/indexed-event.types";
+import { GeoLocation } from "../../clients/geo-api/types/geo-location.types";
 import { EventContentWithMetadata } from "../events.types";
 import { RuralEventScope } from "../../../packages/rural-event-types/dist/ruralEventTypes";
-import { RuralEventClassification } from "../../../packages/rural-event-categories/src/types/ruralEventClassification.types";
-import { TranslatedContents } from "../translate/translateContent";
-import { getMetadataFromContent } from "../classify/getMetadataFromContent";
-import { geoCodeLocation } from "../geocode/geoCodeLocation";
+import { RuralEventClassification } from "../../../packages/rural-event-types/src/rural-event-classification.types";
+import { TranslatedContents } from "../../clients/translation-api/translate-content";
+import { geoCodeLocation } from "../../clients/geo-api/geo-code-location";
 import { mapScopes } from "../scopes/mapScopes";
-import { classifyContent } from "../classify/classifyContent";
-import { translateContent } from "../translate/translateContent";
-import { getGeoLocation } from "../geocode/getGeoLocation";
+import { translateContent } from "../../clients/translation-api/translate-content";
+import { getGeoLocation } from "../../clients/geo-api/get-geo-location";
 import { buildIndexableEvent } from "../helpers/buildIndexableEvent";
 import debug from "debug";
+import { classifyContent } from "@/src/clients/classification-api/classify-content";
+import { unknownToData } from "@/packages/data-text-mapper/src/unknownToData";
 
 const log = debug("events-api:qualify");
 
@@ -42,7 +42,7 @@ export async function qualifyEvent(
 
   try {
     // create uuid based on the event data
-    metadata = getMetadataFromContent(incomingEvent?.description as string);
+    metadata = unknownToData(incomingEvent?.description as string);
 
     // Start all promises early
     const geoLocationPromise = measureTime(
@@ -101,7 +101,7 @@ export async function qualifyEvent(
     );
 
     return newEvent;
-  } catch (error: any) {
+  } catch (error: unknown) {
     throw error instanceof Error
       ? error
       : new Error("Could not enrich event data for unknown reason");

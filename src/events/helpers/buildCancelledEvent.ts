@@ -1,5 +1,5 @@
 import { PostEventRequestBody } from "../events.types";
-import { IndexedEvent } from "../search/types";
+import { IndexedEvent } from "../types/indexed-event.types";
 import { googleDatetimeToTimestamp } from "./datetime/googleDatetimeToTimestamp";
 import { eventUuid } from "./uuids/eventUuid";
 

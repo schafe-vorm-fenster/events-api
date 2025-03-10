@@ -2,7 +2,7 @@ import { initContract } from "@ts-rest/core";
 import { z } from "zod";
 
 import { ErrorSchema } from "@/src/rest/error.schema";
-import { GoogleEvent } from "@/src/events/google-event.types";
+import { GoogleEvent } from "@/src/events/types/google-event.types";
 import { AddEventsToQueueSuccessfulSchema } from "./add-events-to-queue.schema";
 
 const c = initContract();

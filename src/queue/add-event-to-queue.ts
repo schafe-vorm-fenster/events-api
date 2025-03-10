@@ -1,5 +1,5 @@
 import { CloudTasksClient } from "@google-cloud/tasks";
-import { GoogleEvent } from "../events/google-event.types";
+import { GoogleEvent } from "../events/types/google-event.types";
 import { Task } from "./queue.types";
 import { getLogger } from "@/logging/logger";
 import { clientLogger } from "@/logging/loggerApps.config";
@@ -31,6 +31,8 @@ export async function addEventToQueue(event: GoogleEvent): Promise<Task> {
   const parent = client.queuePath(projectId, location, queue);
 
   // Build the task object.
+  // TODO: add typing
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const task: any = {
     httpRequest: {
       httpMethod: "POST",

@@ -4,7 +4,6 @@ import { Metadata } from "next";
 import packageJson from "../../package.json" assert { type: "json" };
 import { ApiContract } from "./api/api.contract";
 
-
 export const metadata: Metadata = {
   title: packageJson.name + " - Swagger",
   description: packageJson.description,
@@ -22,7 +21,6 @@ export default function Home() {
       },
       license: { name: packageJson.license },
     },
-    
   });
 
   return <SwaggerUI spec={openApiDocument} />;

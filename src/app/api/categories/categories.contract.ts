@@ -1,7 +1,7 @@
 import { initContract } from "@ts-rest/core";
 import { CategoriesSuccessfulSchema } from "./categories.schema";
 import { z } from "zod";
-import { Locale } from "@/src/languages/languages.types";
+import { Locale } from "@/src/events/localization/types/languages.types";
 const c = initContract();
 
 export const CategoriesContract = c.router({

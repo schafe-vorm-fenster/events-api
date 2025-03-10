@@ -1,7 +1,7 @@
 import { initContract } from "@ts-rest/core";
 import { LanguagesSuccessfulSchema } from "./languages.schema";
 import { z } from "zod";
-import { Locale } from "@/src/languages/languages.types";
+import { LanguageSchema } from "@/src/events/localization/types/languages.types";
 
 const c = initContract();
 
@@ -10,7 +10,9 @@ export const LanguagesContract = c.router({
     method: "GET",
     path: "/api/languages",
     query: z.object({
-      lang: Locale.optional().describe("Language code to filter labels."),
+      language: LanguageSchema.optional()
+        .default("de")
+        .describe("Language code to filter labels."),
     }),
     responses: {
       200: LanguagesSuccessfulSchema,

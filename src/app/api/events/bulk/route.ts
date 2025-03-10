@@ -1,7 +1,7 @@
 import { createNextHandler } from "@ts-rest/serverless/next";
 import { AddEventsToQueueContract } from "./add-events-to-queue.contract";
 import { getLogger } from "@/logging/logger";
-import { GoogleEvent } from "@/src/events/google-event.types";
+import { GoogleEvent } from "@/src/events/types/google-event.types";
 import { ErrorSchema } from "@/src/rest/error.schema";
 import { handleZodError } from "@/src/rest/zod-error-handler";
 import { addEventToQueue } from "@/src/queue/add-event-to-queue";

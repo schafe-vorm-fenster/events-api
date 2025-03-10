@@ -5,7 +5,7 @@ import {
   GoogleNaturalLanguageL2,
   GoogleNaturalLanguageL3,
 } from "../../packages/rural-event-categories/src/types/googleNaturalLanguageCategories";
-import { RuralEventCategoryId } from "../../packages/rural-event-categories/src/types/ruralEventCategory.types";
+import { RuralEventCategoryId } from "../../packages/rural-event-types/src/rural-event-category.types";
 import Schema$Event = calendar_v3.Schema$Event;
 
 export type PostEventRequestBody = Schema$Event;

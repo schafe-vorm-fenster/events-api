@@ -1,15 +1,6 @@
-import {
-  GoogleDateObject,
-  googleDateObjectToTimestamp,
-} from "./googleDateObjectToTimestamp";
-import {
-  GoogleDatetimeObject,
-  googleDatetimeObjectToTimestamp,
-} from "./googleDatetimeObjectToTimestamp";
-import {
-  GoogleDatetimeString,
-  googleDatetimeStringToTimestamp,
-} from "./googleDatetimeStringToTimestamp";
+import { googleDateObjectToTimestamp } from "./googleDateObjectToTimestamp";
+import { googleDatetimeObjectToTimestamp } from "./googleDatetimeObjectToTimestamp";
+import { googleDatetimeStringToTimestamp } from "./googleDatetimeStringToTimestamp";
 import { calendar_v3 } from "@googleapis/calendar";
 import Schema$EventDateTime = calendar_v3.Schema$EventDateTime;
 

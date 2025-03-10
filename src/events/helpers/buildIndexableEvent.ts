@@ -1,13 +1,13 @@
 import { getLogger } from "../../../logging/logger";
-import { RuralEventClassification } from "../../../packages/rural-event-categories/src/types/ruralEventClassification.types";
-import { RuralEventScope } from "../../../packages/rural-event-types/src/ruralEventScopes";
+import { RuralEventClassification } from "../../../packages/rural-event-types/src/rural-event-classification.types";
+import { RuralEventScope } from "../../../packages/rural-event-types/src/rural-event-scope.types";
 import {
   EventContentWithMetadata,
   PostEventRequestBody,
 } from "../events.types";
-import { GeoLocation } from "../geocode/types/GeoLocation";
-import { IndexedEvent } from "../search/types";
-import { TranslatedContents } from "../translate/translateContent";
+import { GeoLocation } from "../../clients/geo-api/types/geo-location.types";
+import { IndexedEvent } from "../types/indexed-event.types";
+import { TranslatedContents } from "../../clients/translation-api/translate-content";
 
 import { getDocumentLinkFromAttachments } from "./attachments/getDocumentLinkFromAttachments";
 import { getImageLinkFromAttachments } from "./attachments/getImageLinkFromAttachments";

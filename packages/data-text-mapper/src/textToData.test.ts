@@ -52,6 +52,21 @@ describe("should return extracted data from a plain text", () => {
     const object: TextWithData | null = textToData(text);
     expect(object?.description).toBe("Lorem Ipsum Lorem Ipsum");
   });
+
+  // add test which retrieves tag even if it is at the end
+
+  // add test which retrieves scope even if it is at the end
+
+  // add test which retrieves tags or scopes even if it is at the end and ignore < or >
+  test("returns object with tags or scopes stripped from description", () => {
+    const text: string =
+      "Lorem #One Ipsum </hr>#Two Lorem @Three Ipsum @Four</br>";
+    const object: TextWithData | null = textToData(text);
+    expect(object?.tags).toHaveLength(2);
+    expect(object?.tags).toEqual(["One", "Two"]);
+    expect(object?.scopes).toHaveLength(2);
+    expect(object?.scopes).toEqual(["Three", "Four"]);
+  });
 });
 
 describe("should keep text after roundtrip transformation", () => {

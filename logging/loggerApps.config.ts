@@ -25,21 +25,26 @@ export namespace apiLogger {
 
 export namespace clientLogger {
   export enum translation {
+    config = "client.translation.config",
     translate = "client.translation.translate",
   }
   export enum classification {
+    config = "client.classification.config",
     classify = "client.classification.classify",
     bytag = "client.classification.by-tag",
     bytext = "client.classification.by-text",
   }
-  export enum geocode {
+  export enum geo {
+    config = "client.geo.config",
     findbyaddress = "client.geocode.find-by-address",
     getcommunity = "client.geocode.get-community",
   }
   export enum googletasks {
+    config = "client.googletasks.config",
     add = "client.googletasks.add-event-to-queue",
   }
   export enum typesense {
+    config = "client.typesense.config",
     get = "client.typesense.get",
     create = "client.typesense.create",
     delete = "client.typesense.delete",

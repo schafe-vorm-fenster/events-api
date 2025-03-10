@@ -1,12 +1,12 @@
 import { createNextHandler } from "@ts-rest/serverless/next";
 import { CategoriesContract } from "./categories.contract";
 import { getLogger } from "@/logging/logger";
-import { api } from "@/logging/loggerApps.config";
-import { ruralEventCategories } from "@/packages/rural-event-categories/src/types/ruralEventCategory";
-import { RuralEventCategoryList } from "@/packages/rural-event-categories/src/types/ruralEventCategory.types";
+import { ruralEventCategories } from "@/packages/rural-event-types/src/rural-event-category";
+import { RuralEventCategoryList } from "@/packages/rural-event-types/src/rural-event-category.types";
 import { ConfigCacheControlHeader } from "@/src/config/ConfigCacheControlHeader";
+import { apiLogger } from "@/logging/loggerApps.config";
 
-const log = getLogger(api.categories.get);
+const log = getLogger(apiLogger.categories.get);
 
 const handler = createNextHandler(
   CategoriesContract,
@@ -18,7 +18,7 @@ const handler = createNextHandler(
       log.info({ lang, examples }, `get categories`);
 
       // copy categories to avoid mutation
-      let categories: RuralEventCategoryList = JSON.parse(
+      const categories: RuralEventCategoryList = JSON.parse(
         JSON.stringify(ruralEventCategories)
       );
 

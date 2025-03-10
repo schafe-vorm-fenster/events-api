@@ -2,7 +2,7 @@ import { createNextHandler } from "@ts-rest/serverless/next";
 import { getLogger } from "@/logging/logger";
 import { handleZodError } from "@/src/rest/zod-error-handler";
 import { apiLogger } from "@/logging/loggerApps.config";
-import { deleteEvents } from "@/src/events/search/deleteEvents";
+
 import { HttpError } from "http-errors";
 import { ErrorSchema } from "@/src/rest/error.schema";
 import {
@@ -10,7 +10,8 @@ import {
   GetEventSuccessfulSchema,
 } from "./single-event.schema";
 import { SingleEventContract } from "./single-event.contract";
-import { getEvent } from "@/src/events/search/get-event";
+import { getEvent } from "@/src/clients/typesense/search/get-event";
+import { deleteEvents } from "@/src/clients/typesense/search/deleteEvents";
 
 const log = getLogger(apiLogger.events.post);
 

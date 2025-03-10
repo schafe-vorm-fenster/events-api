@@ -3,7 +3,7 @@
  * @param obj: any
  * @returns boolean
  */
-export const isValidJson = (obj: any): boolean => {
+export const isValidJson = (obj: unknown): boolean => {
   if (obj === undefined || obj === null || obj.constructor != Object)
     return false;
   if (Object.keys(obj).length === 0) return false;

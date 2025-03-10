@@ -13,6 +13,13 @@ describe("should return tags by # from plain text", () => {
     expect(tagsFromText(text)).toEqual(["One", "Two", "Three"]);
   });
 
+  // several tags if </hr> is somewhre in between
+  test("returns several tags if </hr> is somewhere in between", () => {
+    const text: string = "Lorem #One Ipsum </hr>#Two Lorem #Three Ipsum";
+    expect(tagsFromText(text)).toHaveLength(3);
+    expect(tagsFromText(text)).toEqual(["One", "Two", "Three"]);
+  });
+
   test("returns camel case tag", () => {
     const text: string = "Lorem #SomeTag Ipsum";
     expect(tagsFromText(text)).toHaveLength(1);
@@ -57,6 +64,12 @@ describe("should return tags by # from plain text", () => {
 
   test("returns tag if it's the only content", () => {
     const text: string = "#tag";
+    expect(tagsFromText(text)).toHaveLength(1);
+    expect(tagsFromText(text)).toEqual(["tag"]);
+  });
+
+  test("returns tag if it's followed by </br>", () => {
+    const text: string = "#tag</br>";
     expect(tagsFromText(text)).toHaveLength(1);
     expect(tagsFromText(text)).toEqual(["tag"]);
   });
