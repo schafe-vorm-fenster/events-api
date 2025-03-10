@@ -1,4 +1,4 @@
-import { getCommunityFilter } from "./getCommunityFilter";
+import { getCommunityFilter } from "./get-community-filter";
 
 describe("getCommunityFilter", () => {
   it("should return correct filter string for valid geoname id", () => {

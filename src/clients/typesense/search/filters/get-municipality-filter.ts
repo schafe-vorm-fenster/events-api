@@ -1,4 +1,4 @@
-import { isValidGeonameId } from "../../../../clients/geo-api/helpers/is-valid-geoname-id";
+import { isValidGeonameId } from "../../../geo-api/helpers/is-valid-geoname-id";
 
 export const getMunicipalityFilter = (municipalityId: string): string => {
   if (!municipalityId || municipalityId.length === 0)

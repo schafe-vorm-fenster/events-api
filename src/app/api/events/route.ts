@@ -19,7 +19,6 @@ import { TypesenseError } from "typesense/lib/Typesense/Errors";
 import { IndexedEvent } from "@/src/events/types/indexed-event.types";
 import { deleteEvents } from "@/src/events/search/deleteEvents";
 import { eventUuid } from "@/src/events/helpers/uuids/eventUuid";
-import { isISO8601 } from "@/src/events/helpers/datetime/isISO8601";
 
 const log = getLogger(apiLogger.events.post);
 

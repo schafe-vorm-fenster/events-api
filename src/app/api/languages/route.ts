@@ -1,12 +1,12 @@
 import { createNextHandler } from "@ts-rest/serverless/next";
 import { LanguagesContract } from "./languages.contract";
 import { getLogger } from "@/logging/logger";
-import { ConfigCacheControlHeader } from "@/src/config/ConfigCacheControlHeader";
 import { Language } from "@/src/events/localization/types/languages.types";
 import { apiLogger } from "@/logging/loggerApps.config";
 import { LanguageList } from "./languages.schema";
 import { getLanguageName } from "@/src/events/localization/helpers/get-lanuage-name";
 import { handleZodError } from "@/src/rest/zod-error-handler";
+import { getConfigCacheControlHeader } from "@/src/config/cache-control-header";
 
 const log = getLogger(apiLogger.languages.get);
 
@@ -25,7 +25,7 @@ const handler = createNextHandler(
         ru: getLanguageName("ru", lang),
       };
 
-      res.responseHeaders.set("Cache-Control", ConfigCacheControlHeader);
+      res.responseHeaders.set("Cache-Control", getConfigCacheControlHeader());
 
       return {
         status: 200,

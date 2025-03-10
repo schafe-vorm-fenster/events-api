@@ -3,17 +3,17 @@ import { apiLogger } from "@/logging/loggerApps.config";
 import { RuralEventCategoryId } from "@/packages/rural-event-types/src/rural-event-category.types";
 import { RuralEventScope } from "@/packages/rural-event-types/src/rural-event-scope.types";
 import { IndexedEvent } from "@/src/events/types/indexed-event.types";
-import { Locale } from "@/src/events/localization/types/languages.types";
 import createHttpError from "http-errors";
-import { getAfterFilter } from "./filters/getAfterFilter";
-import { getBeforeFilter } from "./filters/getBeforeFilter";
-import { getCommunityFilter } from "./filters/getCommunityFilter";
-import { getMunicipalityFilter } from "./filters/getMunicipalityFilter";
+import { getAfterFilter } from "./filters/get-after-filter";
+import { getBeforeFilter } from "./filters/get-before-filter";
+import { getCommunityFilter } from "./filters/get-community-filter";
+import { getMunicipalityFilter } from "./filters/get-municipality-filter";
 import { getScopeDistance } from "@/src/events/scopes/scopeDistances";
 import client from "./client";
 import eventsSchema from "@/src/events/schema/typesense.schema";
 import { TypesenseError } from "typesense/lib/Typesense/Errors";
 import { ISO8601 } from "@/src/rest/iso8601.types";
+import { Language } from "@/src/events/localization/types/languages.types";
 
 export interface CommunityCenterQuery {
   geopoint: [number, number];
@@ -31,7 +31,7 @@ export interface SearchEventsQuery {
   category?: RuralEventCategoryId;
   after?: ISO8601;
   before?: ISO8601;
-  language?: Locale;
+  language?: Language;
 }
 
 // TODO: maybe use an existing type from typesense

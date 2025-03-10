@@ -17,7 +17,7 @@ import { GeonameId } from "@/src/events/types/geonames.types";
 import { RuralEventScope } from "@/packages/rural-event-types/src/rural-event-scope.types";
 import { ISO8601 } from "@/src/rest/iso8601.types";
 import { Language } from "@/src/events/localization/types/languages.types";
-import { MinimalCacheControlHeader } from "@/src/config/MinimalCacheControlHeader";
+import { getDataCacheControlHeader } from "@/src/config/cache-control-header";
 
 const log = getLogger(apiLogger.events.search);
 
@@ -31,9 +31,10 @@ const handler = createNextHandler(
       const community: GeonameId = params?.community ?? "";
       const scope: RuralEventScope = params?.scope ?? "";
       const category: RuralEventCategoryId = params?.category ?? "";
-      const before: ISO8601 | undefined = query?.before ?? undefined;
-      const after: ISO8601 | undefined = query?.after ?? undefined;
-      const language: Language = query?.language ?? "de";
+      const before: ISO8601 | undefined =
+        (query?.before as ISO8601) ?? undefined;
+      const after: ISO8601 | undefined = (query?.after as ISO8601) ?? undefined;
+      const language: Language = (query?.language as Language) ?? "de";
 
       log.info(
         { community, scope, category, before, after, language },
@@ -47,7 +48,7 @@ const handler = createNextHandler(
       );
 
       // Set cache control header
-      res.responseHeaders.set("Cache-Control", MinimalCacheControlHeader);
+      res.responseHeaders.set("Cache-Control", getDataCacheControlHeader());
 
       return await searchEvents({
         center: communityCenter,

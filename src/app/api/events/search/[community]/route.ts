@@ -15,7 +15,7 @@ import { ISO8601 } from "@/src/rest/iso8601.types";
 import { GeonameId } from "@/src/events/types/geonames.types";
 import { HttpError } from "http-errors";
 import { Language } from "@/src/events/localization/types/languages.types";
-import { MinimalCacheControlHeader } from "@/src/config/MinimalCacheControlHeader";
+import { getDataCacheControlHeader } from "@/src/config/cache-control-header";
 
 const log = getLogger(apiLogger.events.search);
 
@@ -24,9 +24,10 @@ const handler = createNextHandler(
   {
     "search-events-by-community": async ({ params, query }, res) => {
       const community: GeonameId = params?.community ?? "";
-      const before: ISO8601 | undefined = query?.before ?? undefined;
-      const after: ISO8601 | undefined = query?.after ?? undefined;
-      const language: Language = query?.language ?? "de";
+      const before: ISO8601 | undefined =
+        (query?.before as ISO8601) ?? undefined;
+      const after: ISO8601 | undefined = (query?.after as ISO8601) ?? undefined;
+      const language: Language = (query?.language as Language) ?? "de";
 
       log.info(
         { community, before, after, language },
@@ -41,7 +42,7 @@ const handler = createNextHandler(
       );
 
       // Set cache control header
-      res.responseHeaders.set("Cache-Control", MinimalCacheControlHeader);
+      res.responseHeaders.set("Cache-Control", getDataCacheControlHeader());
 
       return await searchEvents({
         center: communityCenter,

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const ISO8601 = z
+export const ISO8601Schema = z
   .string()
   .describe("Datetime in ISO8601 format")
   .regex(
@@ -8,4 +8,4 @@ export const ISO8601 = z
   )
   .transform((v) => new Date(v).toISOString());
 
-export type ISO8601 = z.infer<typeof ISO8601>;
+export type ISO8601 = z.infer<typeof ISO8601Schema>;

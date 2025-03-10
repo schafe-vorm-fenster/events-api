@@ -1,4 +1,4 @@
-import { getMunicipalityFilter } from "./getMunicipalityFilter";
+import { getMunicipalityFilter } from "./get-municipality-filter";
 
 describe("should create a municipality filter", () => {
   test("return a municipality filter string", () => {
@@ -10,9 +10,9 @@ describe("should create a municipality filter", () => {
   test("throws an error on missing or invaid municipality id", () => {
     expect(() => {
       getMunicipalityFilter("");
-    }).toThrowError();
+    }).toThrow();
     expect(() => {
       getMunicipalityFilter("abc");
-    }).toThrowError();
+    }).toThrow();
   });
 });

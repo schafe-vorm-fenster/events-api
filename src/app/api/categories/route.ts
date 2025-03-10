@@ -3,7 +3,7 @@ import { CategoriesContract } from "./categories.contract";
 import { getLogger } from "@/logging/logger";
 import { ruralEventCategories } from "@/packages/rural-event-types/src/rural-event-category";
 import { RuralEventCategoryList } from "@/packages/rural-event-types/src/rural-event-category.types";
-import { ConfigCacheControlHeader } from "@/src/config/ConfigCacheControlHeader";
+import { ConfigCacheControlHeader } from "@/src/config/config-cache-control-header";
 import { apiLogger } from "@/logging/loggerApps.config";
 
 const log = getLogger(apiLogger.categories.get);
