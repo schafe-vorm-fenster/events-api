@@ -3,7 +3,7 @@ import { getLogger } from "@/logging/logger";
 import { apiLogger } from "@/logging/loggerApps.config";
 import { SchemaContract } from "./schema.contract";
 import { HttpError } from "http-errors";
-import client from "@/src/events/search/client";
+
 import eventsSchema from "@/src/events/schema/typesense.schema";
 import { TypesenseError } from "typesense/lib/Typesense/Errors";
 import {
@@ -13,6 +13,7 @@ import {
 } from "./schema.schema";
 import { ErrorSchema } from "@/src/rest/error.schema";
 import { handleZodError } from "@/src/rest/zod-error-handler";
+import client from "@/src/clients/typesense/search/client";
 
 const handler = createNextHandler(
   SchemaContract,
@@ -32,19 +33,21 @@ const handler = createNextHandler(
             data,
           } as GetSchemaSuccessfulSchema,
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         const httpCode =
           error instanceof TypesenseError
             ? error.httpStatus
             : error instanceof HttpError
-            ? error.status
-            : 500;
+              ? error.status
+              : 500;
         return {
           status: (httpCode as 404) || 500,
           body: {
             status: httpCode || 500,
             error:
-              error.message || "Could not fetch schema for unknown reason.",
+              error instanceof Error
+                ? error.message
+                : "Could not fetch schema for unknown reason.",
           } as ErrorSchema,
         };
       }
@@ -54,6 +57,7 @@ const handler = createNextHandler(
 
       try {
         const data = await client.collections().create(eventsSchema);
+        log.info({ data }, "Created schema data.");
         return {
           status: 200,
           body: {
@@ -62,19 +66,22 @@ const handler = createNextHandler(
             data,
           } as AddSchemaSuccessfulSchema,
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         const httpCode =
           error instanceof TypesenseError
             ? error.httpStatus
             : error instanceof HttpError
-            ? error.status
-            : 500;
+              ? error.status
+              : 500;
+        log.error({ error }, "Error creating schema.");
         return {
           status: (httpCode as 409) || 500,
           body: {
             status: httpCode,
             error:
-              error.message || "Could not create schema for unknown reason.",
+              error instanceof Error
+                ? error.message
+                : "Could not create schema for unknown reason.",
           } as ErrorSchema,
         };
       }
@@ -84,6 +91,7 @@ const handler = createNextHandler(
 
       try {
         const data = await client.collections(eventsSchema.name).delete();
+        log.info({ data }, "Deleted schema data.");
         return {
           status: 200,
           body: {
@@ -92,19 +100,22 @@ const handler = createNextHandler(
             data,
           } as DeleteSchemaSuccessfulSchema,
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         const httpCode =
           error instanceof TypesenseError
             ? error.httpStatus
             : error instanceof HttpError
-            ? error.status
-            : 500;
+              ? error.status
+              : 500;
+        log.error({ error }, "Error deleting schema.");
         return {
           status: (httpCode as 404) || 500,
           body: {
             status: httpCode,
             error:
-              error.message || "Could not delete schema for unknown reason.",
+              error instanceof Error
+                ? error.message
+                : "Could not delete schema for unknown reason.",
           } as ErrorSchema,
         };
       }

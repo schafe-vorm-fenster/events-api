@@ -2,10 +2,11 @@ import createHttpError from "http-errors";
 import client from "./client";
 
 import { TypesenseError } from "typesense/lib/Typesense/Errors";
-import { getEndedBeforeFilter } from "./filters/getEndedBeforeFilter";
+
 import { apiLogger } from "@/logging/loggerApps.config";
 import { getLogger } from "@/logging/logger";
 import eventsSchema from "@/src/events/schema/typesense.schema";
+import { getEndedBeforeFilter } from "./filters/get-ended-before-filter";
 
 export interface DeleteEventsQuery {
   id?: string;
@@ -49,11 +50,11 @@ export const deleteEvents = async (
 
   // delete by single id
   if (query.id) {
-    const deleteByIdResult: unknown = await client
+    await client
       .collections(eventsSchema.name)
       .documents(query.id)
       .delete()
-      .then(function (deleteResult: unknown) {
+      .then(function () {
         result.deleted++;
       })
       .catch((error: TypesenseError | unknown) => {
@@ -61,14 +62,14 @@ export const deleteEvents = async (
         if (error instanceof TypesenseError) httpCode = error?.httpStatus;
         throw createHttpError(
           httpCode || 500,
-          (error as any)?.message || "error while deleting single event"
+          (error as Error)?.message || "error while deleting single event"
         );
       });
   }
 
   // delete by multiple ids
   if (query.ids && query.ids.length > 0) {
-    const deleteByIdListResult: unknown = await client
+    await client
       .collections(eventsSchema.name)
       .documents()
       .delete({ filter_by: `id:[${query.ids.join(",")}]` })
@@ -89,7 +90,7 @@ export const deleteEvents = async (
 
   // delete by before
   if (query.before && beforeFilter) {
-    const deleteBeforeResult: unknown = await client
+    await client
       .collections(eventsSchema.name)
       .documents()
       .delete({ filter_by: beforeFilter })

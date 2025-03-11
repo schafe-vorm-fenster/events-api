@@ -4,7 +4,7 @@ import { isValidJson } from "./isValidJson";
 
 interface Property {
   key: string;
-  value?: any;
+  value?: unknown;
 }
 
 const requiredProperties: Property[] = [
@@ -19,21 +19,22 @@ const requiredProperties: Property[] = [
  * @returns boolean
  */
 export const isGoogleEvent = (json: object): boolean => {
-  if (!isValidJson(json)) throw new Error("Request body is no valid json.");
+  if (!isValidJson(json)) return false;
 
-  let errors: string[] = new Array();
-  const event: any = json as Schema$Event;
+  const failedChecks: string[] = [];
+  const event: Schema$Event = json as Schema$Event;
 
   // check "json" if it contains all required properties
   requiredProperties.forEach((property: Property) => {
-    if (!event[property.key]) errors.push(`missing ${property.key}`);
-    if (property.value && event[property.key] !== property.value)
-      errors.push(`invalid ${property.key}`);
+    if (!(property.key in event))
+      failedChecks.push(`${property.key} not existing`);
+    if (
+      property.value &&
+      property.key in event &&
+      event[property.key as keyof Schema$Event] !== property.value
+    )
+      failedChecks.push(`${property.key} not matching ${property.value}`);
   });
 
-  const errorMessage: string = `Request json is not a valid google event object: ${errors.join(
-    ", "
-  )}.`;
-  if (errors.length > 0) throw new Error(errorMessage);
-  return true;
+  return failedChecks.length === 0;
 };

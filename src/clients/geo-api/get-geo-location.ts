@@ -2,6 +2,7 @@ import { GeoLocation } from "./types/geo-location.types";
 import { getLogger } from "../../../logging/logger";
 import { clientLogger } from "../../../logging/loggerApps.config";
 import { getGeoApiConfig } from "./helpers/config";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
 
 type GetGeoLocationResponse = GeoLocation | null;
 
@@ -13,6 +14,9 @@ type GetGeoLocationResponse = GeoLocation | null;
 export const getGeoLocation = async (
   geonameId: number
 ): Promise<GetGeoLocationResponse> => {
+  "use cache";
+  cacheLife("geo");
+
   const log = getLogger(clientLogger.geo.getcommunity);
   log.debug({ geonameId }, "get geo location");
   try {

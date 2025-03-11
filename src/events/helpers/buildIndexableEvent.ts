@@ -7,13 +7,13 @@ import {
 } from "../events.types";
 import { GeoLocation } from "../../clients/geo-api/types/geo-location.types";
 import { IndexedEvent } from "../types/indexed-event.types";
-import { TranslatedContents } from "../../clients/translation-api/translate-content";
 
 import { getDocumentLinkFromAttachments } from "./attachments/getDocumentLinkFromAttachments";
 import { getImageLinkFromAttachments } from "./attachments/getImageLinkFromAttachments";
 import { googleDatetimeToTimestamp } from "./datetime/googleDatetimeToTimestamp";
 import { eventUuid } from "./uuids/eventUuid";
 import { recurringEventUuid } from "./uuids/recurringEventUuid";
+import { TranslatedContents } from "@/src/clients/translation-api/translation.types";
 
 export const buildIndexableEvent = (
   rawEvent: PostEventRequestBody,

@@ -4,7 +4,6 @@ import { GeoLocation } from "../../clients/geo-api/types/geo-location.types";
 import { EventContentWithMetadata } from "../events.types";
 import { RuralEventScope } from "../../../packages/rural-event-types/dist/ruralEventTypes";
 import { RuralEventClassification } from "../../../packages/rural-event-types/src/rural-event-classification.types";
-import { TranslatedContents } from "../../clients/translation-api/translate-content";
 import { geoCodeLocation } from "../../clients/geo-api/geo-code-location";
 import { mapScopes } from "../scopes/map-scopes";
 import { translateContent } from "../../clients/translation-api/translate-content";
@@ -13,6 +12,7 @@ import { buildIndexableEvent } from "../helpers/buildIndexableEvent";
 import debug from "debug";
 import { classifyContent } from "@/src/clients/classification-api/classify-content";
 import { unknownToData } from "@/packages/data-text-mapper/src/unknownToData";
+import { TranslatedContents } from "@/src/clients/translation-api/translation.types";
 
 const log = debug("events-api:qualify");
 

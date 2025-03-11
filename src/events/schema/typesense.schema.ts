@@ -1,14 +1,6 @@
-interface TypesenseSchema {
-  name: string;
-  fields: Array<{
-    name: string;
-    type: string;
-    facet?: boolean;
-  }>;
-  default_sorting_field: string;
-}
+import { CollectionCreateSchema } from "typesense/lib/Typesense/Collections";
 
-const eventsSchema: TypesenseSchema = {
+const eventsSchema: CollectionCreateSchema = {
   name: "events",
   fields: [
     // content

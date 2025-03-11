@@ -2,9 +2,8 @@ import { calendar_v3 } from "@googleapis/calendar";
 import Schema$EventAttachment = calendar_v3.Schema$EventAttachment;
 import Schema$EventDateTime = calendar_v3.Schema$EventDateTime;
 import Schema$Event = calendar_v3.Schema$Event;
-
 import { z } from "zod";
-import { ISO8601 } from "../../rest/iso8601.types";
+import { ISO8601Schema } from "../../rest/iso8601.types";
 import { Timezone } from "../../rest/timezone.types";
 
 export const GoogleEventOrganizer = z.object({
@@ -16,8 +15,8 @@ export const GoogleEventOrganizer = z.object({
 export type GoogleEventOrganizer = z.infer<typeof GoogleEventOrganizer>;
 
 export const GoogleEventDateTime = z.object({
-  date: ISO8601.optional(),
-  dateTime: ISO8601.optional(),
+  date: ISO8601Schema.optional(),
+  dateTime: ISO8601Schema.optional(),
   timeZone: Timezone.optional(),
 });
 export type GoogleEventDateTime =
@@ -39,8 +38,8 @@ export const GoogleEvent = z.object({
   // system
   id: z.string(),
   kind: z.literal("calendar#event").optional(),
-  created: ISO8601.optional(),
-  updated: ISO8601.optional(),
+  created: ISO8601Schema.optional(),
+  updated: ISO8601Schema.optional(),
   status: z.string().optional(),
   // date
   start: GoogleEventDateTime,

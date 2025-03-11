@@ -29,10 +29,10 @@ const handler = createNextHandler(
             data: event,
           } as GetEventSuccessfulSchema,
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         const httpCode = error instanceof HttpError ? error.status : 500;
         log.error(
-          { status: httpCode, message: error.message },
+          { status: httpCode, message: (error as Error).message },
           "retrieving an event failed"
         );
 
@@ -40,12 +40,12 @@ const handler = createNextHandler(
           status: (httpCode as 404) || 500,
           body: {
             status: (httpCode as 404) || 500,
-            error: error.message || "Internal Server Error",
+            error: (error as Error).message || "Internal Server Error",
           } as ErrorSchema,
         };
       }
     },
-    "delete-event": async ({ params }, res) => {
+    "delete-event": async ({ params }) => {
       try {
         const result = await deleteEvents({
           id: params.uuid,
@@ -61,10 +61,10 @@ const handler = createNextHandler(
             data: { id: params.uuid },
           } as DeleteEventSuccessfulSchema,
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         const httpCode = error instanceof HttpError ? error.status : 500;
         log.error(
-          { status: httpCode, message: error.message },
+          { status: httpCode, message: (error as Error).message },
           "deleting an event failed"
         );
 
@@ -72,7 +72,7 @@ const handler = createNextHandler(
           status: (httpCode as 404) || 500,
           body: {
             status: (httpCode as 404) || 500,
-            error: error.message || "Internal Server Error",
+            error: (error as Error).message || "Internal Server Error",
           } as ErrorSchema,
         };
       }

@@ -6,7 +6,7 @@ import { eventUuid } from "./uuids/eventUuid";
 export const buildCancelledEvent = (
   rawEvent: PostEventRequestBody
 ): IndexedEvent => {
-  const indexableEvent: any = {
+  const indexableEvent: unknown = {
     id: eventUuid(rawEvent),
 
     /**
@@ -20,5 +20,5 @@ export const buildCancelledEvent = (
         : 0,
   };
 
-  return indexableEvent;
+  return indexableEvent as IndexedEvent;
 };

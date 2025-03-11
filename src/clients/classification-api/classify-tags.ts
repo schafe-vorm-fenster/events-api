@@ -2,10 +2,14 @@ import { getLogger } from "../../../logging/logger";
 import { RuralEventClassification } from "../../../packages/rural-event-types/src/rural-event-classification.types";
 import { clientLogger } from "@/logging/loggerApps.config";
 import { getClassificationApiConfig } from "./helpers/config";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
 
 export const classifyTags = async (
   tags: string[]
 ): Promise<RuralEventClassification | null> => {
+  "use cache";
+  cacheLife("classification");
+
   const log = getLogger(clientLogger.classification.bytag);
 
   // check incoming tags

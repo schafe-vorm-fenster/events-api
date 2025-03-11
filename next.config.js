@@ -8,17 +8,17 @@ const nextConfig = {
       classification: {
         stale: 3600, // 1 hour
         revalidate: 900, // 15 minutes
-        expire: 604800, // 1 week
+        expire: 3600, // 1 hour, just to reduce http traffic
       },
       translation: {
         stale: 3600, // 1 hour
         revalidate: 900, // 15 minutes
-        expire: 604800, // 1 week
+        expire: 3600, // 1 hour, just to reduce http traffic
       },
       geo: {
         stale: 3600, // 1 hour
         revalidate: 900, // 15 minutes
-        expire: 604800, // 1 week
+        expire: 3600, // 1 hour, just to reduce http traffic
       },
     },
   },

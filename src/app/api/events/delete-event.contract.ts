@@ -19,7 +19,6 @@ export const DeleteEventContract = c.router({
     body: z.any().optional(),
     responses: {
       200: DeleteEventsSuccessfulSchema,
-      400: ErrorSchema,
       500: ErrorSchema,
     },
     headers: z.object({

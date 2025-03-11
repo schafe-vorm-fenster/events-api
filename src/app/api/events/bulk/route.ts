@@ -13,7 +13,7 @@ const log = getLogger(apiLogger.events.bulk);
 const handler = createNextHandler(
   AddEventsToQueueContract,
   {
-    "add-events-to-queue": async ({ body }, res) => {
+    "add-events-to-queue": async ({ body }) => {
       const incomingEvents = body as GoogleEvent[];
 
       try {

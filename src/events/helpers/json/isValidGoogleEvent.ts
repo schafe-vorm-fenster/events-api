@@ -4,9 +4,9 @@ import { isValidJson } from "./isValidJson";
 
 interface Property {
   key: string;
-  value?: any;
+  value?: unknown;
 }
-
+// TODO: add empty field checks by zod
 const requiredProperties: Property[] = [
   { key: "id" },
   { key: "kind", value: "calendar#event" },
@@ -23,23 +23,20 @@ const requiredProperties: Property[] = [
 export const isValidGoogleEvent = (json: object): boolean => {
   if (!isValidJson(json)) return false;
 
-  // TODO: refactor using zod
-
-  let errors: string[] = new Array();
-  const event: any = json as Schema$Event;
+  const failedChecks: string[] = [];
+  const event: Schema$Event = json as Schema$Event;
 
   // check "json" if it contains all required properties
   requiredProperties.forEach((property: Property) => {
-    if (!event[property.key]) errors.push(`missing ${property.key}`);
-    if (property.value && event[property.key] !== property.value)
-      errors.push(`invalid ${property.key}`);
+    if (!(property.key in event))
+      failedChecks.push(`${property.key} not existing`);
+    if (
+      property.value &&
+      property.key in event &&
+      event[property.key as keyof Schema$Event] !== property.value
+    )
+      failedChecks.push(`${property.key} not matching ${property.value}`);
   });
 
-  const explanation: string = `The following properties are required: ${requiredProperties
-    .map((property: Property) => property.key)
-    .join(", ")}`;
-
-  const errorMessage: string = `${errors.join(", ")}. ${explanation}.`;
-  if (errors.length > 0) throw new Error(errorMessage);
-  return true;
+  return failedChecks.length === 0;
 };

@@ -3,36 +3,35 @@ import { getLogger } from "@/logging/logger";
 import { GoogleEvent } from "@/src/events/types/google-event.types";
 import { ErrorSchema } from "@/src/rest/error.schema";
 import { handleZodError } from "@/src/rest/zod-error-handler";
-import { AddEventContract } from "./add-event.contract";
 import { apiLogger } from "@/logging/loggerApps.config";
-import {
-  AddEventSuccessfulSchema,
-  DeleteEventsSuccessfulSchema,
-} from "./add-event.schema";
+import { AddEventSuccessfulSchema } from "./add-event.schema";
 import { isGoogleEvent } from "@/src/events/helpers/json/isGoogleEvent";
 import { isCancelledEvent } from "@/src/events/helpers/json/isCancelledEvent";
 import { isValidGoogleEvent } from "@/src/events/helpers/json/isValidGoogleEvent";
 import { qualifyEvent } from "@/src/events/qualify/qualifyEvent";
-import client from "@/src/events/search/client";
+
 import eventsSchema from "@/src/events/schema/typesense.schema";
 import { TypesenseError } from "typesense/lib/Typesense/Errors";
 import { IndexedEvent } from "@/src/events/types/indexed-event.types";
-import { deleteEvents } from "@/src/events/search/deleteEvents";
 import { eventUuid } from "@/src/events/helpers/uuids/eventUuid";
+import client from "@/src/clients/typesense/search/client";
+import { deleteEvents } from "@/src/clients/typesense/search/deleteEvents";
+import { DeleteEventsSuccessfulSchema } from "./delete-event.schema";
+import { AddOrDeleteEventsContract } from "./events.contract";
 
 const log = getLogger(apiLogger.events.post);
 
 const handler = createNextHandler(
-  AddEventContract,
+  AddOrDeleteEventsContract,
   {
-    "add-event": async ({ body }, res) => {
+    "add-event": async ({ body }: { body: GoogleEvent }) => {
       const incomingEvent = body as GoogleEvent;
 
       // check if the body contains a valid google event including json check
       try {
         isGoogleEvent(incomingEvent);
         isValidGoogleEvent(incomingEvent);
-      } catch (error: any) {
+      } catch (error: unknown) {
         log.warn(
           { body: incomingEvent },
           "Request body is no valid google event."
@@ -42,7 +41,8 @@ const handler = createNextHandler(
           body: {
             status: 400,
             error:
-              error?.message || "Request json is not a valid google event.",
+              (error as Error)?.message ||
+              "Request json is not a valid google event.",
           } as ErrorSchema,
         };
       }
@@ -55,6 +55,7 @@ const handler = createNextHandler(
           const deleteResult = await deleteEvents({
             id: eventId,
           });
+          log.debug({ deleteResult }, "Cancelled event deleted");
           return {
             status: 200,
             body: {
@@ -64,13 +65,15 @@ const handler = createNextHandler(
               data: { id: eventId },
             } as AddEventSuccessfulSchema,
           };
-        } catch (error: any) {
+        } catch (error: unknown) {
           log.error({ error }, "Error deleting cancelled event");
           return {
-            status: (error.status as 404) || 500,
+            status: 500,
             body: {
-              status: error.status || 500,
-              error: error.message || "Error deleting cancelled event",
+              status: (error as TypesenseError).httpStatus || 500,
+              error:
+                (error as TypesenseError).message ||
+                "Error deleting cancelled event",
             } as ErrorSchema,
           };
         }
@@ -80,19 +83,19 @@ const handler = createNextHandler(
 
       try {
         // Process incoming event using the new qualifyEvent function
-        indexableEvent = await qualifyEvent(incomingEvent);
+        indexableEvent = (await qualifyEvent(incomingEvent)) as IndexedEvent;
 
         log.debug({ body: incomingEvent }, "Event is fully qualified");
 
         // Create or update the event in the database
         try {
-          const data: IndexedEvent = await client
+          const data: IndexedEvent = (await client
             .collections(eventsSchema.name)
             .documents()
-            .create(indexableEvent);
+            .create(indexableEvent)) as IndexedEvent;
 
           return {
-            status: 201,
+            status: 200,
             body: {
               status: 201,
               timestamp: new Date().toISOString(),
@@ -103,10 +106,10 @@ const handler = createNextHandler(
         } catch (error) {
           if (error instanceof TypesenseError && error.httpStatus === 409) {
             // Update existing event
-            const data: IndexedEvent = await client
+            const data: IndexedEvent = (await client
               .collections(eventsSchema.name)
-              .documents(indexableEvent.id)
-              .update(indexableEvent);
+              .documents(indexableEvent.id as string)
+              .update(indexableEvent)) as IndexedEvent;
 
             return {
               status: 200,
@@ -121,19 +124,19 @@ const handler = createNextHandler(
           }
           throw error;
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         log.error({ error }, "Error processing event");
 
         return {
           status: 500,
           body: {
             status: 500,
-            error: error?.message ?? "Internal Server Error",
+            error: (error as Error)?.message ?? "Internal Server Error",
           } as ErrorSchema,
         };
       }
     },
-    "delete-events": async ({ body, query }, res) => {
+    "delete-events": async ({ query }: { query: { before?: string } }) => {
       const log = getLogger(apiLogger.events["delete-by-date"]);
 
       try {
@@ -163,13 +166,13 @@ const handler = createNextHandler(
             message: `Successfully deleted events`,
           } as DeleteEventsSuccessfulSchema,
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         log.error({ error }, "Error deleting events");
         return {
           status: 500,
           body: {
             status: 500,
-            error: error?.message || "Error deleting events",
+            error: (error as Error)?.message || "Error deleting events",
           } as ErrorSchema,
         };
       }

@@ -1,28 +1,16 @@
 import { getLogger } from "../../../logging/logger";
 import { clientLogger } from "@/logging/loggerApps.config";
 import { getTranslationApiConfig } from "./helpers/config";
-
-export interface Content {
-  title: string;
-  content: string;
-  tags?: string[];
-}
-
-export interface Translation {
-  language: string; // ISO 639-1
-  title: string;
-  text: string;
-  tags?: string[];
-}
-
-export interface TranslatedContents {
-  translations: Translation[];
-}
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import { TranslatedContents } from "./translation.types";
 
 export const translateContent = async (
   title: string,
   body: string
 ): Promise<TranslatedContents | null> => {
+  "use cache";
+  cacheLife("translation");
+
   const log = getLogger(clientLogger.translation.translate);
 
   // check incoming data

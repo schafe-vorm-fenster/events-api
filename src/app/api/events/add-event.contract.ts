@@ -15,7 +15,6 @@ export const AddEventContract = c.router({
     responses: {
       200: AddEventSuccessfulSchema,
       400: ErrorSchema,
-      422: ErrorSchema,
       500: ErrorSchema,
     },
     headers: z.object({

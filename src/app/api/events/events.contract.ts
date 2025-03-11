@@ -9,6 +9,11 @@ import { SearchEventsByCommunityScopeCategoryContract } from "./search/[communit
 
 const c = initContract();
 
+export const AddOrDeleteEventsContract = c.router({
+  ...AddEventContract,
+  ...DeleteEventContract,
+});
+
 export const EventsContract = c.router({
   ...SingleEventContract,
   ...AddEventsToQueueContract,
