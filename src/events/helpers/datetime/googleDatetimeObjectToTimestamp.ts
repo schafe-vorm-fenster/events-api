@@ -9,5 +9,3 @@ export const googleDatetimeObjectToTimestamp = (
   const date = new Date(datetime.dateTime);
   return date.getTime();
 };
-
-module.exports = { googleDatetimeObjectToTimestamp };

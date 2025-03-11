@@ -9,5 +9,3 @@ export const googleDateObjectToTimestamp = (date: GoogleDateObject): number => {
   const day = parseInt(date.date.substring(8, 10));
   return new Date(Date.UTC(year, month, day, 3, 0, 0, 0)).getTime(); // use 3am utc as default for dates without time
 };
-
-module.exports = { googleDateObjectToTimestamp };
