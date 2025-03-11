@@ -1,4 +1,4 @@
-import { RuralEventScope } from "../../../packages/rural-event-types/dist/ruralEventTypes";
+import { RuralEventScope } from "@/packages/rural-event-types/src/rural-event-scope.types";
 
 export interface ScopeDistance {
   scope: RuralEventScope;
