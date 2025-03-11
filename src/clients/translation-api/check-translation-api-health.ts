@@ -3,21 +3,22 @@ import {
   ServiceStatusSchema,
   UnhealthyServiceInfoSchema,
 } from "@/src/rest/health.schema";
-import { getClassificationApiConfig } from "./helpers/config";
 import { getConfigCacheTTL } from "@/src/config/cache-control-header";
+import { getTranslationApiConfig } from "./helpers/config";
 
 /**
- * Checks the health of the classification API service.
+ * Checks the health of the translation-api service.
  * @returns Promise<ServiceStatusSchema>
  */
-export const checkClassificationApiHealth =
+export const checkTranslationApiHealth =
   async (): Promise<ServiceStatusSchema> => {
     try {
-      const { host, token } = getClassificationApiConfig();
-      const url: string = host;
+      const config = getTranslationApiConfig();
+      const url = new URL("", config.host); // TODO: use /api/health later when it's available
+
       const response = await fetch(url, {
         headers: {
-          "Sheep-Token": token,
+          "Sheep-Token": config.token,
           Accept: "application/json",
         },
         cache: "force-cache",
@@ -35,15 +36,15 @@ export const checkClassificationApiHealth =
       const versionRegex = /"version"\s*:\s*"(\d+\.\d+\.\d+)"/;
       const version = body.match(versionRegex)?.[1];
 
-      if (!response.ok || !body.includes("classification-api")) {
-        throw new Error(`classification-api is not healthy`);
+      if (!response.ok || !body.includes("translation-api")) {
+        throw new Error(`translation-api is not healthy`);
       }
 
       const serviceInfo: HealthyServiceInfoSchema = {
-        status: response.status || 200,
+        status: response.status | 200,
         message: "healthy",
-        name: name || "classification-api",
-        version: version, // TODO: get version from health endpoint
+        name: name || "translation-api",
+        version: version || "unknown",
       };
       return serviceInfo;
     } catch (error) {
@@ -54,7 +55,7 @@ export const checkClassificationApiHealth =
         error: (error instanceof Error
           ? error.message
           : "Unknown error") as string,
-        name: "classification-api",
+        name: "translation-api",
         version: "unknown",
       };
       return serviceInfo;

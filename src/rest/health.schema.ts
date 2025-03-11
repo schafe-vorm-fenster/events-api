@@ -12,7 +12,11 @@ export const ServiceInfoSchema = z.object({
   version: z.string().optional(),
 });
 
-export const HealthyServiceInfoSchema = OkaySchema.merge(ServiceInfoSchema);
+export const HealthyServiceInfoSchema = OkaySchema.merge(
+  ServiceInfoSchema
+).extend({
+  message: z.literal("healthy"),
+});
 export type HealthyServiceInfoSchema = z.infer<typeof HealthyServiceInfoSchema>;
 
 export const UnhealthyServiceInfoSchema = ErrorSchema.merge(ServiceInfoSchema);

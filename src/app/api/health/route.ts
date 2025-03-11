@@ -10,6 +10,7 @@ import {
 } from "@/src/rest/health.schema";
 import { checkGeoApiHealth } from "@/src/clients/geo-api/check-geo-api-health";
 import { checkClassificationApiHealth } from "@/src/clients/classification-api/classification-api-health";
+import { checkTranslationApiHealth } from "@/src/clients/translation-api/check-translation-api-health";
 
 const handler = createNextHandler(
   HealthContract,
@@ -22,6 +23,8 @@ const handler = createNextHandler(
       const geoApiStatus: ServiceStatusSchema = await checkGeoApiHealth();
       const classificationApiStatus: ServiceStatusSchema =
         await checkClassificationApiHealth();
+      const translationApiStatus: ServiceStatusSchema =
+        await checkTranslationApiHealth();
 
       if (status === 200) {
         const apiStatus: HealthyApiStatusSchema = {
@@ -29,7 +32,11 @@ const handler = createNextHandler(
           version: packageJson.version,
           name: packageJson.name,
           description: packageJson.description,
-          services: [geoApiStatus, classificationApiStatus],
+          services: [
+            geoApiStatus,
+            classificationApiStatus,
+            translationApiStatus,
+          ],
         };
         return { status: 200, body: apiStatus };
       }

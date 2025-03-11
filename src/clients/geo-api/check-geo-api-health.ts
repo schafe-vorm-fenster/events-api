@@ -4,6 +4,7 @@ import {
   UnhealthyServiceInfoSchema,
 } from "@/src/rest/health.schema";
 import { getGeoApiConfig } from "./helpers/config";
+import { getConfigCacheTTL } from "@/src/config/cache-control-header";
 
 /**
  * Checks the health of the geo-api service.
@@ -12,15 +13,27 @@ import { getGeoApiConfig } from "./helpers/config";
 export const checkGeoApiHealth = async (): Promise<ServiceStatusSchema> => {
   try {
     const config = getGeoApiConfig();
-    const url = new URL("/api/health", config.host);
+    const url = new URL("", config.host); // TODO: use /api/health later when it's available
 
     const response = await fetch(url, {
       headers: {
         "Sheep-Token": config.token,
         Accept: "application/json",
       },
+      cache: "force-cache",
+      next: {
+        revalidate: getConfigCacheTTL(),
+      },
     });
     const body: string = await response.text();
+
+    // get name from json until we have a health endpoint
+    const nameRegex = /"title"\s*:\s*"([^"]+)"/;
+    const name = body.match(nameRegex)?.[1];
+
+    // get version from json until we have a health endpoint
+    const versionRegex = /"version"\s*:\s*"(\d+\.\d+\.\d+)"/;
+    const version = body.match(versionRegex)?.[1];
 
     if (!response.ok || !body.includes("geo-api")) {
       throw new Error(`geo-api is not healthy`);
@@ -28,9 +41,9 @@ export const checkGeoApiHealth = async (): Promise<ServiceStatusSchema> => {
 
     const serviceInfo: HealthyServiceInfoSchema = {
       status: response.status | 200,
-      message: "geo-api is healthy",
-      name: "geo-api",
-      version: "1.0.0", // TODO: get version from response
+      message: "healthy",
+      name: name ?? "geo-api",
+      version: version ?? "unknown",
     };
     return serviceInfo;
   } catch (error) {
