@@ -1,3 +1,5 @@
+import { describe, expect, test } from "vitest";
+
 import { unknownToData } from "./unknownToData";
 
 describe("unknownToData", () => {

@@ -1,3 +1,5 @@
+import { describe, expect, test } from "vitest";
+
 import { removeUrlFromText, urlFromText } from "./urlFromText";
 
 describe("should return a valid url from a plain text", () => {

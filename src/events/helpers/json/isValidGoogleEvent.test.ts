@@ -1,3 +1,5 @@
+import { describe, expect, test } from "vitest";
+
 import { calendar_v3 } from "@googleapis/calendar";
 import Schema$Event = calendar_v3.Schema$Event;
 import { isValidGoogleEvent } from "./isValidGoogleEvent";

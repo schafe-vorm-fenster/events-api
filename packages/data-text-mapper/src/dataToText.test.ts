@@ -1,3 +1,5 @@
+import { describe, expect, test } from "vitest";
+
 import { dataToText } from "./dataToText";
 import { textToData } from "./textToData";
 import { TextWithData } from "./types";

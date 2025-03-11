@@ -21,9 +21,9 @@
     "dev": "next dev --turbo -p 8000",
     "lint": "next lint",
     "start": "next start -p 8000",
-    "test": "jest --maxWorkers=25%",
-    "test:ci": "jest --runInBand --ci",
-    "test:watch": "jest --watch --maxWorkers=25%"
+    "test": "vitest run",
+    "test:ci": "vitest run --coverage",
+    "test:watch": "vitest watch"
   },
   "dependencies": {
     "@cospired/i18n-iso-languages": "^4.0.1",
@@ -49,17 +49,16 @@
     "@types/debug": "^4.1.12",
     "@types/gapi.calendar": "^3.0.6",
     "@types/http-errors": "^2.0.1",
-    "@types/jest": "^29.4.0",
     "@types/node": "^22.13.10",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
+    "@vitest/coverage-v8": "^3.0.8",
     "eslint": "^9.22.0",
     "eslint-config-next": "^15.2.2-canary.6",
     "eslint-plugin-prettier": "^5.2.3",
-    "jest": "^29.4.3",
     "prettier": "^3.5.3",
-    "ts-jest": "^29.0.5",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "vitest": "^3.0.8"
   },
   "engines": {
     "node": "22.x"

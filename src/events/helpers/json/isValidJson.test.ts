@@ -1,3 +1,5 @@
+import { describe, expect, test } from "vitest";
+
 import { isValidJson } from "./isValidJson";
 
 describe("should check any input if it is a valid json object", () => {

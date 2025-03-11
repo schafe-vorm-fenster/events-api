@@ -1,3 +1,5 @@
+import { describe, expect, test } from "vitest";
+
 import { removeScopesFromText, scopesFromText } from "./scopesFromText";
 
 describe("should return scopes by @ from plain text", () => {

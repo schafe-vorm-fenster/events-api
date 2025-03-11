@@ -1,3 +1,5 @@
+import { describe, expect, test } from "vitest";
+
 import { removeTagsFromText, tagsFromText } from "./tagsFromText";
 
 describe("should return tags by # from plain text", () => {

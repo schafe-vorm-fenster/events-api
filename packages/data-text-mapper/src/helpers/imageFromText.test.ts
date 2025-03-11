@@ -1,3 +1,5 @@
+import { describe, expect, test } from "vitest";
+
 import { removeImageFromText, imageFromText } from "./imageFromText";
 
 describe("should return a valid iage url from a plain text", () => {

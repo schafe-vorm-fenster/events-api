@@ -1,3 +1,5 @@
+import { describe, expect, test } from "vitest";
+
 import { PostEventRequestBody } from "../../events.types";
 import { calendarUuid } from "./calendarUuid";
 

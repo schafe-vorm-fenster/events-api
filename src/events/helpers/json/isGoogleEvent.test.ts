@@ -1,3 +1,5 @@
+import { describe, expect, test } from "vitest";
+
 import { isGoogleEvent } from "./isGoogleEvent";
 
 describe("isGoogleEvent", () => {

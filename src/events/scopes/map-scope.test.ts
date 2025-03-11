@@ -1,3 +1,5 @@
+import { describe, expect, test } from "vitest";
+
 import { mapScope, defaultScope } from "./map-scope";
 import { scopeSynonyms } from "./scope-synonyms";
 

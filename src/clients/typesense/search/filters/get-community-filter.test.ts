@@ -1,3 +1,5 @@
+import { describe, expect, it } from "vitest";
+
 import { getCommunityFilter } from "./get-community-filter";
 
 describe("getCommunityFilter", () => {

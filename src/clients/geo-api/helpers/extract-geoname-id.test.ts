@@ -1,3 +1,5 @@
+import { describe, expect, test } from "vitest";
+
 import { extractGeonameId } from "./extract-geoname-id";
 
 describe("extractGeonameId", () => {

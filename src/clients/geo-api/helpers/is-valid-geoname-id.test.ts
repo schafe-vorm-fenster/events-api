@@ -1,3 +1,5 @@
+import { describe, expect, test } from "vitest";
+
 import { isValidGeonameId } from "./is-valid-geoname-id";
 
 describe("should check if a string is a valid geoname id", () => {

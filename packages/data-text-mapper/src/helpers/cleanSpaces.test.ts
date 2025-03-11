@@ -1,3 +1,5 @@
+import { describe, expect, test } from "vitest";
+
 import { cleanSpaces } from "./cleanSpaces";
 
 describe("should clean plain text by reducing multiple spaces and breaks", () => {

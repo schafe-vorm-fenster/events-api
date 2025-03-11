@@ -1,3 +1,5 @@
+import { describe, expect, test } from "vitest";
+
 import { containsHtml } from "./containsHtml";
 
 describe("tests if any html is included in a string", () => {
