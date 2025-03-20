@@ -40,11 +40,11 @@ describe("Cache Control Header", () => {
       );
     });
 
-    it("should use default TTL of 300 when CONFIG_CACHE_TTL is not set", () => {
+    it("should use default TTL of 5 when CONFIG_CACHE_TTL is not set", () => {
       delete process.env.CONFIG_CACHE_TTL;
       const header = getConfigCacheControlHeader();
       expect(header).toBe(
-        "public, max-age=300, s-maxage=300, stale-while-revalidate=3000, stale-if-error=3000"
+        "public, max-age=5, s-maxage=5, stale-while-revalidate=50, stale-if-error=50"
       );
     });
   });
