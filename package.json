@@ -34,7 +34,7 @@
     "add": "^2.0.6",
     "debug": "^4.4.0",
     "http-errors": "^2.0.0",
-    "next": "^15.3.0-canary.15",
+    "next": "15.3.0-canary.10",
     "pino": "^9.6.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
