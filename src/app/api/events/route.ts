@@ -1,9 +1,9 @@
 import { createNextHandler } from "@ts-rest/serverless/next";
-import { getLogger } from "@/logging/logger";
+import { getLogger } from "@/src/logging/logger";
 import { GoogleEvent } from "@/src/events/types/google-event.types";
 import { ErrorSchema } from "@/src/rest/error.schema";
 import { handleZodError } from "@/src/rest/zod-error-handler";
-import { apiLogger } from "@/logging/loggerApps.config";
+import { ApiEvents } from "@/src/logging/loggerApps.config";
 import { AddEventSuccessfulSchema } from "./add-event.schema";
 import { isGoogleEvent } from "@/src/events/helpers/json/isGoogleEvent";
 import { isCancelledEvent } from "@/src/events/helpers/json/isCancelledEvent";
@@ -19,7 +19,7 @@ import { deleteEvents } from "@/src/clients/typesense/search/deleteEvents";
 import { DeleteEventsSuccessfulSchema } from "./delete-event.schema";
 import { AddOrDeleteEventsContract } from "./events.contract";
 
-const log = getLogger(apiLogger.events.post);
+const log = getLogger(ApiEvents.post);
 
 const handler = createNextHandler(
   AddOrDeleteEventsContract,
@@ -137,7 +137,7 @@ const handler = createNextHandler(
       }
     },
     "delete-events": async ({ query }: { query: { before?: string } }) => {
-      const log = getLogger(apiLogger.events["delete-by-date"]);
+      const log = getLogger(ApiEvents["delete-by-date"]);
 
       try {
         const result = await deleteEvents({

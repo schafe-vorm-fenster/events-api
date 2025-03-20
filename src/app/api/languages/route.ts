@@ -1,14 +1,15 @@
 import { createNextHandler } from "@ts-rest/serverless/next";
 import { LanguagesContract } from "./languages.contract";
-import { getLogger } from "@/logging/logger";
+import { getLogger } from "@/src/logging/logger";
 import { Language } from "@/src/events/localization/types/languages.types";
-import { apiLogger } from "@/logging/loggerApps.config";
+
 import { LanguageList } from "./languages.schema";
 import { getLanguageName } from "@/src/events/localization/helpers/get-lanuage-name";
 import { handleZodError } from "@/src/rest/zod-error-handler";
 import { getConfigCacheControlHeader } from "@/src/config/cache-control-header";
+import { ApiLanguages } from "@/src/logging/loggerApps.config";
 
-const log = getLogger(apiLogger.languages.get);
+const log = getLogger(ApiLanguages.get);
 
 const handler = createNextHandler(
   LanguagesContract,

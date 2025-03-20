@@ -1,4 +1,4 @@
-import { clientLogger } from "@/logging/loggerApps.config";
+import { ClientClassification } from "@/src/logging/loggerApps.config";
 import { getApiConfig, getApiHost, getApiToken } from "../../helpers/config";
 
 // Environment variable names for classification API
@@ -10,10 +10,7 @@ const CLASSIFICATION_API_TOKEN_ENV = "SVF_CLASSIFICATIONAPI_TOKEN";
  * @returns The API host URL or throws an error if not configured
  */
 export const getClassificationApiHost = (): string => {
-  return getApiHost(
-    CLASSIFICATION_API_HOST_ENV,
-    clientLogger.classification.config
-  );
+  return getApiHost(CLASSIFICATION_API_HOST_ENV, ClientClassification.config);
 };
 
 /**
@@ -21,10 +18,7 @@ export const getClassificationApiHost = (): string => {
  * @returns The API token or throws an error if not configured
  */
 export const getClassificationApiToken = (): string => {
-  return getApiToken(
-    CLASSIFICATION_API_TOKEN_ENV,
-    clientLogger.classification.config
-  );
+  return getApiToken(CLASSIFICATION_API_TOKEN_ENV, ClientClassification.config);
 };
 
 /**
@@ -36,6 +30,6 @@ export const getClassificationApiConfig = () => {
   return getApiConfig(
     CLASSIFICATION_API_HOST_ENV,
     CLASSIFICATION_API_TOKEN_ENV,
-    clientLogger.classification.config
+    ClientClassification.config
   );
 };

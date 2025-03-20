@@ -1,6 +1,6 @@
 import { createNextHandler } from "@ts-rest/serverless/next";
-import { getLogger } from "@/logging/logger";
-import { apiLogger } from "@/logging/loggerApps.config";
+import { getLogger } from "@/src/logging/logger";
+import { ApiEvents } from "@/src/logging/loggerApps.config";
 import { ErrorSchema } from "@/src/rest/error.schema";
 import { handleZodError } from "@/src/rest/zod-error-handler";
 import { SearchEventsByCommunityScopeCategoryContract } from "./search-events-by-community-scope-category.contract";
@@ -19,7 +19,7 @@ import { ISO8601 } from "@/src/rest/iso8601.types";
 import { Language } from "@/src/events/localization/types/languages.types";
 import { getDataCacheControlHeader } from "@/src/config/cache-control-header";
 
-const log = getLogger(apiLogger.events.search);
+const log = getLogger(ApiEvents.search);
 
 const handler = createNextHandler(
   SearchEventsByCommunityScopeCategoryContract,

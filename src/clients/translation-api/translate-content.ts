@@ -1,8 +1,9 @@
-import { getLogger } from "../../../logging/logger";
-import { clientLogger } from "@/logging/loggerApps.config";
+import { getLogger } from "../../logging/logger";
+
 import { getTranslationApiConfig } from "./helpers/config";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
 import { TranslatedContents } from "./translation.types";
+import { ClientTranslation } from "@/src/logging/loggerApps.config";
 
 export const translateContent = async (
   title: string,
@@ -11,7 +12,7 @@ export const translateContent = async (
   "use cache";
   cacheLife("translation");
 
-  const log = getLogger(clientLogger.translation.translate);
+  const log = getLogger(ClientTranslation.translate);
 
   // check incoming data
   if (!title || title.length === 0) {

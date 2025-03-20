@@ -8,7 +8,6 @@ interface Property {
 
 const requiredProperties: Property[] = [
   { key: "id" },
-  { key: "kind", value: "calendar#event" },
   { key: "status", value: "cancelled" },
   { key: "updated" },
 ];

@@ -9,7 +9,6 @@ interface Property {
 // TODO: add empty field checks by zod
 const requiredProperties: Property[] = [
   { key: "id" },
-  { key: "kind", value: "calendar#event" },
   { key: "summary" },
   { key: "start" },
   { key: "location" },

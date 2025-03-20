@@ -1,7 +1,6 @@
 import { createNextHandler } from "@ts-rest/serverless/next";
-import { getLogger } from "@/logging/logger";
+import { getLogger } from "@/src/logging/logger";
 import { handleZodError } from "@/src/rest/zod-error-handler";
-import { apiLogger } from "@/logging/loggerApps.config";
 
 import { HttpError } from "http-errors";
 import { ErrorSchema } from "@/src/rest/error.schema";
@@ -12,8 +11,9 @@ import {
 import { SingleEventContract } from "./single-event.contract";
 import { getEvent } from "@/src/clients/typesense/search/get-event";
 import { deleteEvents } from "@/src/clients/typesense/search/deleteEvents";
+import { ApiEvents } from "@/src/logging/loggerApps.config";
 
-const log = getLogger(apiLogger.events.post);
+const log = getLogger(ApiEvents.post);
 
 const handler = createNextHandler(
   SingleEventContract,

@@ -1,6 +1,6 @@
 import { GeoLocation } from "./types/geo-location.types";
-import { getLogger } from "../../../logging/logger";
-import { clientLogger } from "@/logging/loggerApps.config";
+import { getLogger } from "../../logging/logger";
+import { ClientGeo } from "@/src/logging/loggerApps.config";
 import { getGeoApiConfig } from "./helpers/config";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
 
@@ -17,7 +17,7 @@ export const geoCodeLocation = async (
   "use cache";
   cacheLife("geo");
 
-  const log = getLogger(clientLogger.geo.findbyaddress);
+  const log = getLogger(ClientGeo.findbyaddress);
   log.debug({ location }, "geocoding location");
 
   try {

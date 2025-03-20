@@ -1,6 +1,6 @@
 import { createNextHandler } from "@ts-rest/serverless/next";
-import { getLogger } from "@/logging/logger";
-import { apiLogger } from "@/logging/loggerApps.config";
+import { getLogger } from "@/src/logging/logger";
+import { ApiEvents } from "@/src/logging/loggerApps.config";
 import { ErrorSchema } from "@/src/rest/error.schema";
 import { handleZodError } from "@/src/rest/zod-error-handler";
 import { SearchEventsByCommunityScopeContract } from "./search-events-by-community-scope.contract";
@@ -18,7 +18,7 @@ import { extractGeonameId } from "@/src/clients/geo-api/helpers/extract-geoname-
 import { getCommunityCenter } from "@/src/clients/typesense/search/helpers/get-community-center";
 import { getDataCacheControlHeader } from "@/src/config/cache-control-header";
 
-const log = getLogger(apiLogger.events.search);
+const log = getLogger(ApiEvents.search);
 
 const handler = createNextHandler(
   SearchEventsByCommunityScopeContract,

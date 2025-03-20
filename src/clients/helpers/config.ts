@@ -1,4 +1,4 @@
-import { getLogger } from "../../../logging/logger";
+import { getLogger } from "../../logging/logger";
 
 /**
  * Interface defining the return type of API configuration

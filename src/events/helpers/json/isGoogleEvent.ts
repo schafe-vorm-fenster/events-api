@@ -7,11 +7,7 @@ interface Property {
   value?: unknown;
 }
 
-const requiredProperties: Property[] = [
-  { key: "id" },
-  { key: "kind", value: "calendar#event" },
-  { key: "start" },
-];
+const requiredProperties: Property[] = [{ key: "id" }, { key: "start" }];
 
 /**
  * Check if the input is a google event.

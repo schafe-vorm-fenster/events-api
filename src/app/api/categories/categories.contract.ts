@@ -10,9 +10,9 @@ export const CategoriesContract = c.router({
     path: "/api/categories",
     // add query param for "lang" to filter by language
     query: z.object({
-      lang: LanguageSchema.optional()
+      language: LanguageSchema.optional()
         .default("de")
-        .describe("Language code to filter descriptions."),
+        .describe("Language code to filter labels."),
       examples: z
         .enum(["true", "false"])
         .transform((val) => {

@@ -1,6 +1,6 @@
 import { createNextHandler } from "@ts-rest/serverless/next";
-import { getLogger } from "@/logging/logger";
-import { apiLogger } from "@/logging/loggerApps.config";
+import { getLogger } from "@/src/logging/logger";
+import { ApiSchema } from "@/src/logging/loggerApps.config";
 import { SchemaContract } from "./schema.contract";
 import { HttpError } from "http-errors";
 
@@ -19,7 +19,7 @@ const handler = createNextHandler(
   SchemaContract,
   {
     "get-schema": async () => {
-      const log = getLogger(apiLogger.schema.get);
+      const log = getLogger(ApiSchema.get);
 
       try {
         const data = await client.collections(eventsSchema.name).retrieve();
@@ -53,7 +53,7 @@ const handler = createNextHandler(
       }
     },
     "create-schema": async () => {
-      const log = getLogger(apiLogger.schema.create);
+      const log = getLogger(ApiSchema.create);
 
       try {
         const data = await client.collections().create(eventsSchema);
@@ -87,7 +87,7 @@ const handler = createNextHandler(
       }
     },
     "delete-schema": async () => {
-      const log = getLogger(apiLogger.schema.delete);
+      const log = getLogger(ApiSchema.delete);
 
       try {
         const data = await client.collections(eventsSchema.name).delete();

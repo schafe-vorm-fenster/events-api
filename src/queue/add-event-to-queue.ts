@@ -1,8 +1,8 @@
 import { CloudTasksClient } from "@google-cloud/tasks";
 import { GoogleEvent } from "../events/types/google-event.types";
 import { Task } from "./queue.types";
-import { getLogger } from "@/logging/logger";
-import { clientLogger } from "@/logging/loggerApps.config";
+import { getLogger } from "@/src/logging/logger";
+import { ClientGoogleTasks } from "@/src/logging/loggerApps.config";
 
 // Instantiate a Cloud Tasks client.
 const client = new CloudTasksClient({
@@ -16,7 +16,7 @@ const client = new CloudTasksClient({
  * Adds a new task to a Google Cloud Tasks queue.
  */
 export async function addEventToQueue(event: GoogleEvent): Promise<Task> {
-  const log = getLogger(clientLogger.googletasks.add);
+  const log = getLogger(ClientGoogleTasks.add);
 
   if (!event) throw new Error("Event is required");
 

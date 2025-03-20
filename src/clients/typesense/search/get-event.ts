@@ -1,11 +1,11 @@
-import { getLogger } from "@/logging/logger";
-import { clientLogger } from "@/logging/loggerApps.config";
+import { getLogger } from "@/src/logging/logger";
+import { ClientTypesense } from "@/src/logging/loggerApps.config";
 import createError from "http-errors";
 import client from "./client";
 import eventsSchema from "@/src/events/schema/typesense.schema";
 import { GetEventSuccessfulSchema } from "@/src/app/api/events/[id]/single-event.schema";
 
-const log = getLogger(clientLogger.typesense.get);
+const log = getLogger(ClientTypesense.get);
 
 export async function getEvent(id: string): Promise<GetEventSuccessfulSchema> {
   try {

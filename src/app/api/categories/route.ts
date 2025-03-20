@@ -1,18 +1,19 @@
 import { createNextHandler } from "@ts-rest/serverless/next";
 import { CategoriesContract } from "./categories.contract";
-import { getLogger } from "@/logging/logger";
+import { getLogger } from "@/src/logging/logger";
 import { ruralEventCategories } from "@/packages/rural-event-types/src/rural-event-category";
 import { RuralEventCategoryList } from "@/packages/rural-event-types/src/rural-event-category.types";
-import { apiLogger } from "@/logging/loggerApps.config";
-import { getConfigCacheControlHeader } from "@/src/config/cache-control-header";
 
-const log = getLogger(apiLogger.categories.get);
+import { getConfigCacheControlHeader } from "@/src/config/cache-control-header";
+import { ApiCategories } from "@/src/logging/loggerApps.config";
+
+const log = getLogger(ApiCategories.get);
 
 const handler = createNextHandler(
   CategoriesContract,
   {
     getCategories: async ({ query }, res) => {
-      const lang: string | undefined = query?.lang ?? undefined;
+      const lang: string | undefined = query?.language ?? undefined;
       const examples: boolean | undefined = query?.examples ?? undefined;
 
       log.info({ lang, examples }, `get categories`);

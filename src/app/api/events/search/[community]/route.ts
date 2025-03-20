@@ -1,7 +1,7 @@
 import { createNextHandler } from "@ts-rest/serverless/next";
 import { SearchEventsByCommunityContract } from "./search-events-by-community.contract";
-import { getLogger } from "@/logging/logger";
-import { apiLogger } from "@/logging/loggerApps.config";
+import { getLogger } from "@/src/logging/logger";
+import { ApiEvents } from "@/src/logging/loggerApps.config";
 import { ErrorSchema } from "@/src/rest/error.schema";
 import { handleZodError } from "@/src/rest/zod-error-handler";
 import { SearchEventsSuccessfulSchema } from "./search-events.schema";
@@ -17,7 +17,7 @@ import { HttpError } from "http-errors";
 import { Language } from "@/src/events/localization/types/languages.types";
 import { getDataCacheControlHeader } from "@/src/config/cache-control-header";
 
-const log = getLogger(apiLogger.events.search);
+const log = getLogger(ApiEvents.search);
 
 const handler = createNextHandler(
   SearchEventsByCommunityContract,
@@ -41,12 +41,10 @@ const handler = createNextHandler(
         extractGeonameId(community)
       );
 
-      // Set cache control header
-      res.responseHeaders.set("Cache-Control", getDataCacheControlHeader());
-
       return await searchEvents({
         center: communityCenter,
         scope: "region", // TODO: check which should be the default scope if not set
+        containTighterScopes: true,
         after: after,
         before: before,
         language: language,
@@ -56,6 +54,9 @@ const handler = createNextHandler(
           //   .status(200)
           //   .setHeader("Cache-Control", CacheControlHeader)
           //   .json(result);
+
+          // Set cache control header
+          res.responseHeaders.set("Cache-Control", getDataCacheControlHeader());
 
           return {
             status: 200 as const,

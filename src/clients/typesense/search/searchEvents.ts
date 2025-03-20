@@ -1,5 +1,5 @@
-import { getLogger } from "@/logging/logger";
-import { apiLogger } from "@/logging/loggerApps.config";
+import { getLogger } from "@/src/logging/logger";
+import { ApiEvents } from "@/src/logging/loggerApps.config";
 import { RuralEventCategoryId } from "@/packages/rural-event-types/src/rural-event-category.types";
 import { RuralEventScope } from "@/packages/rural-event-types/src/rural-event-scope.types";
 import { IndexedEvent } from "@/src/events/types/indexed-event.types";
@@ -45,7 +45,7 @@ export interface SearchEventsResult {
 export const searchEvents = async (
   query: SearchEventsQuery
 ): Promise<SearchEventsResult> => {
-  const log = getLogger(apiLogger.events.search);
+  const log = getLogger(ApiEvents.search);
   log.debug("query: ", query);
 
   // validate geo center

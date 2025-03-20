@@ -1,12 +1,10 @@
 import createHttpError from "http-errors";
 import client from "./client";
-
 import { TypesenseError } from "typesense/lib/Typesense/Errors";
-
-import { apiLogger } from "@/logging/loggerApps.config";
-import { getLogger } from "@/logging/logger";
+import { getLogger } from "@/src/logging/logger";
 import eventsSchema from "@/src/events/schema/typesense.schema";
 import { getEndedBeforeFilter } from "./filters/get-ended-before-filter";
+import { ApiEvents } from "@/src/logging/loggerApps.config";
 
 export interface DeleteEventsQuery {
   id?: string;
@@ -21,7 +19,7 @@ export interface DeleteEventsResult {
 export const deleteEvents = async (
   query: DeleteEventsQuery
 ): Promise<DeleteEventsResult> => {
-  const log = getLogger(apiLogger.events.delete);
+  const log = getLogger(ApiEvents.delete);
 
   // validate params
   if (!query.id && !query.ids && !query.before) {

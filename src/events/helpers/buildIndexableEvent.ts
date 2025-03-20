@@ -1,4 +1,4 @@
-import { getLogger } from "../../../logging/logger";
+import { getLogger } from "../../logging/logger";
 import { RuralEventClassification } from "../../../packages/rural-event-types/src/rural-event-classification.types";
 import { RuralEventScope } from "../../../packages/rural-event-types/src/rural-event-scope.types";
 import {

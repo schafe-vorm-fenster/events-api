@@ -1,5 +1,5 @@
 import { unstable_cacheLife as cacheLife } from "next/cache";
-import { getLogger } from "../../../logging/logger";
+import { getLogger } from "../../logging/logger";
 import { RuralEventClassification } from "../../../packages/rural-event-types/src/rural-event-classification.types";
 import { classifyTags } from "./classify-tags";
 import { getClassificationApiConfig } from "./helpers/config";
