@@ -11,6 +11,7 @@ import {
 import { checkGeoApiHealth } from "@/src/clients/geo-api/check-geo-api-health";
 import { checkClassificationApiHealth } from "@/src/clients/classification-api/classification-api-health";
 import { checkTranslationApiHealth } from "@/src/clients/translation-api/check-translation-api-health";
+import { checkTypesenseHealth } from "@/src/clients/typesense/check-typesense-health";
 
 const handler = createNextHandler(
   HealthContract,
@@ -25,6 +26,8 @@ const handler = createNextHandler(
         await checkClassificationApiHealth();
       const translationApiStatus: ServiceStatusSchema =
         await checkTranslationApiHealth();
+      const searchEngineStatus: ServiceStatusSchema =
+        await checkTypesenseHealth();
 
       if (status === 200) {
         const apiStatus: HealthyApiStatusSchema = {
@@ -36,6 +39,7 @@ const handler = createNextHandler(
             geoApiStatus,
             classificationApiStatus,
             translationApiStatus,
+            searchEngineStatus,
           ],
         };
         return { status: 200, body: apiStatus };
