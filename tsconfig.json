@@ -24,15 +24,5 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  // "ts-node": {
-  //   "transpileOnly": true,
-  //   "files": true,
-  //   "compilerOptions": {
-  //     "module": "CommonJS"
-  //   },
-  //   "paths": {
-  //     "@/*": ["./*"]
-  //   }
-  // },
   "exclude": ["node_modules", "**./*.json"]
 }
