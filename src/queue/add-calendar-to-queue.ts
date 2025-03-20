@@ -1,8 +1,8 @@
 import { CloudTasksClient } from "@google-cloud/tasks";
-import { GoogleEvent } from "../events/types/google-event.types";
-import { EventQueueTask } from "./queue.types";
+import { CalendarQueueTask } from "./queue.types";
 import { getLogger } from "@/src/logging/logger";
 import { ClientGoogleTasks } from "@/src/logging/loggerApps.config";
+import { SingleCalendarUpdateBody } from "../app/api/update/calendars/single/trigger-update-calendar.schema";
 
 // Instantiate a Cloud Tasks client.
 const client = new CloudTasksClient({
@@ -15,19 +15,30 @@ const client = new CloudTasksClient({
 /**
  * Adds a new task to a Google Cloud Tasks queue.
  */
-export async function addEventToQueue(
-  event: GoogleEvent
-): Promise<EventQueueTask> {
+export async function addCalendarToQueue(
+  calendarId: string,
+  after?: string,
+  before?: string,
+  updatedSince?: string
+): Promise<CalendarQueueTask> {
   const log = getLogger(ClientGoogleTasks.add);
 
-  if (!event) throw new Error("Event is required");
+  if (!calendarId) throw new Error("Calendar id is required");
+
+  // build task body
+  const taskBody: SingleCalendarUpdateBody = {
+    id: calendarId,
+    after: after,
+    before: before,
+    updatedSince: updatedSince,
+  };
 
   // define constants by env vars
   const projectId: string = process.env.GOOGLEAPI_PROJECT_ID!;
   const location: string = process.env.GOOGLEAPI_LOCATION!;
-  const queue: string = process.env.GOOGLEAPI_TASKS_EVENTS_QUEUE_NAME!;
+  const queue: string = process.env.GOOGLEAPI_TASKS_CALENDARS_QUEUE_NAME!;
   const url: string = new URL(
-    "/api/events",
+    "/api/update/calendars/single",
     process.env.SVF_EVENTSAPI_URL
   ).toString();
 
@@ -48,7 +59,7 @@ export async function addEventToQueue(
   };
 
   // If a payload is provided, encode it to base64.
-  const body = Buffer.from(JSON.stringify(event)).toString("base64");
+  const body = Buffer.from(JSON.stringify(taskBody)).toString("base64");
   task.httpRequest.body = body;
 
   // Create the task in the specified queue.
@@ -58,9 +69,9 @@ export async function addEventToQueue(
     // get last three segments from "projects/schafe-vorm-fenster/locations/europe-west3/queues/incoming-events/tasks/3436979078631171913" so that it becomes "/incoming-events/tasks/9166206631063672756"
     const queueTaskId = response.name!.split("/").slice(-3).join("/");
 
-    const createTaskResult: EventQueueTask = {
+    const createTaskResult: CalendarQueueTask = {
       queueTaskId: queueTaskId,
-      eventID: event.id!,
+      calendarID: calendarId,
     };
     log.info("Task created", createTaskResult);
 

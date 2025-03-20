@@ -6,15 +6,17 @@ import { ApiUpdate } from "@/src/logging/loggerApps.config";
 import { TriggerUpdateCalendarContract } from "./trigger-update-calendar.contract";
 import { TriggerUpdateCalendarSuccessfulSchema } from "./trigger-update-calendar.schema";
 import { ISO8601 } from "@/src/rest/iso8601.types";
+import { getCalendarEvents } from "@/src/clients/calendar-api/get-calendar-events";
+import { addEventToQueue } from "@/src/queue/add-event-to-queue";
 
 const log = getLogger(ApiUpdate.calendar);
 
 const handler = createNextHandler(
   TriggerUpdateCalendarContract,
   {
-    "trigger-update-calendar": async ({ params, query }) => {
+    "trigger-update-calendar": async ({ body }) => {
       try {
-        log.debug({ params, query }, "Trigger update for all calendars");
+        log.debug({ body }, "Trigger update for all calendars");
 
         // today 0am
         const today = new Date(new Date().setHours(0, 0, 0, 0)).toISOString();
@@ -26,19 +28,30 @@ const handler = createNextHandler(
             0,
             0
           )
-        );
+        ).toISOString();
 
         // set defaults to update all events from today to 90 days in the future
-        const after: ISO8601 = (query?.after as ISO8601) ?? today;
-        const before: ISO8601 = (query?.before as ISO8601) ?? futureDate;
+        const after: ISO8601 = (body?.after as ISO8601) ?? today;
+        const before: ISO8601 = (body?.before as ISO8601) ?? futureDate;
         const updatedSince: ISO8601 =
-          (query?.updatedSince as ISO8601) ?? undefined;
+          (body?.updatedSince as ISO8601) ?? undefined;
 
-        /**
-         * TODO:
-         * - fetch all events for the given calendar from calendar-api
-         * - for each create a google task for the bulk event import
-         */
+        // get all events for the given calendar
+        const events: object[] = await getCalendarEvents(
+          body.id,
+          after,
+          before,
+          updatedSince
+        );
+
+        // push all events to the queue
+        // this is done in parallel to speed up the process.
+        // as result, we get an array of tasks incl. the task id.
+        const tasks = await Promise.all(
+          events.map(async (event) => {
+            return await addEventToQueue(event);
+          })
+        );
 
         const timestamp = new Date().toISOString();
 
@@ -46,13 +59,13 @@ const handler = createNextHandler(
           status: 200,
           body: {
             status: 200,
-            results: 0,
+            results: tasks.length,
             timestamp: timestamp,
-            data: [],
+            data: tasks,
           } as TriggerUpdateCalendarSuccessfulSchema,
         };
       } catch (error) {
-        log.error({ error }, "Error adding events");
+        log.error({ error }, "Error adding events to queue");
 
         return {
           status: 500,

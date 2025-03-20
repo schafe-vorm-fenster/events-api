@@ -1,20 +1,18 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
 import { ErrorSchema } from "@/src/rest/error.schema";
-import { TriggerUpdateCalendarSuccessfulSchema } from "./trigger-update-calendar.schema";
-import { UpdateParamsSchema } from "../../update-params.schema";
+import {
+  SingleCalendarUpdateBodySchema,
+  TriggerUpdateCalendarSuccessfulSchema,
+} from "./trigger-update-calendar.schema";
 
 const c = initContract();
 
 export const TriggerUpdateCalendarContract = c.router({
   "trigger-update-calendar": {
     method: "POST",
-    path: "/api/update/calendars/:id",
-    pathParams: z.object({
-      id: z.string(),
-    }),
-    query: UpdateParamsSchema,
-    body: z.object({}).optional(),
+    path: "/api/update/calendars/single",
+    body: SingleCalendarUpdateBodySchema,
     responses: {
       200: TriggerUpdateCalendarSuccessfulSchema,
       400: ErrorSchema,
