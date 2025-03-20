@@ -1,4 +1,7 @@
-import { LanguageSchema } from "@/src/events/localization/types/languages.types";
+import {
+  CountrySchema,
+  LanguageSchema,
+} from "@/src/events/localization/types/languages.types";
 import { ISO8601Schema } from "@/src/rest/iso8601.types";
 import { z } from "zod";
 
@@ -12,4 +15,7 @@ export const SearchEventsQuerySchema = z.object({
   language: LanguageSchema.optional()
     .default("de")
     .describe("Language to receive events in"),
+  country: CountrySchema.optional()
+    .default("DE")
+    .describe("Country to show location name for"),
 });

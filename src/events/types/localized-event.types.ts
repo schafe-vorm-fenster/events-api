@@ -3,18 +3,10 @@ import { OccurrenceSchema } from "./occurrence.types";
 import { RuralEventScope } from "@/packages/rural-event-types/src/rural-event-scope.types";
 import { GeonameIdSchema } from "./geonames.types";
 
-export const IndexedEventSchema = z.object({
+export const LocalizedEventSchema = z.object({
   id: z.string().optional(),
-  "summary.de": z.string(),
-  "summary.en": z.string(),
-  "summary.pl": z.string(),
-  "summary.uk": z.string(),
-  "summary.ru": z.string(),
-  "description.de": z.string(),
-  "description.en": z.string(),
-  "description.pl": z.string(),
-  "description.uk": z.string(),
-  "description.ru": z.string(),
+  summary: z.string(),
+  description: z.string(),
   link: z.string(),
   image: z.string(),
   "image.exists": z.boolean(),
@@ -28,22 +20,22 @@ export const IndexedEventSchema = z.object({
   occurrence: OccurrenceSchema,
   "series.id": z.string(),
   "location.raw": z.string(),
-  "location.name.de": z.string(),
-  "location.localname.de": z.string(),
+  "location.name": z.string(),
+  "location.localname": z.string(),
   "location.address": z.string(),
   "location.geopoint": z.any(),
   scope: RuralEventScope,
   "community.id": GeonameIdSchema,
   "community.geopoint": z.any(),
-  "community.name.de": z.string(),
+  "community.name": z.string(),
   "municipality.id": GeonameIdSchema,
-  "municipality.name.de": z.string(),
+  "municipality.name": z.string(),
   "county.id": GeonameIdSchema,
-  "county.name.de": z.string(),
+  "county.name": z.string(),
   "state.id": GeonameIdSchema,
-  "state.name.de": z.string(),
+  "state.name": z.string(),
   "country.id": z.string(),
-  "country.name.de": z.string(),
+  "country.name": z.string(),
   "organizer.id": z.string(),
   "organizer.name": z.string(),
   "calendar.id": z.string(),
@@ -52,4 +44,4 @@ export const IndexedEventSchema = z.object({
   changed: z.number(),
   deleted: z.number(),
 });
-export type IndexedEvent = z.infer<typeof IndexedEventSchema>;
+export type LocalizedEvent = z.infer<typeof LocalizedEventSchema>;

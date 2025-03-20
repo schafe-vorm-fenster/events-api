@@ -5,6 +5,7 @@ import { GeonameIdSchema } from "./geonames.types";
 
 export const IndexedEventSchema = z.object({
   id: z.string().optional(),
+  "org.id": z.string().optional(),
   "summary.de": z.string(),
   "summary.en": z.string(),
   "summary.pl": z.string(),

@@ -16,8 +16,17 @@ import { RuralEventCategoryId } from "@/packages/rural-event-types/src/rural-eve
 import { GeonameId } from "@/src/events/types/geonames.types";
 import { RuralEventScope } from "@/packages/rural-event-types/src/rural-event-scope.types";
 import { ISO8601 } from "@/src/rest/iso8601.types";
-import { Language } from "@/src/events/localization/types/languages.types";
-import { getDataCacheControlHeader } from "@/src/config/cache-control-header";
+import {
+  Country,
+  Language,
+} from "@/src/events/localization/types/languages.types";
+import {
+  getDataCacheControlHeader,
+  getErrorCacheControlHeader,
+} from "@/src/config/cache-control-header";
+import { LocalizedEvent } from "@/src/events/types/localized-event.types";
+import { IndexedEvent } from "@/src/events/types/indexed-event.types";
+import { localizedEvent } from "@/src/events/helpers/localized-event";
 
 const log = getLogger(ApiEvents.search);
 
@@ -35,9 +44,10 @@ const handler = createNextHandler(
         (query?.before as ISO8601) ?? undefined;
       const after: ISO8601 | undefined = (query?.after as ISO8601) ?? undefined;
       const language: Language = (query?.language as Language) ?? "de";
+      const country: Country = (query?.country as Country) ?? "DE";
 
       log.info(
-        { community, scope, category, before, after, language },
+        { community, scope, category, before, after, language, country },
         `search events by community`
       );
       const timestamp = new Date().toISOString();
@@ -46,9 +56,6 @@ const handler = createNextHandler(
       const communityCenter: CommunityCenterQuery = await getCommunityCenter(
         extractGeonameId(community)
       );
-
-      // Set cache control header
-      res.responseHeaders.set("Cache-Control", getDataCacheControlHeader());
 
       return await searchEvents({
         center: communityCenter,
@@ -60,10 +67,15 @@ const handler = createNextHandler(
         language: language,
       })
         .then((result) => {
-          // return res
-          //   .status(200)
-          //   .setHeader("Cache-Control", CacheControlHeader)
-          //   .json(result);
+          // map all result item trhough localizedEvent
+          const localizedEvents: LocalizedEvent[] = result.hits.map(
+            (event: IndexedEvent) => {
+              return localizedEvent(event, language, country);
+            }
+          );
+
+          // Set cache control header
+          res.responseHeaders.set("Cache-Control", getDataCacheControlHeader());
 
           return {
             status: 200 as const,
@@ -71,13 +83,17 @@ const handler = createNextHandler(
               status: 200,
               results: result.found,
               timestamp: timestamp,
-              data: result.hits,
+              data: localizedEvents,
             } as SearchEventsSuccessfulSchema,
           };
         })
         .catch((error: HttpError | unknown) => {
           let httpCode: number | undefined;
           if (error instanceof HttpError) httpCode = error?.status;
+          res.responseHeaders.set(
+            "Cache-Control",
+            getErrorCacheControlHeader()
+          );
           return {
             status: 500 as const,
             body: {

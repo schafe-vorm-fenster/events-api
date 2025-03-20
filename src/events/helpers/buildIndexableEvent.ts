@@ -28,6 +28,7 @@ export const buildIndexableEvent = (
 
   const indexableEvent: IndexedEvent = {
     id: eventUuid(rawEvent),
+    "org.id": rawEvent.id || "",
 
     /**
      * contents

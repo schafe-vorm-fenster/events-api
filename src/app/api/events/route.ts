@@ -18,6 +18,7 @@ import client from "@/src/clients/typesense/search/client";
 import { deleteEvents } from "@/src/clients/typesense/search/deleteEvents";
 import { DeleteEventsSuccessfulSchema } from "./delete-event.schema";
 import { AddOrDeleteEventsContract } from "./events.contract";
+import { isTypesenseError } from "@/src/clients/typesense/helpers/typesense-error";
 
 const log = getLogger(ApiEvents.post);
 
@@ -93,7 +94,7 @@ const handler = createNextHandler(
             .collections(eventsSchema.name)
             .documents()
             .create(indexableEvent)) as IndexedEvent;
-
+          log.debug({ data }, "Event created successfully");
           return {
             status: 200,
             body: {
@@ -104,13 +105,17 @@ const handler = createNextHandler(
             } as AddEventSuccessfulSchema,
           };
         } catch (error) {
-          if (error instanceof TypesenseError && error.httpStatus === 409) {
+          if (isTypesenseError(error, ["409", "ObjectAlreadyExists"])) {
+            log.info(
+              { error, data: { id: indexableEvent.id } },
+              "Could not create event, because it already exists"
+            );
             // Update existing event
             const data: IndexedEvent = (await client
               .collections(eventsSchema.name)
               .documents(indexableEvent.id as string)
               .update(indexableEvent)) as IndexedEvent;
-
+            log.debug({ data }, "Event updated successfully");
             return {
               status: 200,
               body: {
@@ -143,7 +148,7 @@ const handler = createNextHandler(
         const result = await deleteEvents({
           before: query.before || "now",
         });
-        log.debug({ result }, "Events deleted");
+        log.debug({ data: result }, "Events deleted");
 
         if (result?.deleted === 0) {
           return {

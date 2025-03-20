@@ -21,6 +21,23 @@ export const getConfigCacheControlHeader = (): string => {
 };
 
 /**
+ * Cache ttl for error responses, is meant to secure the service from spamming
+ * @returns
+ */
+export const getErrorCacheTTL = (): number => {
+  return Number(process.env.ERROR_CACHE_TTL || 2);
+};
+
+/**
+ * Cache control header for error responses
+ * @returns
+ */
+export const getErrorCacheControlHeader = (): string => {
+  const ttl = getErrorCacheTTL();
+  return getCacheControlHeader(Number(ttl));
+};
+
+/**
  * Cache ttl for data responses
  */
 export const getDataCacheTTL = (): number => {
