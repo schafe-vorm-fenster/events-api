@@ -280,10 +280,10 @@
     "@eslint/core" "^0.12.0"
     levn "^0.4.1"
 
-"@google-cloud/tasks@5.1.0":
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/@google-cloud/tasks/-/tasks-5.1.0.tgz#6ec7768670b6d6fc7392727da897206aacacd6b9"
-  integrity sha512-6TU2BqK5G62iLSiNzIAK7EBXJzDtjY9kiOjvXm1bcZAnRbmlow+2QtunSWzRlcLYJW9oz4v4mTGkuvNWa/QC0A==
+"@google-cloud/tasks@4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@google-cloud/tasks/-/tasks-4.1.0.tgz#c5905bc76cb0d949cb7b45bff18f155927e52210"
+  integrity sha512-9n6Aw0JZS/c6dqP1wmK9tmzwqayS/E62BM1rOtzDhwYeWhtAhFsdXjCDZZ9+H+kGOrpsLf+4NPIs5lu5mQvapg==
   dependencies:
     google-gax "^4.0.4"
 

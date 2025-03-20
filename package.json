@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@cospired/i18n-iso-languages": "^4.0.1",
-    "@google-cloud/tasks": "5.1.0",
+    "@google-cloud/tasks": "4.1.0",
     "@googleapis/calendar": "^9.8.0",
     "@ts-rest/core": "^3.52.1",
     "@ts-rest/open-api": "^3.52.1",
