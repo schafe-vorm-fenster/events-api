@@ -4,6 +4,7 @@ import { CategoriesContract } from "./categories/categories.contract";
 import { LanguagesContract } from "./languages/languages.contract";
 import { EventsContract } from "./events/events.contract";
 import { SchemaContract } from "./schema/schema.contract";
+import { UpdateContract } from "./update/update.contract";
 
 const c = initContract();
 
@@ -13,4 +14,5 @@ export const ApiContract = c.router({
   languages: LanguagesContract,
   events: EventsContract,
   schema: SchemaContract,
+  "trigger updates": UpdateContract,
 });

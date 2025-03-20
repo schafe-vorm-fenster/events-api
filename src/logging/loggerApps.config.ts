@@ -10,6 +10,11 @@ export enum ApiEvents {
   bulk = "api.events.bulk",
 }
 
+export enum ApiUpdate {
+  calendar = "api.update.calendar",
+  all = "api.update.calendars.all",
+}
+
 export enum ApiCategories {
   get = "api.categories.get",
 }
