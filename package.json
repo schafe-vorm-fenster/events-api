@@ -27,12 +27,12 @@
   },
   "dependencies": {
     "@cospired/i18n-iso-languages": "^4.0.1",
-    "@google-cloud/tasks": "4.1.0",
     "@googleapis/calendar": "^9.8.0",
     "@ts-rest/core": "^3.52.1",
     "@ts-rest/open-api": "^3.52.1",
     "add": "^2.0.6",
     "debug": "^4.4.0",
+    "google-auth-library": "^9.15.1",
     "http-errors": "^2.0.0",
     "next": "15.3.0-canary.10",
     "pino": "^9.6.0",
