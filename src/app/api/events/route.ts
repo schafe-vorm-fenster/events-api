@@ -137,7 +137,9 @@ const handler = createNextHandler(
               } as AddEventSuccessfulSchema,
             };
           }
-          throw error;
+          throw new Error("Error creating event", {
+            cause: error,
+          });
         }
       } catch (error: unknown) {
         log.error({ error }, "Error processing event");
