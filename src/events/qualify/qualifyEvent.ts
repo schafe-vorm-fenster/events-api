@@ -9,27 +9,15 @@ import { mapScopes } from "../scopes/map-scopes";
 import { translateContent } from "../../clients/translation-api/translate-content";
 import { getGeoLocation } from "../../clients/geo-api/get-geo-location";
 import { buildIndexableEvent } from "../helpers/buildIndexableEvent";
-import debug from "debug";
 import { classifyContent } from "@/src/clients/classification-api/classify-content";
 import { unknownToData } from "@/packages/data-text-mapper/src/unknownToData";
 import { TranslatedContents } from "@/src/clients/translation-api/translation.types";
 import { RuralEventScope } from "@/packages/rural-event-types/src/rural-event-scope.types";
+import { getLogger } from "@/src/logging/logger";
+import { ApiEvents } from "@/src/logging/loggerApps.config";
+import { measureTime } from "@/src/logging/measure-time";
 
-const log = debug("events-api:qualify");
-
-async function measureTime<T>(name: string, fn: Promise<T>): Promise<T> {
-  const start = Date.now();
-  try {
-    const result = await fn;
-    const duration = Date.now() - start;
-    log(`${name} took ${duration}ms`);
-    return result;
-  } catch (error) {
-    const duration = Date.now() - start;
-    log(`${name} failed after ${duration}ms`);
-    throw error;
-  }
-}
+const log = getLogger(ApiEvents.qualify);
 
 export async function qualifyEvent(
   incomingEvent: GoogleEvent
@@ -48,11 +36,13 @@ export async function qualifyEvent(
     // Start all promises early
     const geoLocationPromise = measureTime(
       "geoCodeLocation",
-      geoCodeLocation(incomingEvent?.location as string)
+      geoCodeLocation(incomingEvent?.location as string),
+      log
     );
     const scopePromise = measureTime(
       "mapScopes",
-      mapScopes(metadata?.scopes as string[])
+      mapScopes(metadata?.scopes as string[]),
+      log
     );
     const classificationPromise = measureTime(
       "classifyContent",
@@ -61,14 +51,16 @@ export async function qualifyEvent(
         description: (incomingEvent.description as string) || "",
         tags: metadata?.tags as string[],
         occurrence: incomingEvent?.recurringEventId ? "recurring" : "once",
-      })
+      }),
+      log
     );
     const translationPromise = measureTime(
       "translateContent",
       translateContent(
         incomingEvent.summary as string,
         incomingEvent.description as string
-      )
+      ),
+      log
     );
 
     // Resolve promises with individual error handling
@@ -81,7 +73,8 @@ export async function qualifyEvent(
       "getGeoLocation",
       getGeoLocation(
         geolocation.hierarchy?.community?.geonameId as number
-      ) as Promise<GeoLocation>
+      ) as Promise<GeoLocation>,
+      log
     );
 
     scope = await scopePromise;
@@ -103,6 +96,7 @@ export async function qualifyEvent(
 
     return newEvent;
   } catch (error: unknown) {
+    log.error({ error, incomingEvent }, "Error enriching event data");
     throw error instanceof Error
       ? error
       : new Error("Could not enrich event data for unknown reason");

@@ -95,9 +95,18 @@ const handler = createNextHandler(
       try {
         // Process incoming event using the new qualifyEvent function
         indexableEvent = (await qualifyEvent(incomingEvent)) as IndexedEvent;
+        log.debug(
+          { incomingEvent, indexableEvent },
+          "Event is fully qualified"
+        );
+      } catch (error) {
+        log.error({ error }, "Error qualifying event");
+        throw new Error("Error qualifying event", {
+          cause: error,
+        });
+      }
 
-        log.debug({ body: incomingEvent }, "Event is fully qualified");
-
+      try {
         // Create or update the event in the database
         try {
           const data: IndexedEvent = (await client
