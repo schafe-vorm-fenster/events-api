@@ -1,6 +1,9 @@
 import { createNextHandler } from "@ts-rest/serverless/next";
 import { getLogger } from "@/src/logging/logger";
-import { GoogleEvent } from "@/src/events/types/google-event.types";
+import {
+  GoogleEvent,
+  GoogleEventSchema,
+} from "@/src/events/types/google-event.types";
 import { ErrorSchema } from "@/src/rest/error.schema";
 import { handleZodError } from "@/src/rest/zod-error-handler";
 import { ApiEvents } from "@/src/logging/loggerApps.config";
@@ -27,6 +30,13 @@ const handler = createNextHandler(
   {
     "add-event": async ({ body }: { body: GoogleEvent }) => {
       const incomingEvent = body as GoogleEvent;
+
+      try {
+        GoogleEventSchema.parse(incomingEvent);
+      } catch (error) {
+        log.error({ error }, "Error parsing request body");
+        throw new Error("Error parsing request body");
+      }
 
       // check if the body contains a valid google event including json check
       try {

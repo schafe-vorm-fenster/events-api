@@ -34,7 +34,7 @@ export type GoogleEventAttachment =
   | z.infer<typeof GoogleEventAttachment>
   | Schema$EventAttachment;
 
-export const GoogleEvent = z.object({
+export const GoogleEventSchema = z.object({
   // system
   id: z.string(),
   kind: z.literal("calendar#event").optional(),
@@ -55,4 +55,4 @@ export const GoogleEvent = z.object({
   // context
   organizer: GoogleEventOrganizer.optional(),
 });
-export type GoogleEvent = z.infer<typeof GoogleEvent> | Schema$Event;
+export type GoogleEvent = z.infer<typeof GoogleEventSchema> | Schema$Event;

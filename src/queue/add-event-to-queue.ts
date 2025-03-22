@@ -1,4 +1,7 @@
-import { GoogleEvent } from "../events/types/google-event.types";
+import {
+  GoogleEvent,
+  GoogleEventSchema,
+} from "../events/types/google-event.types";
 import { getGoogleAuthToken } from "./helpers/get-google-auth-token";
 import { EventQueueTask } from "./queue.types";
 import { getLogger } from "@/src/logging/logger";
@@ -13,6 +16,13 @@ export async function addEventToQueue(
   const log = getLogger(ClientGoogleTasks["add-event"]);
 
   if (!event) throw new Error("Event is required");
+
+  try {
+    GoogleEventSchema.parse(event);
+  } catch (error) {
+    log.error({ error }, "Error parsing event body");
+    throw new Error("Error parsing event body");
+  }
 
   // define constants by env vars
   const projectId: string = process.env.GOOGLEAPI_PROJECT_ID!;

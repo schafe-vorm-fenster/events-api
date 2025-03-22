@@ -1,7 +1,7 @@
 import { initContract } from "@ts-rest/core";
 
 import { ErrorSchema } from "@/src/rest/error.schema";
-import { GoogleEvent } from "@/src/events/types/google-event.types";
+import { GoogleEventSchema } from "@/src/events/types/google-event.types";
 import { AddEventSuccessfulSchema } from "./add-event.schema";
 import { z } from "zod";
 
@@ -11,7 +11,7 @@ export const AddEventContract = c.router({
   "add-event": {
     method: "POST",
     path: "/api/events",
-    body: GoogleEvent,
+    body: GoogleEventSchema,
     responses: {
       200: AddEventSuccessfulSchema,
       400: ErrorSchema,
