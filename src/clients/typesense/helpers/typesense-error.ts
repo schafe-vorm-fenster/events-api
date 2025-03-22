@@ -1,5 +1,6 @@
 import { TypesenseError } from "typesense/lib/Typesense/Errors";
 
+// TODO: something is strange here, this function shpuld not be needed
 export const isTypesenseError = (error: unknown, checks: string[]): boolean => {
   // case for a regular typesense error object
   if (error instanceof TypesenseError) {

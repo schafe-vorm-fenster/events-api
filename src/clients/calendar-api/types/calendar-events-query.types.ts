@@ -1,4 +1,4 @@
-import { ISO8601Schema } from "@/src/rest/iso8601.types";
+import { ISO8601Schema } from "../../../rest/iso8601.types";
 import { z } from "zod";
 
 export const CalendarEventsQueryParamsSchema = z.object({

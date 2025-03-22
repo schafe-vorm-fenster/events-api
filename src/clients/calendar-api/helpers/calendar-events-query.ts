@@ -1,4 +1,4 @@
-import { futureOrPastDate } from "@/src/events/helpers/datetime/future-or-past-date";
+import { futureOrPastDate } from "../../../events/helpers/datetime/future-or-past-date";
 import {
   CalendarEventsQuery,
   CalendarEventsQuerySchema,
