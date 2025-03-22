@@ -35,6 +35,11 @@ export const getCalendarEvents = async (
   if (validQuery.updatedSince)
     url.searchParams.append("updatedMin", validQuery.updatedSince);
 
+  log.debug(
+    { url: url.toString(), query },
+    "Fetching calendar events from calendar-api"
+  );
+
   try {
     const response = await fetch(url, {
       method: "GET",

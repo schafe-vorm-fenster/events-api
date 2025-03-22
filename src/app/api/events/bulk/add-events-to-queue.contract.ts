@@ -18,7 +18,7 @@ export const AddEventsToQueueContract = c.router({
       500: ErrorSchema,
     },
     headers: z.object({
-      "Sheep-Token": z.string(),
+      "Sheep-Token": z.string().optional(),
     }),
     summary: "Add new events to an import queue",
     description:

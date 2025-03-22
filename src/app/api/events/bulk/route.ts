@@ -1,7 +1,10 @@
 import { createNextHandler } from "@ts-rest/serverless/next";
 import { AddEventsToQueueContract } from "./add-events-to-queue.contract";
 import { getLogger } from "@/src/logging/logger";
-import { GoogleEvent } from "@/src/events/types/google-event.types";
+import {
+  GoogleEvent,
+  GoogleEventSchema,
+} from "@/src/events/types/google-event.types";
 import { ErrorSchema } from "@/src/rest/error.schema";
 import { handleZodError } from "@/src/rest/zod-error-handler";
 import { addEventToQueue } from "@/src/queue/add-event-to-queue";
@@ -15,6 +18,18 @@ const handler = createNextHandler(
   {
     "add-events-to-queue": async ({ body }) => {
       const incomingEvents = body as GoogleEvent[];
+
+      try {
+        incomingEvents.forEach((event) => {
+          // Validate each event in the array
+          GoogleEventSchema.parse(event);
+          // Check if the event is a valid Google event
+        });
+      } catch (error) {
+        log.error({ error }, "Error parsing request body");
+
+        throw new Error("Invalid event format", { cause: error });
+      }
 
       try {
         // Send all events to the queue.
