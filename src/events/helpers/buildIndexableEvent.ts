@@ -6,7 +6,7 @@ import {
   PostEventRequestBody,
 } from "../events.types";
 import { GeoLocation } from "../../clients/geo-api/types/geo-location.types";
-import { IndexedEvent } from "../types/indexed-event.types";
+import { IndexedEvent, IndexedEventSchema } from "../types/indexed-event.types";
 
 import { getDocumentLinkFromAttachments } from "./attachments/getDocumentLinkFromAttachments";
 import { getImageLinkFromAttachments } from "./attachments/getImageLinkFromAttachments";
@@ -14,6 +14,9 @@ import { googleDatetimeToTimestamp } from "./datetime/googleDatetimeToTimestamp"
 import { eventUuid } from "./uuids/eventUuid";
 import { recurringEventUuid } from "./uuids/recurringEventUuid";
 import { TranslatedContents } from "@/src/clients/translation-api/translation.types";
+import { ApiEvents } from "@/src/logging/loggerApps.config";
+
+const log = getLogger(ApiEvents["build-indexable-event"]);
 
 export const buildIndexableEvent = (
   rawEvent: PostEventRequestBody,
@@ -24,8 +27,6 @@ export const buildIndexableEvent = (
   classification: RuralEventClassification | null,
   translatedContents: TranslatedContents | null
 ): IndexedEvent => {
-  const log = getLogger("buildIndexableEvent");
-
   const indexableEvent: IndexedEvent = {
     id: eventUuid(rawEvent),
     "org.id": rawEvent.id || "",
@@ -201,8 +202,18 @@ export const buildIndexableEvent = (
         : 0,
   };
 
-  // log warnings
+  // validate
+  try {
+    IndexedEventSchema.parse(indexableEvent);
+  } catch (error) {
+    log.error(
+      { error, event: { summary: rawEvent.summary, indexableEvent } },
+      "Event is not valid. Event will be skipped."
+    );
+    throw new Error("Indexable event is not valid");
+  }
 
+  // log warnings
   if (indexableEvent.categories.includes("unknown")) {
     log.warn(
       { event: { summary: rawEvent.summary }, classification: classification },

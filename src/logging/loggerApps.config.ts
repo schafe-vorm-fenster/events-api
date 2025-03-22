@@ -9,6 +9,7 @@ export enum ApiEvents {
   "delete-by-date" = "api.events.delete.by-date",
   bulk = "api.events.bulk",
   qualify = "api.events.qualify",
+  "build-indexable-event" = "api.events.build-indexable-event",
 }
 
 export enum ApiUpdate {

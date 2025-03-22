@@ -94,6 +94,11 @@ export async function qualifyEvent(
       translatedContents
     );
 
+    log.debug(
+      { event: newEvent },
+      "Event qualified successfully and built as IndexedEvent"
+    );
+
     return newEvent;
   } catch (error: unknown) {
     log.error({ error, incomingEvent }, "Error enriching event data");
