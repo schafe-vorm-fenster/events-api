@@ -1,8 +1,8 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
 import { ErrorSchema } from "@/src/rest/error.schema";
-import { UpdateParamsSchema } from "../../update-params.schema";
-import { TriggerUpdateAllSuccessfulSchema } from "./trigger-update-all.schema";
+import { TriggerUpdateAllCalendarsSuccessfulSchema } from "./trigger-update-all-calendars.schema";
+import { CalendarEventsQueryParamsSchema } from "@/src/clients/calendar-api/types/calendar-events-query.types";
 
 const c = initContract();
 
@@ -10,10 +10,9 @@ export const TriggerUpdateAllContract = c.router({
   "trigger-update-all": {
     method: "POST",
     path: "/api/update/calendars/all",
-    query: UpdateParamsSchema,
-    body: z.object({}).optional(),
+    body: CalendarEventsQueryParamsSchema,
     responses: {
-      200: TriggerUpdateAllSuccessfulSchema,
+      200: TriggerUpdateAllCalendarsSuccessfulSchema,
       400: ErrorSchema,
       500: ErrorSchema,
     },

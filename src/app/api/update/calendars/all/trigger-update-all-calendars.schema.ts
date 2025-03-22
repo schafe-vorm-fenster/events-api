@@ -4,10 +4,10 @@ import { z } from "zod";
 
 export const TaskList = z.array(Task);
 
-export const TriggerUpdateAllSuccessfulSchema = ResultSchema.extend({
+export const TriggerUpdateAllCalendarsSuccessfulSchema = ResultSchema.extend({
   data: TaskList,
 });
 
-export type TriggerUpdateAllSuccessfulSchema = z.infer<
-  typeof TriggerUpdateAllSuccessfulSchema
+export type TriggerUpdateAllCalendarsSuccessfulSchema = z.infer<
+  typeof TriggerUpdateAllCalendarsSuccessfulSchema
 >;

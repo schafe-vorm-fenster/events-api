@@ -3,46 +3,41 @@ import { getLogger } from "@/src/logging/logger";
 import { ErrorSchema } from "@/src/rest/error.schema";
 import { handleZodError } from "@/src/rest/zod-error-handler";
 import { ApiUpdate } from "@/src/logging/loggerApps.config";
-import { TriggerUpdateCalendarContract } from "./trigger-update-calendar.contract";
-import { TriggerUpdateCalendarSuccessfulSchema } from "./trigger-update-calendar.schema";
-import { ISO8601 } from "@/src/rest/iso8601.types";
+import { TriggerUpdateCalendarEventsContract } from "./trigger-update-calendar-events.contract";
 import { getCalendarEvents } from "@/src/clients/calendar-api/get-calendar-events";
 import { addEventToQueue } from "@/src/queue/add-event-to-queue";
+import { TriggerUpdateCalendarEventsSuccessfulSchema } from "./trigger-update-calendar-events.schema";
+import {
+  CalendarEventsQuery,
+  CalendarEventsQuerySchema,
+} from "@/src/clients/calendar-api/types/calendar-events-query.types";
 
 const log = getLogger(ApiUpdate.calendar);
 
 const handler = createNextHandler(
-  TriggerUpdateCalendarContract,
+  TriggerUpdateCalendarEventsContract,
   {
     "trigger-update-calendar": async ({ body }) => {
+      log.debug(
+        { ...body },
+        "Trigger update calendar events for a specific calendar"
+      );
+
+      // validate request body
       try {
-        log.debug({ body }, "Trigger update for all calendars");
+        CalendarEventsQuerySchema.parse(body);
+      } catch (error) {
+        log.error({ error }, "Error parsing post request body");
+        throw new Error("Error parsing post request body", { cause: error });
+      }
 
-        // today 0am
-        const today = new Date(new Date().setHours(0, 0, 0, 0)).toISOString();
-        // in 90 days
-        const futureDate = new Date(
-          new Date(new Date().getTime() + 90 * 24 * 60 * 60 * 1000).setHours(
-            0,
-            0,
-            0,
-            0
-          )
-        ).toISOString();
-
-        // set defaults to update all events from today to 90 days in the future
-        const after: ISO8601 = (body?.after as ISO8601) ?? today;
-        const before: ISO8601 = (body?.before as ISO8601) ?? futureDate;
-        const updatedSince: ISO8601 =
-          (body?.updatedSince as ISO8601) ?? undefined;
-
+      // build query and double check all params
+      try {
         // get all events for the given calendar
         const events: object[] = await getCalendarEvents(
-          body.id,
-          after,
-          before,
-          updatedSince
+          body as CalendarEventsQuery
         );
+        log.debug({ events }, "Fetched events from calendar-api");
 
         // push all events to the queue
         // this is done in parallel to speed up the process.
@@ -52,6 +47,7 @@ const handler = createNextHandler(
             return await addEventToQueue(event);
           })
         );
+        log.debug({ tasks }, "Added events as tasks to queue");
 
         const timestamp = new Date().toISOString();
 
@@ -62,7 +58,7 @@ const handler = createNextHandler(
             results: tasks.length,
             timestamp: timestamp,
             data: tasks,
-          } as TriggerUpdateCalendarSuccessfulSchema,
+          } as TriggerUpdateCalendarEventsSuccessfulSchema,
         };
       } catch (error) {
         log.error({ error }, "Error adding events to queue");

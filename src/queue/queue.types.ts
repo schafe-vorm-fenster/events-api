@@ -4,7 +4,7 @@ import { z } from "zod";
 export const Task = z.object({
   queueTaskId: z.string(),
 });
-// export type Task = z.infer<typeof Task>;
+export type Task = z.infer<typeof Task>;
 
 export const EventQueueTask = Task.extend({
   eventID: z.string(),

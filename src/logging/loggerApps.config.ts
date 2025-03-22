@@ -54,7 +54,8 @@ export enum ClientGeo {
 
 export enum ClientGoogleTasks {
   config = "client.googletasks.config",
-  add = "client.googletasks.add-event-to-queue",
+  "add-event" = "client.googletasks.add-event-to-queue",
+  "add-calendar" = "client.googletasks.add-calendar-to-queue",
 }
 
 export enum ClientTypesense {

@@ -1,9 +1,10 @@
-import { ISO8601 } from "@/src/rest/iso8601.types";
 import { getCalendarApiConfig } from "./helpers/config";
 import { ResultsSchema } from "@/src/rest/results.schema";
 import { z } from "zod";
 import { getLogger } from "@/src/logging/logger";
 import { ClientCalendar } from "@/src/logging/loggerApps.config";
+import { CalendarEventsQuery } from "./types/calendar-events-query.types";
+import { getCalendarEventsQuery } from "./helpers/calendar-events-query";
 
 const log = getLogger(ClientCalendar.events);
 
@@ -22,16 +23,17 @@ type CalendarApiResponse = z.infer<typeof CalendarApiResponseSchema>;
  * @throws Error
  */
 export const getCalendarEvents = async (
-  id: string,
-  timeMin?: ISO8601,
-  timeMax?: ISO8601,
-  updatedMin?: ISO8601
+  query: CalendarEventsQuery
 ): Promise<object[]> => {
   const { host, token } = getCalendarApiConfig();
-  const url: URL = new URL(`/api/calendars/${id}/events`, host);
-  if (timeMin) url.searchParams.append("timeMin", timeMin);
-  if (timeMax) url.searchParams.append("timeMax", timeMax);
-  if (updatedMin) url.searchParams.append("updatedMin", updatedMin);
+  const url: URL = new URL(`/api/calendars/${query.id}/events`, host);
+
+  const validQuery = getCalendarEventsQuery(query);
+
+  if (validQuery.after) url.searchParams.append("timeMin", validQuery.after);
+  if (validQuery.before) url.searchParams.append("timeMax", validQuery.before);
+  if (validQuery.updatedSince)
+    url.searchParams.append("updatedMin", validQuery.updatedSince);
 
   try {
     const response = await fetch(url, {

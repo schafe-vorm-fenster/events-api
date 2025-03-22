@@ -1,10 +1,10 @@
 import { initContract } from "@ts-rest/core";
-import { TriggerUpdateCalendarContract } from "./calendars/single/trigger-update-calendar.contract";
-import { TriggerUpdateAllContract } from "./calendars/all/trigger-update-all.contract";
+import { TriggerUpdateCalendarEventsContract } from "./calendars/single/trigger-update-calendar-events.contract";
+import { TriggerUpdateAllContract } from "./calendars/all/trigger-update-all-calendars.contract";
 
 const c = initContract();
 
 export const UpdateContract = c.router({
-  ...TriggerUpdateCalendarContract,
+  ...TriggerUpdateCalendarEventsContract,
   ...TriggerUpdateAllContract,
 });

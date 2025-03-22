@@ -1,29 +1,30 @@
 import { CalendarQueueTask } from "./queue.types";
 import { getLogger } from "@/src/logging/logger";
 import { ClientGoogleTasks } from "@/src/logging/loggerApps.config";
-import { SingleCalendarUpdateBody } from "../app/api/update/calendars/single/trigger-update-calendar.schema";
-import { GoogleAuth } from "google-auth-library";
+import {
+  CalendarEventsQuery,
+  CalendarEventsQuerySchema,
+} from "../clients/calendar-api/types/calendar-events-query.types";
+import { getCalendarEventsQuery } from "../clients/calendar-api/helpers/calendar-events-query";
+import { getGoogleAuthToken } from "./helpers/get-google-auth-token";
 
 /**
  * Adds a new task to a Google Cloud Tasks queue using direct HTTP API.
  */
 export async function addCalendarToQueue(
-  calendarId: string,
-  after?: string,
-  before?: string,
-  updatedSince?: string
+  query: CalendarEventsQuery
 ): Promise<CalendarQueueTask> {
-  const log = getLogger(ClientGoogleTasks.add);
+  const log = getLogger(ClientGoogleTasks["add-calendar"]);
 
-  if (!calendarId) throw new Error("Calendar id is required");
+  try {
+    CalendarEventsQuerySchema.parse(query);
+  } catch (error) {
+    log.error({ error }, "Error parsing calendar events query");
+    throw new Error("Error parsing calendar events query");
+  }
 
-  // build task body
-  const taskBody: SingleCalendarUpdateBody = {
-    id: calendarId,
-    after: after,
-    before: before,
-    updatedSince: updatedSince,
-  };
+  // build task body by using a validated query
+  const taskBody: CalendarEventsQuery = getCalendarEventsQuery(query);
 
   // define constants by env vars
   const projectId: string = process.env.GOOGLEAPI_PROJECT_ID!;
@@ -79,43 +80,13 @@ export async function addCalendarToQueue(
 
     const createTaskResult: CalendarQueueTask = {
       queueTaskId: queueTaskId,
-      calendarID: calendarId,
+      calendarID: query.id,
     };
 
     log.info("Task created", createTaskResult);
     return createTaskResult;
   } catch (error) {
     log.error("Error creating task:", error);
-    throw error;
-  }
-}
-
-/**
- * Gets a Google Auth token for authenticating with the Cloud Tasks API
- * Using google-auth-library for proper authentication
- */
-async function getGoogleAuthToken(): Promise<string> {
-  try {
-    // Create a new GoogleAuth instance using environment variables
-    const auth = new GoogleAuth({
-      credentials: {
-        client_email: process.env.GOOGLEAPI_CLIENT_EMAIL,
-        private_key: process.env.GOOGLEAPI_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-      },
-      scopes: ["https://www.googleapis.com/auth/cloud-platform"],
-    });
-
-    // Get an access token
-    const client = await auth.getClient();
-    const token = await client.getAccessToken();
-
-    if (!token.token) {
-      throw new Error("Failed to obtain access token");
-    }
-
-    return token.token;
-  } catch (error) {
-    console.error("Error getting authentication token:", error);
     throw error;
   }
 }
