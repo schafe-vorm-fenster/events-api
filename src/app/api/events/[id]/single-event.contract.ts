@@ -1,5 +1,5 @@
 import { initContract } from "@ts-rest/core";
-import { ErrorSchema } from "@/src/rest/error.schema";
+import { ApiErrorSchema } from "@/src/rest/error.schema";
 import {
   DeleteEventSuccessfulSchema,
   GetEventSuccessfulSchema,
@@ -14,8 +14,8 @@ export const SingleEventContract = c.router({
     path: "/api/events/:uuid",
     responses: {
       200: GetEventSuccessfulSchema,
-      404: ErrorSchema,
-      500: ErrorSchema,
+      404: ApiErrorSchema,
+      500: ApiErrorSchema,
     },
     headers: z.object({
       "Sheep-Token": z.string().optional(),
@@ -29,8 +29,8 @@ export const SingleEventContract = c.router({
     body: z.any().optional(),
     responses: {
       200: DeleteEventSuccessfulSchema,
-      404: ErrorSchema,
-      500: ErrorSchema,
+      404: ApiErrorSchema,
+      500: ApiErrorSchema,
     },
     headers: z.object({
       "Sheep-Token": z.string().optional(),

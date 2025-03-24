@@ -1,9 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import {
-  getTypesenseHost,
-  getTypesenseApiKey,
-  getTypesenseApiConfig,
-} from "./config";
+import { getTypesenseHost, getTypesenseApiKey } from "./config";
 import * as baseConfigModule from "../../helpers/config";
 import { ClientTypesense } from "@/src/logging/loggerApps.config";
 
@@ -16,7 +12,6 @@ vi.mock("../../helpers/config", () => ({
 describe("Typesense Configuration Helpers", () => {
   const mockHost = "https://typesense.example.com";
   const mockToken = "ts-123456789";
-  const mockConfig = { host: mockHost, token: mockToken };
 
   // Set up mocks before each test
   beforeEach(() => {

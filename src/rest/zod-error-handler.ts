@@ -1,6 +1,6 @@
 import { ZodError } from "zod";
 import { TsRestResponse } from "@ts-rest/serverless";
-import { ErrorSchema } from "./error.schema";
+import { ApiErrorSchema } from "./error.schema";
 
 export async function handleZodError(err: unknown): Promise<TsRestResponse> {
   if (
@@ -10,7 +10,7 @@ export async function handleZodError(err: unknown): Promise<TsRestResponse> {
       "statusCode" in err &&
       err.statusCode === 400)
   ) {
-    const zodError: ErrorSchema = {
+    const zodError: ApiErrorSchema = {
       status: 400,
       error: "Validation Error",
       trace: err,
@@ -18,7 +18,7 @@ export async function handleZodError(err: unknown): Promise<TsRestResponse> {
     return new TsRestResponse(JSON.stringify(zodError), { status: 400 });
   }
 
-  const unknownError: ErrorSchema = {
+  const unknownError: ApiErrorSchema = {
     status: 500,
     error: "Internal Server Error",
     trace: err,

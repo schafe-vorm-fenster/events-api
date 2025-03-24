@@ -1,6 +1,6 @@
 import { initContract } from "@ts-rest/core";
 
-import { ErrorSchema } from "@/src/rest/error.schema";
+import { ApiErrorSchema } from "@/src/rest/error.schema";
 import { z } from "zod";
 import {
   DeleteDateSchema,
@@ -19,7 +19,7 @@ export const DeleteEventContract = c.router({
     body: z.any().optional(),
     responses: {
       200: DeleteEventsSuccessfulSchema,
-      500: ErrorSchema,
+      500: ApiErrorSchema,
     },
     headers: z.object({
       "Sheep-Token": z.string().optional(),

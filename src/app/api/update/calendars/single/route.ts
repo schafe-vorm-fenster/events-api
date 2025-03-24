@@ -1,6 +1,6 @@
 import { createNextHandler } from "@ts-rest/serverless/next";
 import { getLogger } from "@/src/logging/logger";
-import { ErrorSchema } from "@/src/rest/error.schema";
+import { ApiErrorSchema } from "@/src/rest/error.schema";
 import { handleZodError } from "@/src/rest/zod-error-handler";
 import { ApiUpdate } from "@/src/logging/loggerApps.config";
 import { TriggerUpdateCalendarEventsContract } from "./trigger-update-calendar-events.contract";
@@ -68,7 +68,7 @@ const handler = createNextHandler(
           body: {
             status: 500,
             error: error ?? "Internal Server Error",
-          } as ErrorSchema,
+          } as ApiErrorSchema,
         };
       }
     },

@@ -4,7 +4,7 @@ import {
   GoogleEvent,
   GoogleEventSchema,
 } from "@/src/events/types/google-event.types";
-import { ErrorSchema } from "@/src/rest/error.schema";
+import { ApiErrorSchema } from "@/src/rest/error.schema";
 import { handleZodError } from "@/src/rest/zod-error-handler";
 import { ApiEvents } from "@/src/logging/loggerApps.config";
 import { AddEventSuccessfulSchema } from "./add-event.schema";
@@ -54,7 +54,7 @@ const handler = createNextHandler(
             error:
               (error as Error)?.message ||
               "Request json is not a valid google event.",
-          } as ErrorSchema,
+          } as ApiErrorSchema,
         };
       }
 
@@ -85,7 +85,7 @@ const handler = createNextHandler(
               error:
                 (error as TypesenseError).message ||
                 "Error deleting cancelled event",
-            } as ErrorSchema,
+            } as ApiErrorSchema,
           };
         }
       }
@@ -158,7 +158,7 @@ const handler = createNextHandler(
           body: {
             status: 500,
             error: (error as Error)?.message ?? "Internal Server Error",
-          } as ErrorSchema,
+          } as ApiErrorSchema,
         };
       }
     },
@@ -199,7 +199,7 @@ const handler = createNextHandler(
           body: {
             status: 500,
             error: (error as Error)?.message || "Error deleting events",
-          } as ErrorSchema,
+          } as ApiErrorSchema,
         };
       }
     },

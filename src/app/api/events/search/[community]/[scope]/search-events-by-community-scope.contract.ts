@@ -1,5 +1,5 @@
 import { initContract } from "@ts-rest/core";
-import { ErrorSchema } from "@/src/rest/error.schema";
+import { ApiErrorSchema } from "@/src/rest/error.schema";
 import { z } from "zod";
 import { SearchEventsSuccessfulSchema } from "../search-events.schema";
 import { SearchEventsQuerySchema } from "../search-events-query.schema";
@@ -19,8 +19,8 @@ export const SearchEventsByCommunityScopeContract = c.router({
     query: SearchEventsQuerySchema,
     responses: {
       200: SearchEventsSuccessfulSchema,
-      400: ErrorSchema,
-      500: ErrorSchema,
+      400: ApiErrorSchema,
+      500: ApiErrorSchema,
     },
     headers: z.object({
       "Sheep-Token": z.string().optional(),

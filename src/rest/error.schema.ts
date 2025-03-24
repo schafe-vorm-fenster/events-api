@@ -1,9 +1,9 @@
 import { z } from "zod";
 
-export const ErrorSchema = z.object({
+export const ApiErrorSchema = z.object({
   status: z.number().min(400).max(599),
   error: z.string(),
   trace: z.any().optional(),
 });
 
-export type ErrorSchema = z.infer<typeof ErrorSchema>;
+export type ApiErrorSchema = z.infer<typeof ApiErrorSchema>;

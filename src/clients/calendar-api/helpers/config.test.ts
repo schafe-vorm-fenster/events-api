@@ -1,9 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import {
-  getCalendarApiHost,
-  getCalendarApiToken,
-  getCalendarApiConfig,
-} from "./config";
+import { getCalendarApiHost, getCalendarApiToken } from "./config";
 import * as baseConfigModule from "../../helpers/config";
 import { ClientCalendar } from "@/src/logging/loggerApps.config";
 
@@ -16,7 +12,6 @@ vi.mock("../../helpers/config", () => ({
 describe("Calendar API Configuration Helpers", () => {
   const mockHost = "https://calendar-api.example.com";
   const mockToken = "cal-123456789";
-  const mockConfig = { host: mockHost, token: mockToken };
 
   // Set up mocks before each test
   beforeEach(() => {

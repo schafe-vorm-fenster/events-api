@@ -2,7 +2,7 @@ import { createNextHandler } from "@ts-rest/serverless/next";
 import { SearchEventsByCommunityContract } from "./search-events-by-community.contract";
 import { getLogger } from "@/src/logging/logger";
 import { ApiEvents } from "@/src/logging/loggerApps.config";
-import { ErrorSchema } from "@/src/rest/error.schema";
+import { ApiErrorSchema } from "@/src/rest/error.schema";
 import { handleZodError } from "@/src/rest/zod-error-handler";
 import { SearchEventsSuccessfulSchema } from "./search-events.schema";
 import {
@@ -93,7 +93,7 @@ const handler = createNextHandler(
             body: {
               status: httpCode ?? 500,
               error: error ?? "Internal Server Error",
-            } as ErrorSchema,
+            } as ApiErrorSchema,
           };
         });
     },

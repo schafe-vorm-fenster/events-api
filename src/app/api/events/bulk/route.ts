@@ -5,7 +5,7 @@ import {
   GoogleEvent,
   GoogleEventSchema,
 } from "@/src/events/types/google-event.types";
-import { ErrorSchema } from "@/src/rest/error.schema";
+import { ApiErrorSchema } from "@/src/rest/error.schema";
 import { handleZodError } from "@/src/rest/zod-error-handler";
 import { addEventToQueue } from "@/src/queue/add-event-to-queue";
 import { AddEventsToQueueSuccessfulSchema } from "./add-events-to-queue.schema";
@@ -66,7 +66,7 @@ const handler = createNextHandler(
           body: {
             status: 500,
             error: error ?? "Internal Server Error",
-          } as ErrorSchema,
+          } as ApiErrorSchema,
         };
       }
     },

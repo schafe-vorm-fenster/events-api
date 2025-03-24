@@ -3,7 +3,6 @@ import {
   ServiceStatusSchema,
   UnhealthyServiceInfoSchema,
 } from "@/src/rest/health.schema";
-import client from "./search/client";
 import { getTypesenseApiConfig } from "./helpers/config";
 import { getConfigCacheTTL } from "@/src/config/cache-control-header";
 

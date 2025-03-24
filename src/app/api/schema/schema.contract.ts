@@ -5,7 +5,7 @@ import {
   DeleteSchemaSuccessfulSchema,
   GetSchemaSuccessfulSchema,
 } from "./schema.schema";
-import { ErrorSchema } from "@/src/rest/error.schema";
+import { ApiErrorSchema } from "@/src/rest/error.schema";
 
 const c = initContract();
 
@@ -15,8 +15,8 @@ export const SchemaContract = c.router({
     path: "/api/schema",
     responses: {
       200: GetSchemaSuccessfulSchema,
-      404: ErrorSchema,
-      500: ErrorSchema,
+      404: ApiErrorSchema,
+      500: ApiErrorSchema,
     },
     headers: z.object({
       "Sheep-Token": z.string().optional(),
@@ -29,8 +29,8 @@ export const SchemaContract = c.router({
     body: z.object({}).optional(), // Empty object since schema is predefined
     responses: {
       200: AddSchemaSuccessfulSchema,
-      409: ErrorSchema,
-      500: ErrorSchema,
+      409: ApiErrorSchema,
+      500: ApiErrorSchema,
     },
     headers: z.object({
       "Sheep-Token": z.string().optional(),
@@ -42,8 +42,8 @@ export const SchemaContract = c.router({
     path: "/api/schema",
     responses: {
       200: DeleteSchemaSuccessfulSchema,
-      404: ErrorSchema,
-      500: ErrorSchema,
+      404: ApiErrorSchema,
+      500: ApiErrorSchema,
     },
     headers: z.object({
       "Sheep-Token": z.string().optional(),

@@ -3,7 +3,7 @@ import { getLogger } from "@/src/logging/logger";
 import { handleZodError } from "@/src/rest/zod-error-handler";
 
 import { HttpError } from "http-errors";
-import { ErrorSchema } from "@/src/rest/error.schema";
+import { ApiErrorSchema } from "@/src/rest/error.schema";
 import {
   DeleteEventSuccessfulSchema,
   GetEventSuccessfulSchema,
@@ -41,7 +41,7 @@ const handler = createNextHandler(
           body: {
             status: (httpCode as 404) || 500,
             error: (error as Error).message || "Internal Server Error",
-          } as ErrorSchema,
+          } as ApiErrorSchema,
         };
       }
     },
@@ -73,7 +73,7 @@ const handler = createNextHandler(
           body: {
             status: (httpCode as 404) || 500,
             error: (error as Error).message || "Internal Server Error",
-          } as ErrorSchema,
+          } as ApiErrorSchema,
         };
       }
     },

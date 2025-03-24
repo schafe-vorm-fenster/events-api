@@ -1,9 +1,9 @@
 import { initContract } from "@ts-rest/core";
 
-import { ErrorSchema } from "@/src/rest/error.schema";
 import { GoogleEventSchema } from "@/src/events/types/google-event.types";
 import { AddEventSuccessfulSchema } from "./add-event.schema";
 import { z } from "zod";
+import { ApiErrorSchema } from "@/src/rest/error.schema";
 
 const c = initContract();
 
@@ -14,8 +14,8 @@ export const AddEventContract = c.router({
     body: GoogleEventSchema,
     responses: {
       200: AddEventSuccessfulSchema,
-      400: ErrorSchema,
-      500: ErrorSchema,
+      400: ApiErrorSchema,
+      500: ApiErrorSchema,
     },
     headers: z.object({
       "Sheep-Token": z.string().optional(),

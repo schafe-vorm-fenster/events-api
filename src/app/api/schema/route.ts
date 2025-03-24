@@ -11,7 +11,7 @@ import {
   DeleteSchemaSuccessfulSchema,
   GetSchemaSuccessfulSchema,
 } from "./schema.schema";
-import { ErrorSchema } from "@/src/rest/error.schema";
+import { ApiErrorSchema } from "@/src/rest/error.schema";
 import { handleZodError } from "@/src/rest/zod-error-handler";
 import client from "@/src/clients/typesense/search/client";
 
@@ -48,7 +48,7 @@ const handler = createNextHandler(
               error instanceof Error
                 ? error.message
                 : "Could not fetch schema for unknown reason.",
-          } as ErrorSchema,
+          } as ApiErrorSchema,
         };
       }
     },
@@ -82,7 +82,7 @@ const handler = createNextHandler(
               error instanceof Error
                 ? error.message
                 : "Could not create schema for unknown reason.",
-          } as ErrorSchema,
+          } as ApiErrorSchema,
         };
       }
     },
@@ -116,7 +116,7 @@ const handler = createNextHandler(
               error instanceof Error
                 ? error.message
                 : "Could not delete schema for unknown reason.",
-          } as ErrorSchema,
+          } as ApiErrorSchema,
         };
       }
     },

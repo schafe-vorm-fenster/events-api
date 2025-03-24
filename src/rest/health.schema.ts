@@ -1,7 +1,7 @@
 import { OkaySchema } from "./okay.schema";
 
 import { z } from "zod";
-import { ErrorSchema } from "./error.schema";
+import { ApiErrorSchema } from "./error.schema";
 
 /**
  * Services
@@ -19,7 +19,8 @@ export const HealthyServiceInfoSchema = OkaySchema.merge(
 });
 export type HealthyServiceInfoSchema = z.infer<typeof HealthyServiceInfoSchema>;
 
-export const UnhealthyServiceInfoSchema = ErrorSchema.merge(ServiceInfoSchema);
+export const UnhealthyServiceInfoSchema =
+  ApiErrorSchema.merge(ServiceInfoSchema);
 export type UnhealthyServiceInfoSchema = z.infer<
   typeof UnhealthyServiceInfoSchema
 >;
@@ -44,7 +45,7 @@ export type ApiInfoSchema = z.infer<typeof ApiInfoSchema>;
 export const HealthyApiStatusSchema = OkaySchema.merge(ApiInfoSchema);
 export type HealthyApiStatusSchema = z.infer<typeof HealthyApiStatusSchema>;
 
-export const UnhealthyApiStatusSchema = ErrorSchema.merge(ApiInfoSchema);
+export const UnhealthyApiStatusSchema = ApiErrorSchema.merge(ApiInfoSchema);
 export type UnhealthyApiStatusSchema = z.infer<typeof UnhealthyApiStatusSchema>;
 
 export const ApiStatusSchema = z.union([
