@@ -4,6 +4,7 @@ export enum ApiEvents {
   scope = "api.events.community.scope",
   category = "api.events.community.scope.category",
   search = "api.events.search",
+  add = "api.events.add",
   delete = "api.events.delete",
   "delete-by-id" = "api.events.delete.by-id",
   "delete-by-date" = "api.events.delete.by-date",
@@ -64,6 +65,7 @@ export enum ClientTypesense {
   config = "client.typesense.config",
   get = "client.typesense.get",
   create = "client.typesense.create",
+  update = "client.typesense.update",
   delete = "client.typesense.delete",
   search = "client.typesense.search",
 }
