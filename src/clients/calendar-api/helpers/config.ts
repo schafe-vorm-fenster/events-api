@@ -1,5 +1,5 @@
 import { ClientCalendar } from "@/src/logging/loggerApps.config";
-import { getApiConfig, getApiHost, getApiToken } from "../../helpers/config";
+import { ApiConfig, getApiHost, getApiToken } from "../../helpers/config";
 
 // Environment variable names for calendar API
 const CALENDAR_API_HOST_ENV = "SVF_CALENDARAPI_HOST";
@@ -27,9 +27,8 @@ export const getCalendarApiToken = (): string => {
  * @returns Object containing host and token, or null values if configuration is invalid
  */
 export const getCalendarApiConfig = () => {
-  return getApiConfig(
-    CALENDAR_API_HOST_ENV,
-    CALENDAR_API_TOKEN_ENV,
-    ClientCalendar.config
-  );
+  return {
+    host: getCalendarApiHost(),
+    token: getCalendarApiToken(),
+  } as ApiConfig;
 };

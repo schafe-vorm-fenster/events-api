@@ -1,5 +1,5 @@
 import { ClientTranslation } from "@/src/logging/loggerApps.config";
-import { getApiConfig, getApiHost, getApiToken } from "../../helpers/config";
+import { ApiConfig, getApiHost, getApiToken } from "../../helpers/config";
 
 // Environment variable names for translation API
 const TRANSLATION_API_HOST_ENV = "SVF_TRANSLATIONAPI_HOST";
@@ -27,9 +27,8 @@ export const getTranslationApiToken = (): string => {
  * @returns Object containing host and token, or null values if configuration is invalid
  */
 export const getTranslationApiConfig = () => {
-  return getApiConfig(
-    TRANSLATION_API_HOST_ENV,
-    TRANSLATION_API_TOKEN_ENV,
-    ClientTranslation.config
-  );
+  return {
+    host: getTranslationApiHost(),
+    token: getTranslationApiToken(),
+  } as ApiConfig;
 };

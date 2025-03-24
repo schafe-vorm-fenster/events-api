@@ -1,5 +1,5 @@
 import { ClientGeo } from "@/src/logging/loggerApps.config";
-import { getApiConfig, getApiHost, getApiToken } from "../../helpers/config";
+import { ApiConfig, getApiHost, getApiToken } from "../../helpers/config";
 
 // Environment variable names for geo API
 const GEO_API_HOST_ENV = "SVF_GEOAPI_URL";
@@ -27,5 +27,8 @@ export const getGeoApiToken = (): string => {
  * @returns Object containing host and token, or null values if configuration is invalid
  */
 export const getGeoApiConfig = () => {
-  return getApiConfig(GEO_API_HOST_ENV, GEO_API_TOKEN_ENV, ClientGeo.config);
+  return {
+    host: getGeoApiHost(),
+    token: getGeoApiToken(),
+  } as ApiConfig;
 };
