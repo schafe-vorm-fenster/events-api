@@ -4,7 +4,7 @@ import {
   GoogleEvent,
   GoogleEventSchema,
 } from "@/src/events/types/google-event.types";
-import { ApiErrorSchema } from "@/src/rest/error.schema";
+import { ApiError, ApiErrorSchema } from "@/src/rest/error.schema";
 import { handleZodError } from "@/src/rest/zod-error-handler";
 import { ApiEvents } from "@/src/logging/loggerApps.config";
 import { AddEventSuccessfulSchema } from "./add-event.schema";
@@ -12,16 +12,13 @@ import { isGoogleEvent } from "@/src/events/helpers/json/isGoogleEvent";
 import { isCancelledEvent } from "@/src/events/helpers/json/isCancelledEvent";
 import { isValidGoogleEvent } from "@/src/events/helpers/json/isValidGoogleEvent";
 import { qualifyEvent } from "@/src/events/qualify/qualifyEvent";
-
-import eventsSchema from "@/src/events/schema/typesense.schema";
-import { TypesenseError } from "typesense/lib/Typesense/Errors";
 import { IndexedEvent } from "@/src/events/types/indexed-event.types";
 import { eventUuid } from "@/src/events/helpers/uuids/eventUuid";
-import client from "@/src/clients/typesense/search/client";
-import { deleteEvents } from "@/src/clients/typesense/search/deleteEvents";
 import { DeleteEventsSuccessfulSchema } from "./delete-event.schema";
 import { AddOrDeleteEventsContract } from "./events.contract";
-import { isTypesenseError } from "@/src/clients/typesense/helpers/typesense-error";
+import { createOrUpdateEvent } from "@/src/clients/typesense/create-or-update-event";
+import { deleteEvent } from "@/src/clients/typesense/delete-event";
+import { deleteEventsBefore } from "@/src/clients/typesense/delete-events-before";
 
 const log = getLogger(ApiEvents.post);
 
@@ -38,7 +35,7 @@ const handler = createNextHandler(
         throw new Error("Error parsing request body");
       }
 
-      // check if the body contains a valid google event including json check
+      // sanity check
       try {
         isGoogleEvent(incomingEvent);
         isValidGoogleEvent(incomingEvent);
@@ -63,9 +60,7 @@ const handler = createNextHandler(
         try {
           const eventId = eventUuid(incomingEvent);
 
-          const deleteResult = await deleteEvents({
-            id: eventId,
-          });
+          const deleteResult = await deleteEvent(eventId);
           log.debug({ deleteResult }, "Cancelled event deleted");
           return {
             status: 200,
@@ -81,10 +76,11 @@ const handler = createNextHandler(
           return {
             status: 500,
             body: {
-              status: (error as TypesenseError).httpStatus || 500,
+              status: error instanceof ApiError ? error.status : 500,
               error:
-                (error as TypesenseError).message ||
-                "Error deleting cancelled event",
+                error instanceof Error
+                  ? error.message
+                  : "Error deleting cancelled event",
             } as ApiErrorSchema,
           };
         }
@@ -101,63 +97,41 @@ const handler = createNextHandler(
         );
       } catch (error) {
         log.error({ error }, "Error qualifying event");
-        throw new Error("Error qualifying event", {
-          cause: error,
-        });
-      }
-
-      try {
-        // Create or update the event in the database
-        try {
-          const data: IndexedEvent = (await client
-            .collections(eventsSchema.name)
-            .documents()
-            .create(indexableEvent)) as IndexedEvent;
-          log.debug({ data }, "Event created successfully");
-          return {
-            status: 200,
-            body: {
-              status: 201,
-              timestamp: new Date().toISOString(),
-              message: "Event created successfully",
-              data: data,
-            } as AddEventSuccessfulSchema,
-          };
-        } catch (error) {
-          if (isTypesenseError(error, ["409", "ObjectAlreadyExists"])) {
-            log.info(
-              { error, data: { id: indexableEvent.id } },
-              "Could not create event, because it already exists"
-            );
-            // Update existing event
-            const data: IndexedEvent = (await client
-              .collections(eventsSchema.name)
-              .documents(indexableEvent.id as string)
-              .update(indexableEvent)) as IndexedEvent;
-            log.debug({ data }, "Event updated successfully");
-            return {
-              status: 200,
-              body: {
-                status: 200,
-                results: 1,
-                timestamp: new Date().toISOString(),
-                message: "Event updated successfully",
-                data: data,
-              } as AddEventSuccessfulSchema,
-            };
-          }
-          throw new Error("Error creating event", {
-            cause: error,
-          });
-        }
-      } catch (error: unknown) {
-        log.error({ error }, "Error processing event");
-
         return {
           status: 500,
           body: {
             status: 500,
-            error: (error as Error)?.message ?? "Internal Server Error",
+            error: (error as Error)?.message || "Error qualifying event",
+          } as ApiErrorSchema,
+        };
+      }
+
+      // Create or update the event in the database
+      try {
+        const data = await createOrUpdateEvent(indexableEvent);
+        log.debug({ data }, "Event created or updated successfully");
+        return {
+          status: 200,
+          body: {
+            status: 201,
+            timestamp: new Date().toISOString(),
+            message: "Event created or updated successfully",
+            data: data,
+          } as AddEventSuccessfulSchema,
+        };
+      } catch (error: ApiErrorSchema | unknown) {
+        log.error(
+          { error, data: indexableEvent },
+          "Error creating or updating event"
+        );
+        return {
+          status: 500,
+          body: {
+            status: error instanceof ApiError ? error.status : 500,
+            error:
+              error instanceof Error
+                ? error.message
+                : "Error creating or updating event",
           } as ApiErrorSchema,
         };
       }
@@ -166,18 +140,17 @@ const handler = createNextHandler(
       const log = getLogger(ApiEvents["delete-by-date"]);
 
       try {
-        const result = await deleteEvents({
-          before: query.before || "now",
-        });
+        const timestamp = new Date().toISOString();
+        const result = await deleteEventsBefore(query.before || "now");
         log.debug({ data: result }, "Events deleted");
 
-        if (result?.deleted === 0) {
+        if (result === 0) {
           return {
             status: 200,
             body: {
               status: 204,
               results: 0,
-              timestamp: new Date().toISOString(),
+              timestamp: timestamp,
               message: "No events found to delete",
             } as DeleteEventsSuccessfulSchema,
           };
@@ -187,8 +160,8 @@ const handler = createNextHandler(
           status: 200,
           body: {
             status: 200,
-            results: result.deleted,
-            timestamp: new Date().toISOString(),
+            results: result,
+            timestamp: timestamp,
             message: `Successfully deleted events`,
           } as DeleteEventsSuccessfulSchema,
         };

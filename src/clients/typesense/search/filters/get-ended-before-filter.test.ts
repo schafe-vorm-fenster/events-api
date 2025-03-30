@@ -1,29 +1,46 @@
-import { describe, it, expect, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi, afterEach } from "vitest";
 import { getEndedBeforeFilter } from "./get-ended-before-filter";
+import * as nowModule from "@/src/events/helpers/datetime/now";
 
 describe("getEndedBeforeFilter", () => {
-  it("should return undefined when no date is provided", () => {
-    expect(getEndedBeforeFilter()).toBeUndefined();
+  const mockFixedDate = new Date("2023-01-01T12:00:00.000Z");
+  const mockFixedTimestamp = mockFixedDate.getTime();
+
+  beforeEach(() => {
+    // Mock the getCurrentTime function to return a fixed date
+    vi.spyOn(nowModule, "now").mockImplementation(() => mockFixedDate);
   });
 
-  it("should return correct filter string for valid ISO8601 date", () => {
-    const date = "2024-01-01T00:00:00Z";
-    expect(getEndedBeforeFilter(date)).toBe(
-      "start:<=1704067200000 && end:<=1704067200000"
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('should return a filter with current timestamp when isoDate is "now"', () => {
+    const filter = getEndedBeforeFilter("now");
+    expect(filter).toBe(
+      `start:<=${mockFixedTimestamp} && end:<=${mockFixedTimestamp}`
     );
   });
 
-  it("should handle 'now' as a valid input", () => {
-    vi.useFakeTimers();
-    const now = new Date("2024-01-01T12:00:00Z");
-    vi.setSystemTime(now);
-    expect(getEndedBeforeFilter("now")).toBe(
-      "start:<=1704110400000 && end:<=1704110400000"
+  it("should return a filter with current timestamp when isoDate is not provided", () => {
+    const filter = getEndedBeforeFilter();
+    expect(filter).toBe(
+      `start:<=${mockFixedTimestamp} && end:<=${mockFixedTimestamp}`
     );
-    vi.useRealTimers();
   });
 
-  it("should throw error for invalid ISO8601 date format", () => {
-    expect(() => getEndedBeforeFilter("invalid-date")).toThrow();
+  it("should return a filter with the specified timestamp when a valid ISO date is provided", () => {
+    const testIsoDate = "2022-06-15T10:30:00.000Z";
+    const testTimestamp = new Date(testIsoDate).getTime();
+
+    const filter = getEndedBeforeFilter(testIsoDate);
+    expect(filter).toBe(`start:<=${testTimestamp} && end:<=${testTimestamp}`);
+  });
+
+  it("should throw an error when an invalid ISO date is provided", () => {
+    const invalidDate = "not-a-date";
+    expect(() => {
+      getEndedBeforeFilter(invalidDate as string);
+    }).toThrow();
   });
 });

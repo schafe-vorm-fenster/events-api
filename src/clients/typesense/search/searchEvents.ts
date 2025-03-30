@@ -254,6 +254,7 @@ export const searchEvents = async (
   log.debug(searchParameters, "searchParameters");
 
   // TODO: maybe put into one generic function? Only for error handling reasons?
+  // TODO: refactor to pure http api
   const result = await client
     .collections(eventsSchema.name)
     .documents()

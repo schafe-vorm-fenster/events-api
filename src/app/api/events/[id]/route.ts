@@ -3,15 +3,15 @@ import { getLogger } from "@/src/logging/logger";
 import { handleZodError } from "@/src/rest/zod-error-handler";
 
 import { HttpError } from "http-errors";
-import { ApiErrorSchema } from "@/src/rest/error.schema";
+import { ApiError, ApiErrorSchema } from "@/src/rest/error.schema";
 import {
   DeleteEventSuccessfulSchema,
   GetEventSuccessfulSchema,
 } from "./single-event.schema";
 import { SingleEventContract } from "./single-event.contract";
-import { getEvent } from "@/src/clients/typesense/search/get-event";
-import { deleteEvents } from "@/src/clients/typesense/search/deleteEvents";
 import { ApiEvents } from "@/src/logging/loggerApps.config";
+import { deleteEvent } from "@/src/clients/typesense/delete-event";
+import { getEvent } from "@/src/clients/typesense/get-event";
 
 const log = getLogger(ApiEvents.post);
 
@@ -47,9 +47,7 @@ const handler = createNextHandler(
     },
     "delete-event": async ({ params }) => {
       try {
-        const result = await deleteEvents({
-          id: params.uuid,
-        });
+        const result = await deleteEvent(params.uuid);
 
         log.debug({ result }, "event deleted - tried at least");
         return {
@@ -69,10 +67,16 @@ const handler = createNextHandler(
         );
 
         return {
-          status: (httpCode as 404) || 500,
+          status:
+            error instanceof ApiError && error.status === 404
+              ? error.status
+              : 500,
           body: {
-            status: (httpCode as 404) || 500,
-            error: (error as Error).message || "Internal Server Error",
+            status: error instanceof ApiError ? error.status : 500,
+            error:
+              error instanceof Error
+                ? error.message
+                : "Error creating or updating event",
           } as ApiErrorSchema,
         };
       }

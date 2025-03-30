@@ -63,9 +63,14 @@ export enum ClientGoogleTasks {
 
 export enum ClientTypesense {
   config = "client.typesense.config",
-  get = "client.typesense.get",
-  create = "client.typesense.create",
-  update = "client.typesense.update",
-  delete = "client.typesense.delete",
+  "get-event" = "client.typesense.get-event",
+  "create-event" = "client.typesense.create-event",
+  "update-event" = "client.typesense.update-event",
+  "delete-event" = "client.typesense.delete-event",
+  "delete-events" = "client.typesense.delete-events",
   search = "client.typesense.search",
+  "create-or-update-event" = "client.typesense.create-or-update-event",
+  "retrieve-schema" = "client.typesense.retrieve-schema",
+  "create-schema" = "client.typesense.create-schema",
+  "delete-schema" = "client.typesense.delete-schema",
 }
