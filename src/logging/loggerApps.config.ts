@@ -11,6 +11,7 @@ export enum ApiEvents {
   bulk = "api.events.bulk",
   qualify = "api.events.qualify",
   "build-indexable-event" = "api.events.build-indexable-event",
+  "build-indexable-event-time-data" = "api.events.build-indexable-event-time-data",
 }
 
 export enum ApiUpdate {
@@ -39,6 +40,7 @@ export enum ClientTranslation {
 export enum ClientClassification {
   config = "client.classification.config",
   classify = "client.classification.classify",
+  scopify = "client.classification.scopify",
   bytag = "client.classification.by-tag",
   bytext = "client.classification.by-text",
 }

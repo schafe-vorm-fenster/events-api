@@ -11,7 +11,6 @@ import { AddEventSuccessfulSchema } from "./add-event.schema";
 import { isGoogleEvent } from "@/src/events/helpers/json/isGoogleEvent";
 import { isCancelledEvent } from "@/src/events/helpers/json/isCancelledEvent";
 import { isValidGoogleEvent } from "@/src/events/helpers/json/isValidGoogleEvent";
-import { qualifyEvent } from "@/src/events/qualify/qualifyEvent";
 import { IndexedEvent } from "@/src/events/types/indexed-event.types";
 import { eventUuid } from "@/src/events/helpers/uuids/eventUuid";
 import { DeleteEventsSuccessfulSchema } from "./delete-event.schema";
@@ -19,6 +18,7 @@ import { AddOrDeleteEventsContract } from "./events.contract";
 import { createOrUpdateEvent } from "@/src/clients/typesense/create-or-update-event";
 import { deleteEvent } from "@/src/clients/typesense/delete-event";
 import { deleteEventsBefore } from "@/src/clients/typesense/delete-events-before";
+import { qualifyEvent } from "@/src/events/qualify/qualify-event";
 
 const log = getLogger(ApiEvents.post);
 

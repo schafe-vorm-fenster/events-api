@@ -1,6 +1,8 @@
 import { IndexedEvent } from "../../events/types/indexed-event.types";
 
 export const mockEventCommunity: IndexedEvent = {
+  id: "mock-event-123",
+  "org.id": "mock-org-123",
   "summary.de": "Verenstreffen",
   "summary.en": "Event meeting",
   "summary.pl": "Spotkanie z wydarzeniem",

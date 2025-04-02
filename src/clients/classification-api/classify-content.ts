@@ -1,54 +1,50 @@
-import { unstable_cacheLife as cacheLife } from "next/cache";
+// import { unstable_cacheLife as cacheLife } from "next/cache";
 import { getLogger } from "../../logging/logger";
-import { RuralEventClassification } from "../../../packages/rural-event-types/src/rural-event-classification.types";
+import {
+  RuralEventClassification,
+  RuralEventClassificationSchema,
+} from "../../../packages/rural-event-types/src/rural-event-classification.types";
 import { classifyTags } from "./classify-tags";
 import { getClassificationApiConfig } from "./helpers/config";
+import { ClientClassification } from "@/src/logging/loggerApps.config";
+import {
+  ClassifyContentQuery,
+  ClassifyContentQuerySchema,
+  ClassifyContentResponse,
+  ClassifyContentResponseSchema,
+  FallbackClassification,
+} from "./classify-content.types";
+import { ApiError } from "next/dist/server/api-utils";
 
-export interface ClassifyContentQuery {
-  tags: string[];
-  summary: string;
-  description: string;
-  occurrence?: string;
-}
-
-export type ClassifyContentResponse = RuralEventClassification | null;
+const log = getLogger(ClientClassification.classify);
 
 export const classifyContent = async (
   query: ClassifyContentQuery
 ): Promise<ClassifyContentResponse> => {
-  "use cache";
-  cacheLife("classification");
-
-  const log = getLogger("events.classify.classifyContent");
+  // "use cache";
+  // cacheLife("classification");
 
   // check incoming params
-  if (!query) {
-    log.error("No query given.");
-    return null;
-  }
-  if (!query.tags || !query.summary || query.summary.length <= 0) {
-    log.error("No tags or summary given.");
-    return null;
-  }
-
-  // if tags, then use classifyByTags
-  if (query.tags && query.tags.length > 0) {
-    const classificationByTags: RuralEventClassification | null =
-      await classifyTags(query.tags);
-    // check classification for category and scope
-    const classificationResult: ClassifyContentResponse =
-      RuralEventClassification.parse(classificationByTags);
-    // if classification found with category and scope, then just return it
-    if (classificationResult) {
-      log.debug(
-        { tags: query.tags, classification: classificationResult },
-        "Classification done by tags."
-      );
-      return classificationResult;
-    }
-  }
-
   try {
+    ClassifyContentQuerySchema.parse(query);
+
+    // if tags, then use classifyByTags
+    if (query.tags && query.tags.length > 0) {
+      const classificationByTags: RuralEventClassification | null =
+        await classifyTags({ tags: query.tags as [string, ...string[]] });
+      // check classification for category and scope
+      const classificationResult: ClassifyContentResponse =
+        RuralEventClassificationSchema.parse(classificationByTags);
+      // if classification found with category and scope, then just return it
+      if (classificationResult) {
+        log.debug(
+          { tags: query.tags, classification: classificationResult },
+          "Classification done by tags."
+        );
+        return classificationResult;
+      }
+    }
+
     // Get API configuration
     const { host, token } = getClassificationApiConfig();
 
@@ -70,31 +66,26 @@ export const classifyContent = async (
     });
 
     if (!response.ok) {
-      throw new Error(
-        `Classification request failed with status ${response.status}`
-      );
+      throw new ApiError(response.status, response.statusText);
     }
 
-    const data = await response.json();
-    log.debug(`classification api response: ${JSON.stringify(data)}`);
-
     // check classification for category and scope
-    const classificationResult: ClassifyContentResponse =
-      RuralEventClassification.parse(data as RuralEventClassification);
+    const classification: ClassifyContentResponse = await response.json();
+    ClassifyContentResponseSchema.parse(classification);
 
-    // if not valid, delegate to error handling
-    if (!classificationResult)
-      throw new Error("Classification failed with no/invalid result.");
-
-    return classificationResult;
+    log.debug(
+      { query: query, data: classification },
+      "Classify content successful"
+    );
+    return classification;
   } catch (error) {
     log.error(
       {
+        error: error,
         query: query,
-        error: error instanceof Error ? error.message : String(error),
       },
-      "Classification failed."
+      "Classify content failed"
     );
-    return null;
+    return FallbackClassification;
   }
 };

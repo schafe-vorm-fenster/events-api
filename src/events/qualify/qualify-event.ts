@@ -6,16 +6,20 @@ import { EventContentWithMetadata } from "../events.types";
 import { RuralEventClassification } from "../../../packages/rural-event-types/src/rural-event-classification.types";
 import { geoCodeLocation } from "../../clients/geo-api/geo-code-location";
 import { mapScopes } from "../scopes/map-scopes";
-import { translateContent } from "../../clients/translation-api/translate-content";
+// import { translateContent } from "../../clients/translation-api/translate-content";
 import { getGeoLocation } from "../../clients/geo-api/get-geo-location";
-import { buildIndexableEvent } from "../helpers/buildIndexableEvent";
 import { classifyContent } from "@/src/clients/classification-api/classify-content";
 import { unknownToData } from "@/packages/data-text-mapper/src/unknownToData";
-import { TranslatedContents } from "@/src/clients/translation-api/translation.types";
+// import { TranslatedContents } from "@/src/clients/translation-api/translation.types";
 import { RuralEventScope } from "@/packages/rural-event-types/src/rural-event-scope.types";
 import { getLogger } from "@/src/logging/logger";
 import { ApiEvents } from "@/src/logging/loggerApps.config";
 import { measureTime } from "@/src/logging/measure-time";
+import { buildIndexableEvent } from "../helpers/build-indexable-event";
+import { scopifyContent } from "@/src/clients/classification-api/scopify-content";
+import { translateContent } from "@/src/clients/translation-api/translate-content";
+import { TranslatedContents } from "@/src/clients/translation-api/translation.types";
+// import { TranslatedContents } from "@/src/clients/translation-api/translation.types";
 
 const log = getLogger(ApiEvents.qualify);
 
@@ -23,27 +27,29 @@ export async function qualifyEvent(
   incomingEvent: GoogleEvent
 ): Promise<IndexedEvent> {
   // prepare enhancement of the event data
-  let geolocation: GeoLocation | null;
-  let metadata: EventContentWithMetadata | null;
-  let scope: RuralEventScope;
-  let classification: RuralEventClassification | null;
-  let translatedContents: TranslatedContents | null;
+  let geolocation: GeoLocation | null | undefined = null;
+  let metadata: EventContentWithMetadata | null | undefined = null;
+  let scope: RuralEventScope | undefined = undefined;
+  let classification: RuralEventClassification;
+  let translatedContents: TranslatedContents | null | undefined = undefined;
 
   try {
-    // create uuid based on the event data
+    // try to extract some metdata e.g. tags or scopesfrom the description
     metadata = unknownToData(incomingEvent?.description as string);
 
-    // Start all promises early
+    // set scope if found something in description
+    if (metadata && (metadata?.scopes ?? []).length > 0) {
+      scope = await mapScopes(metadata.scopes as string[]);
+    }
+
+    // Start geo coding early
     const geoLocationPromise = measureTime(
       "geoCodeLocation",
       geoCodeLocation(incomingEvent?.location as string),
       log
     );
-    const scopePromise = measureTime(
-      "mapScopes",
-      mapScopes(metadata?.scopes as string[]),
-      log
-    );
+
+    // Start classification early
     const classificationPromise = measureTime(
       "classifyContent",
       classifyContent({
@@ -54,6 +60,8 @@ export async function qualifyEvent(
       }),
       log
     );
+
+    // Start translation early
     const translationPromise = measureTime(
       "translateContent",
       translateContent(
@@ -63,12 +71,39 @@ export async function qualifyEvent(
       log
     );
 
-    // Resolve promises with individual error handling
+    // Resolve classification
+    classification = await classificationPromise;
+
+    // do scopification at the end, because we need classification data first
+    if (!scope) {
+      scope = await scopifyContent({
+        summary: incomingEvent.summary as string,
+        description: (incomingEvent.description as string) || "",
+        category: classification?.category as string,
+        tags: [
+          ...(classification?.tags as string[]),
+          ...(metadata?.tags as string[]),
+        ],
+        allday: incomingEvent?.start?.date ? true : false,
+        occurrence: incomingEvent?.recurringEventId ? "recurring" : "once",
+      });
+    }
+
+    translatedContents = await translationPromise;
+    if (!translatedContents) {
+      log.warn(
+        { event: incomingEvent },
+        "No translated contents found, using original content"
+      );
+    }
+
+    // Resolve geo coding promise at the end
     geolocation = await geoLocationPromise;
     if (!geolocation) {
       throw new Error("No geolocation found");
     }
 
+    // get community details, after geo coding
     const community = await measureTime(
       "getGeoLocation",
       getGeoLocation(
@@ -76,12 +111,6 @@ export async function qualifyEvent(
       ) as Promise<GeoLocation>,
       log
     );
-
-    scope = await scopePromise;
-
-    classification = await classificationPromise;
-
-    translatedContents = await translationPromise;
 
     // build proper indexable object
     const newEvent: IndexedEvent = buildIndexableEvent(
@@ -100,10 +129,18 @@ export async function qualifyEvent(
     );
 
     return newEvent;
-  } catch (error: unknown) {
-    log.error({ error, incomingEvent }, "Error enriching event data");
+  } catch (error: Error | unknown) {
+    log.error(
+      {
+        error: error instanceof Error ? error.message : "unknown error",
+        query: incomingEvent,
+      },
+      "Qualify event failed"
+    );
     throw error instanceof Error
       ? error
-      : new Error("Could not enrich event data for unknown reason");
+      : new Error("Qualify event failed", {
+          cause: error,
+        });
   }
 }

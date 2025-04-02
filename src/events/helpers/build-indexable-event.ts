@@ -1,20 +1,26 @@
 import { getLogger } from "../../logging/logger";
 import { RuralEventClassification } from "../../../packages/rural-event-types/src/rural-event-classification.types";
-import { RuralEventScope } from "../../../packages/rural-event-types/src/rural-event-scope.types";
+
 import {
   EventContentWithMetadata,
   PostEventRequestBody,
 } from "../events.types";
 import { GeoLocation } from "../../clients/geo-api/types/geo-location.types";
-import { IndexedEvent, IndexedEventSchema } from "../types/indexed-event.types";
+import {
+  IndexedEvent,
+  IndexedEventSchema,
+  IndexedEventTimeData,
+} from "../types/indexed-event.types";
 
 import { getDocumentLinkFromAttachments } from "./attachments/getDocumentLinkFromAttachments";
 import { getImageLinkFromAttachments } from "./attachments/getImageLinkFromAttachments";
 import { googleDatetimeToTimestamp } from "./datetime/googleDatetimeToTimestamp";
 import { eventUuid } from "./uuids/eventUuid";
-import { recurringEventUuid } from "./uuids/recurringEventUuid";
 import { TranslatedContents } from "@/src/clients/translation-api/translation.types";
 import { ApiEvents } from "@/src/logging/loggerApps.config";
+import { buildIndexableEventTimeData } from "./build-indexable-event-time-data";
+import { GoogleEventTimeDataSchema } from "../types/google-event.types";
+import { RuralEventScope } from "@/packages/rural-event-types/src/rural-event-scope.types";
 
 const log = getLogger(ApiEvents["build-indexable-event"]);
 
@@ -24,9 +30,23 @@ export const buildIndexableEvent = (
   community: GeoLocation,
   contentWithMetadata: EventContentWithMetadata | null,
   scope: RuralEventScope,
-  classification: RuralEventClassification | null,
+  classification: RuralEventClassification,
   translatedContents: TranslatedContents | null
 ): IndexedEvent => {
+  // build time data
+  let indexableEventTimeData: IndexedEventTimeData;
+  try {
+    indexableEventTimeData = buildIndexableEventTimeData(
+      GoogleEventTimeDataSchema.parse(rawEvent)
+    );
+  } catch (error) {
+    log.error(
+      { error, event: { data: { rawEvent } } },
+      "Error while parsing event time data."
+    );
+    throw new Error("Error while parsing event time data.", { cause: error });
+  }
+
   const indexableEvent: IndexedEvent = {
     id: eventUuid(rawEvent),
     "org.id": rawEvent.id || "",
@@ -132,19 +152,12 @@ export const buildIndexableEvent = (
       ? [classification?.category]
       : ["unknown"],
     tags: classification?.tags || [],
-    scope: scope || classification?.scope || "nearby",
+    scope: scope || "community",
 
     /**
      * dates and times
      */
-    start: googleDatetimeToTimestamp(rawEvent?.start) || 0,
-    end: googleDatetimeToTimestamp(rawEvent?.end) || 0,
-    allday: rawEvent?.start?.date ? true : false,
-    // TODO: check as well for recurrence[] and sequence, both could indicate a recurrency
-    occurrence: rawEvent?.recurringEventId ? "recurring" : "once",
-    "series.id": rawEvent?.recurringEventId
-      ? recurringEventUuid(rawEvent) || ""
-      : "",
+    ...indexableEventTimeData,
 
     /**
      * location infos

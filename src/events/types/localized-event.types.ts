@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { OccurrenceSchema } from "./occurrence.types";
-import { RuralEventScope } from "@/packages/rural-event-types/src/rural-event-scope.types";
+import { RuralEventScopeSchema } from "@/packages/rural-event-types/src/rural-event-scope.types";
 import { GeonameIdSchema } from "./geonames.types";
 
 export const LocalizedEventSchema = z.object({
@@ -24,7 +24,7 @@ export const LocalizedEventSchema = z.object({
   "location.localname": z.string(),
   "location.address": z.string(),
   "location.geopoint": z.any(),
-  scope: RuralEventScope,
+  scope: RuralEventScopeSchema,
   "community.id": GeonameIdSchema,
   "community.geopoint": z.any(),
   "community.name": z.string(),

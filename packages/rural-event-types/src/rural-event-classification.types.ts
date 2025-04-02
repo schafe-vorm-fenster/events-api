@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { RuralEventCategoryId } from "./rural-event-category.types";
-import { RuralEventScope } from "./rural-event-scope.types";
+import { RuralEventCategoryIdSchema } from "./rural-event-category.types";
 
-export const RuralEventClassification = z.object({
-  category: RuralEventCategoryId,
+export const RuralEventClassificationSchema = z.object({
+  category: RuralEventCategoryIdSchema,
   tags: z.array(z.string()).optional(),
-  scope: RuralEventScope,
 });
 
-export type RuralEventClassification = z.infer<typeof RuralEventClassification>;
+export type RuralEventClassification = z.infer<
+  typeof RuralEventClassificationSchema
+>;

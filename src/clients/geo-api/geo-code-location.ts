@@ -2,7 +2,7 @@ import { GeoLocation } from "./types/geo-location.types";
 import { getLogger } from "../../logging/logger";
 import { ClientGeo } from "@/src/logging/loggerApps.config";
 import { getGeoApiConfig } from "./helpers/config";
-import { cacheLife } from "next/dist/server/use-cache/cache-life";
+// import { cacheLife } from "next/dist/server/use-cache/cache-life";
 
 type GeoCodeLocationResponse = GeoLocation | null;
 
@@ -14,8 +14,8 @@ type GeoCodeLocationResponse = GeoLocation | null;
 export const geoCodeLocation = async (
   location: string
 ): Promise<GeoCodeLocationResponse> => {
-  "use cache";
-  cacheLife("geo");
+  // "use cache";
+  // cacheLife("geo");
 
   const log = getLogger(ClientGeo.findbyaddress);
   log.debug({ location }, "geocoding location");

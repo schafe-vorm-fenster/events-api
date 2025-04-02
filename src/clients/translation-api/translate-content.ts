@@ -1,7 +1,7 @@
 import { getLogger } from "../../logging/logger";
 
 import { getTranslationApiConfig } from "./helpers/config";
-import { cacheLife } from "next/dist/server/use-cache/cache-life";
+// import { cacheLife } from "next/dist/server/use-cache/cache-life";
 import { TranslatedContents } from "./translation.types";
 import { ClientTranslation } from "@/src/logging/loggerApps.config";
 
@@ -9,8 +9,8 @@ export const translateContent = async (
   title: string,
   body: string
 ): Promise<TranslatedContents | null> => {
-  "use cache";
-  cacheLife("translation");
+  // "use cache";
+  // cacheLife("translation");
 
   const log = getLogger(ClientTranslation.translate);
 

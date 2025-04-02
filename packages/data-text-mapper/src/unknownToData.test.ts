@@ -3,8 +3,14 @@ import { describe, expect, test } from "vitest";
 import { unknownToData } from "./unknownToData";
 
 describe("unknownToData", () => {
-  test("returns null for empty input", () => {
-    expect(unknownToData("")).toBeNull();
+  test("returns empty object for empty input", () => {
+    const result = unknownToData("");
+    expect(result).not.toBeNull();
+    expect(result?.description).toBe("");
+    expect(result?.url).toBe("");
+    expect(result?.tags).toHaveLength(0);
+    expect(result?.scopes).toHaveLength(0);
+    expect(result?.image).toBe("");
   });
 
   describe("HTML content", () => {

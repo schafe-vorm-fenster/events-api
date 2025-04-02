@@ -7,8 +7,8 @@ import {
 import { containsHtml } from "../../../packages/data-text-mapper/src/helpers/containsHtml";
 import { isDataHtml } from "./helpers/isDataHtml";
 
-export const unknownToData = (body: string): TextWithData | null => {
-  if (!body) return null;
+export const unknownToData = (body: string): TextWithData => {
+  console.log("unknownToData", "No body provided");
 
   // extract tags from body
   let textWithData: TextWithData | null;
@@ -24,10 +24,13 @@ export const unknownToData = (body: string): TextWithData | null => {
   }
 
   return {
-    description: textWithData?.description || "",
-    url: textWithData?.url || "",
-    tags: textWithData?.tags || [],
-    scopes: textWithData?.scopes || [],
-    image: textWithData?.image || "",
+    description:
+      textWithData && textWithData.description
+        ? textWithData.description
+        : body, // fallback to initial body
+    url: textWithData && textWithData.url ? textWithData.url : "",
+    tags: textWithData && textWithData.tags ? textWithData.tags : [],
+    scopes: textWithData && textWithData.scopes ? textWithData.scopes : [],
+    image: textWithData && textWithData.image ? textWithData.image : "",
   };
 };

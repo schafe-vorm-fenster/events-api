@@ -3,7 +3,7 @@ import { z } from "zod";
 /**
  * The id of a rural event category. This is used to classify events by a fixed hard-coded structure. It's also used to indexing and searching.
  */
-export const RuralEventCategoryId = z.enum([
+export const RuralEventCategoryIdSchema = z.enum([
   "community-life",
   "education-health",
   "everyday-supply",
@@ -11,7 +11,7 @@ export const RuralEventCategoryId = z.enum([
   "unknown",
 ]);
 
-export type RuralEventCategoryId = z.infer<typeof RuralEventCategoryId>;
+export type RuralEventCategoryId = z.infer<typeof RuralEventCategoryIdSchema>;
 
 /**
  * Type for a localization of a rural event category for display purpose.
@@ -31,7 +31,7 @@ export type RuralEventCategoryLocalization = z.infer<
  * Type for a localizes rural event category for display purpose.
  */
 export const RuralEventCategory = z.object({
-  id: RuralEventCategoryId,
+  id: RuralEventCategoryIdSchema,
   localizations: z.array(RuralEventCategoryLocalization),
 });
 export type RuralEventCategory = z.infer<typeof RuralEventCategory>;

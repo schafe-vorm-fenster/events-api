@@ -3,7 +3,7 @@ import Schema$EventAttachment = calendar_v3.Schema$EventAttachment;
 import Schema$EventDateTime = calendar_v3.Schema$EventDateTime;
 import Schema$Event = calendar_v3.Schema$Event;
 import { z } from "zod";
-import { ISO8601Schema } from "../../rest/iso8601.types";
+import { ISO8601DateSchema, ISO8601Schema } from "../../rest/iso8601.types";
 import { Timezone } from "../../rest/timezone.types";
 
 export const GoogleEventOrganizer = z.object({
@@ -15,7 +15,7 @@ export const GoogleEventOrganizer = z.object({
 export type GoogleEventOrganizer = z.infer<typeof GoogleEventOrganizer>;
 
 export const GoogleEventDateTime = z.object({
-  date: ISO8601Schema.optional(),
+  date: ISO8601DateSchema.optional(),
   dateTime: ISO8601Schema.optional(),
   timeZone: Timezone.optional(),
 });
@@ -34,25 +34,36 @@ export type GoogleEventAttachment =
   | z.infer<typeof GoogleEventAttachment>
   | Schema$EventAttachment;
 
-export const GoogleEventSchema = z.object({
-  // system
-  id: z.string(),
-  kind: z.literal("calendar#event").optional(),
-  created: ISO8601Schema.optional(),
-  updated: ISO8601Schema.optional(),
-  status: z.string().optional(),
-  // date
+export const GoogleEventTimeDataSchema = z.object({
   start: GoogleEventDateTime,
   end: GoogleEventDateTime.optional(),
   sequence: z.number().optional(),
-  attachments: z.array(GoogleEventAttachment).optional(),
   recurrence: z.array(z.string()).optional(),
   recurringEventId: z.string().optional(),
-  // content
-  summary: z.string(),
-  description: z.string().optional(),
-  location: z.string(),
-  // context
-  organizer: GoogleEventOrganizer.optional(),
 });
+export type GoogleEventTimeData = z.infer<typeof GoogleEventTimeDataSchema>;
+
+export const GoogleEventSchema = z
+  .object({
+    // system
+    id: z.string(),
+    kind: z.literal("calendar#event").optional(),
+    created: ISO8601Schema.optional(),
+    updated: ISO8601Schema.optional(),
+    status: z.string().optional(),
+    // date
+    start: GoogleEventDateTime,
+    end: GoogleEventDateTime.optional(),
+    sequence: z.number().optional(),
+    recurrence: z.array(z.string()).optional(),
+    recurringEventId: z.string().optional(),
+    // content
+    summary: z.string(),
+    description: z.string().optional(),
+    location: z.string(),
+    attachments: z.array(GoogleEventAttachment).optional(),
+    // context
+    organizer: GoogleEventOrganizer.optional(),
+  })
+  .merge(GoogleEventTimeDataSchema);
 export type GoogleEvent = z.infer<typeof GoogleEventSchema> | Schema$Event;

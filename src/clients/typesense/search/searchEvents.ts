@@ -1,7 +1,10 @@
 import { getLogger } from "@/src/logging/logger";
 import { ApiEvents } from "@/src/logging/loggerApps.config";
 import { RuralEventCategoryId } from "@/packages/rural-event-types/src/rural-event-category.types";
-import { RuralEventScope } from "@/packages/rural-event-types/src/rural-event-scope.types";
+import {
+  RuralEventScope,
+  RuralEventScopeSchema,
+} from "@/packages/rural-event-types/src/rural-event-scope.types";
 import { IndexedEvent } from "@/src/events/types/indexed-event.types";
 import createHttpError from "http-errors";
 import { getAfterFilter } from "./filters/get-after-filter";
@@ -65,7 +68,7 @@ export const searchEvents = async (
   }
 
   // validate scope
-  if (!query.scope || !RuralEventScope.parse(query.scope)) {
+  if (!query.scope || !RuralEventScopeSchema.parse(query.scope)) {
     throw createHttpError(
       400,
       "invalid scope param, event search requires a valid scope"

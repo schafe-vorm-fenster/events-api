@@ -3,8 +3,8 @@ import { ApiErrorSchema } from "@/src/rest/error.schema";
 import { z } from "zod";
 import { SearchEventsSuccessfulSchema } from "../../search-events.schema";
 import { SearchEventsQuerySchema } from "../../search-events-query.schema";
-import { RuralEventScope } from "@/packages/rural-event-types/src/rural-event-scope.types";
-import { RuralEventCategoryId } from "@/packages/rural-event-types/src/rural-event-category.types";
+import { RuralEventScopeSchema } from "@/packages/rural-event-types/src/rural-event-scope.types";
+import { RuralEventCategoryIdSchema } from "@/packages/rural-event-types/src/rural-event-category.types";
 import { GeonameIdSchema } from "@/src/events/types/geonames.types";
 
 const c = initContract();
@@ -15,8 +15,8 @@ export const SearchEventsByCommunityScopeCategoryContract = c.router({
     path: "/api/events/search/:community/:scope/:category",
     pathParams: z.object({
       community: GeonameIdSchema,
-      scope: RuralEventScope,
-      category: RuralEventCategoryId,
+      scope: RuralEventScopeSchema,
+      category: RuralEventCategoryIdSchema,
     }),
     query: SearchEventsQuerySchema,
     responses: {
