@@ -1,7 +1,6 @@
 import { calendar_v3 } from "@googleapis/calendar";
 import Schema$EventAttachment = calendar_v3.Schema$EventAttachment;
 import Schema$EventDateTime = calendar_v3.Schema$EventDateTime;
-import Schema$Event = calendar_v3.Schema$Event;
 import { z } from "zod";
 import { ISO8601DateSchema, ISO8601Schema } from "../../rest/iso8601.types";
 import { Timezone } from "../../rest/timezone.types";
@@ -66,4 +65,4 @@ export const GoogleEventSchema = z
     organizer: GoogleEventOrganizer.optional(),
   })
   .merge(GoogleEventTimeDataSchema);
-export type GoogleEvent = z.infer<typeof GoogleEventSchema> | Schema$Event;
+export type GoogleEvent = z.infer<typeof GoogleEventSchema>;

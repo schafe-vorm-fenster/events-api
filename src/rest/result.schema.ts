@@ -4,3 +4,4 @@ import { OkaySchema } from "./okay.schema";
 export const ResultSchema = OkaySchema.extend({
   timestamp: z.string().transform((val) => new Date(val).toISOString()),
 });
+export type Result = z.infer<typeof ResultSchema>;

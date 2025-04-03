@@ -7,12 +7,13 @@ import { z } from "zod";
  * Keep all information loose and optional.
  */
 export const ScopifyContentQuerySchema = z.object({
-  summary: z.string(),
-  description: z.string().optional(),
   category: z.string().optional(),
   tags: z.array(z.string()).optional(),
-  allday: z.boolean().optional(),
-  occurrence: z.string().optional(),
+  timespan: z.string().optional().describe("Use 15min, 3days or similar."),
+  occurrence: z
+    .enum(["once", "recurring", "opening-hours"])
+    .or(z.string())
+    .optional(),
 });
 export type ScopifyContentQuery = z.infer<typeof ScopifyContentQuerySchema>;
 

@@ -10,16 +10,16 @@ export function middleware(req: NextRequest) {
   const token = req.headers.get("Sheep-Token");
 
   // collect tokens from env
-  const readTokens: String[] | undefined =
+  const readTokens: string[] | undefined =
     process.env.READ_ACCESS_TOKENS?.split(",").map((t) => t.trim());
-  const writeTokens: String[] | undefined =
+  const writeTokens: string[] | undefined =
     process.env.WRITE_ACCESS_TOKENS?.split(",").map((t) => t.trim());
-  const adminTokens: String[] | undefined =
+  const adminTokens: string[] | undefined =
     process.env.ADMIN_ACCESS_TOKENS?.split(",").map((t) => t.trim());
-  const allowedTokens: String[] = [
-    ...(readTokens as String[]),
-    ...(writeTokens as String[]),
-    ...(adminTokens as String[]),
+  const allowedTokens: string[] = [
+    ...(readTokens as string[]),
+    ...(writeTokens as string[]),
+    ...(adminTokens as string[]),
   ];
 
   if (token && allowedTokens?.includes(token)) {

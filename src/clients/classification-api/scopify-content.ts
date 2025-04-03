@@ -10,6 +10,7 @@ import {
   ScopifyContentResponseSchema,
 } from "./scopify-content.types";
 import { ApiError } from "next/dist/server/api-utils";
+import { AnyResult } from "@/src/rest/any-result.schema";
 
 const log = getLogger(ClientClassification.scopify);
 
@@ -27,7 +28,7 @@ export const scopifyContent = async (
     const { host, token } = getClassificationApiConfig();
 
     // if no tags, then scopify by using the classification api with fetch at SVF_CLASSIFICATIONAPI_URL
-    const url = new URL("/api/scopify/byobject", host);
+    const url = new URL("/api/scopify", host);
 
     const response = await fetch(url, {
       method: "POST",
@@ -45,14 +46,15 @@ export const scopifyContent = async (
     }
 
     // check classification for category and scope
-    const classification: ScopifyContentResponse = await response.json();
-    ScopifyContentResponseSchema.parse(classification);
+    const scopifyResponse: AnyResult = await response.json();
+    const scopification: ScopifyContentResponse =
+      ScopifyContentResponseSchema.parse(scopifyResponse);
 
     log.debug(
-      { query: query, data: classification },
+      { query: query, data: scopification },
       "Scopify content successful"
     );
-    return classification;
+    return scopification;
   } catch (error) {
     log.error(
       {

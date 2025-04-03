@@ -1,10 +1,5 @@
 // import { unstable_cacheLife as cacheLife } from "next/cache";
 import { getLogger } from "../../logging/logger";
-import {
-  RuralEventClassification,
-  RuralEventClassificationSchema,
-} from "../../../packages/rural-event-types/src/rural-event-classification.types";
-import { classifyTags } from "./classify-tags";
 import { getClassificationApiConfig } from "./helpers/config";
 import { ClientClassification } from "@/src/logging/loggerApps.config";
 import {
@@ -15,6 +10,7 @@ import {
   FallbackClassification,
 } from "./classify-content.types";
 import { ApiError } from "next/dist/server/api-utils";
+import { AnyResult } from "@/src/rest/any-result.schema";
 
 const log = getLogger(ClientClassification.classify);
 
@@ -28,28 +24,11 @@ export const classifyContent = async (
   try {
     ClassifyContentQuerySchema.parse(query);
 
-    // if tags, then use classifyByTags
-    if (query.tags && query.tags.length > 0) {
-      const classificationByTags: RuralEventClassification | null =
-        await classifyTags({ tags: query.tags as [string, ...string[]] });
-      // check classification for category and scope
-      const classificationResult: ClassifyContentResponse =
-        RuralEventClassificationSchema.parse(classificationByTags);
-      // if classification found with category and scope, then just return it
-      if (classificationResult) {
-        log.debug(
-          { tags: query.tags, classification: classificationResult },
-          "Classification done by tags."
-        );
-        return classificationResult;
-      }
-    }
-
     // Get API configuration
     const { host, token } = getClassificationApiConfig();
 
     // if no tags, then classify by using the classification api with fetch at SVF_CLASSIFICATIONAPI_URL
-    const url = new URL("/api/classify/byobject", host);
+    const url = new URL("/api/classify", host);
 
     const response = await fetch(url, {
       method: "POST",
@@ -58,11 +37,7 @@ export const classifyContent = async (
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        title: query.summary || "",
-        content: query?.description || "",
-        occourance: query?.occurrence || "",
-      }),
+      body: JSON.stringify(query),
     });
 
     if (!response.ok) {
@@ -70,8 +45,9 @@ export const classifyContent = async (
     }
 
     // check classification for category and scope
-    const classification: ClassifyContentResponse = await response.json();
-    ClassifyContentResponseSchema.parse(classification);
+    const classificationResponse: AnyResult = await response.json();
+    const classification: ClassifyContentResponse =
+      ClassifyContentResponseSchema.parse(classificationResponse.data);
 
     log.debug(
       { query: query, data: classification },

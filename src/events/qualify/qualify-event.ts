@@ -19,6 +19,8 @@ import { buildIndexableEvent } from "../helpers/build-indexable-event";
 import { scopifyContent } from "@/src/clients/classification-api/scopify-content";
 import { translateContent } from "@/src/clients/translation-api/translate-content";
 import { TranslatedContents } from "@/src/clients/translation-api/translation.types";
+import { calculateTimespan } from "../helpers/datetime/calculate-timespan";
+
 // import { TranslatedContents } from "@/src/clients/translation-api/translation.types";
 
 const log = getLogger(ApiEvents.qualify);
@@ -71,20 +73,22 @@ export async function qualifyEvent(
       log
     );
 
-    // Resolve classification
+    // Resolve classification as first, because so we can start the scopification before the other ended
     classification = await classificationPromise;
 
     // do scopification at the end, because we need classification data first
     if (!scope) {
+      const timespan: string = calculateTimespan(
+        incomingEvent.start,
+        incomingEvent.end
+      );
       scope = await scopifyContent({
-        summary: incomingEvent.summary as string,
-        description: (incomingEvent.description as string) || "",
         category: classification?.category as string,
         tags: [
           ...(classification?.tags as string[]),
           ...(metadata?.tags as string[]),
         ],
-        allday: incomingEvent?.start?.date ? true : false,
+        timespan: timespan || "",
         occurrence: incomingEvent?.recurringEventId ? "recurring" : "once",
       });
     }

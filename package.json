@@ -1,6 +1,6 @@
 {
   "name": "@schafevormfenster/events-api",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "private": true,
   "description": "An API to manage events structured in a search engine database.",
   "homepage": "https://events.api.schafe-vorm-fenster.de/",

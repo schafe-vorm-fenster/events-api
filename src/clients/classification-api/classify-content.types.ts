@@ -6,9 +6,9 @@ import { z } from "zod";
  * Ensures that the summary is a string and not empty.
  */
 export const ClassifyContentQuerySchema = z.object({
-  tags: z.array(z.string()).optional(),
   summary: z.string(),
   description: z.string().optional(),
+  tags: z.array(z.string()).optional(),
   occurrence: z.string().optional(),
 });
 export type ClassifyContentQuery = z.infer<typeof ClassifyContentQuerySchema>;

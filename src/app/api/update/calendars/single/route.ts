@@ -11,6 +11,7 @@ import {
   CalendarEventsQuery,
   CalendarEventsQuerySchema,
 } from "@/src/clients/calendar-api/types/calendar-events-query.types";
+import { GoogleEventSchema } from "@/src/events/types/google-event.types";
 
 const log = getLogger(ApiUpdate.calendar);
 
@@ -44,7 +45,7 @@ const handler = createNextHandler(
         // as result, we get an array of tasks incl. the task id.
         const tasks = await Promise.all(
           events.map(async (event) => {
-            return await addEventToQueue(event);
+            return await addEventToQueue(GoogleEventSchema.parse(event));
           })
         );
         log.debug({ tasks }, "Added events as tasks to queue");
