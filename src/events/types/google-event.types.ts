@@ -50,12 +50,6 @@ export const GoogleEventSchema = z
     created: ISO8601Schema.optional(),
     updated: ISO8601Schema.optional(),
     status: z.string().optional(),
-    // date
-    start: GoogleEventDateTime,
-    end: GoogleEventDateTime.optional(),
-    sequence: z.number().optional(),
-    recurrence: z.array(z.string()).optional(),
-    recurringEventId: z.string().optional(),
     // content
     summary: z.string(),
     description: z.string().optional(),
