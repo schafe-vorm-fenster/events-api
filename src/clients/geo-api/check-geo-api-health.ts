@@ -5,12 +5,17 @@ import {
 } from "@/src/rest/health.schema";
 import { getGeoApiConfig } from "./helpers/config";
 import { getConfigCacheTTL } from "@/src/config/cache-control-header";
+import { getLogger } from "@/src/logging/logger";
+import { ClientGeo } from "@/src/logging/loggerApps.config";
+
+const log = getLogger(ClientGeo.health);
 
 /**
  * Checks the health of the geo-api service.
  * @returns Promise<ServiceStatusSchema>
  */
 export const checkGeoApiHealth = async (): Promise<ServiceStatusSchema> => {
+  log.debug({}, "Checking Geo API health");
   try {
     const config = getGeoApiConfig();
     const url = new URL("", config.host); // TODO: use /api/health later when it's available
@@ -45,9 +50,20 @@ export const checkGeoApiHealth = async (): Promise<ServiceStatusSchema> => {
       name: name ?? "geo-api",
       version: version ?? "unknown",
     };
+
+    log.info(
+      {
+        data: {
+          status: serviceInfo.status,
+          name: serviceInfo.name,
+          version: serviceInfo.version,
+        },
+      },
+      "Geo API health check successful"
+    );
     return serviceInfo;
   } catch (error) {
-    console.error(error);
+    log.error(error, "Geo API health check failed");
 
     const serviceInfo: UnhealthyServiceInfoSchema = {
       status: 503,

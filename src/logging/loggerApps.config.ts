@@ -38,6 +38,7 @@ export enum ClientTranslation {
 }
 
 export enum ClientClassification {
+  health = "client.classification.health",
   config = "client.classification.config",
   classify = "client.classification.classify",
   scopify = "client.classification.scopify",
@@ -49,9 +50,11 @@ export enum ClientCalendar {
   config = "client.calendar.config",
   calendars = "client.calendar.calendars",
   events = "client.calendar.events",
+  health = "client.calendar.health",
 }
 
 export enum ClientGeo {
+  health = "client.geo.health",
   config = "client.geo.config",
   findbyaddress = "client.geocode.find-by-address",
   getcommunity = "client.geocode.get-community",

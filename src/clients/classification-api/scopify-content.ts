@@ -20,6 +20,15 @@ export const scopifyContent = async (
   // "use cache";
   // cacheLife("classification");
 
+  log.trace(
+    {
+      query: {
+        ...query,
+      },
+    },
+    "scopifyContent called"
+  );
+
   // check incoming params
   try {
     ScopifyContentQuerySchema.parse(query);
@@ -51,18 +60,14 @@ export const scopifyContent = async (
       ScopifyContentResponseSchema.parse(scopifyResponse);
 
     log.debug(
-      { query: query, data: scopification },
-      "Scopify content successful"
+      {
+        data: scopification,
+      },
+      "Scopification successful"
     );
     return scopification;
   } catch (error) {
-    log.error(
-      {
-        error: error,
-        query: query,
-      },
-      "Scopify content failed"
-    );
+    log.error(error, "Scopification failed");
     return FallbackScopification;
   }
 };

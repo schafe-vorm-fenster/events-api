@@ -20,6 +20,15 @@ export const classifyContent = async (
   // "use cache";
   // cacheLife("classification");
 
+  log.trace(
+    {
+      query: {
+        ...query,
+      },
+    },
+    "classifyContent called"
+  );
+
   // check incoming params
   try {
     ClassifyContentQuerySchema.parse(query);
@@ -50,18 +59,14 @@ export const classifyContent = async (
       ClassifyContentResponseSchema.parse(classificationResponse.data);
 
     log.debug(
-      { query: query, data: classification },
-      "Classify content successful"
+      {
+        data: classification,
+      },
+      "Classification successful"
     );
     return classification;
   } catch (error) {
-    log.error(
-      {
-        error: error,
-        query: query,
-      },
-      "Classify content failed"
-    );
+    log.error(error, "Classification failed");
     return FallbackClassification;
   }
 };

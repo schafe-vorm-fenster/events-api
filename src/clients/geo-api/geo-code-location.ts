@@ -18,7 +18,15 @@ export const geoCodeLocation = async (
   // cacheLife("geo");
 
   const log = getLogger(ClientGeo.findbyaddress);
-  log.debug({ location }, "geocoding location");
+
+  log.trace(
+    {
+      query: {
+        location,
+      },
+    },
+    "geoCodeLocation called"
+  );
 
   try {
     const config = getGeoApiConfig();
@@ -39,13 +47,30 @@ export const geoCodeLocation = async (
 
     const data = await response.json();
     if (data) {
+      log.debug(
+        {
+          data: {
+            hasData: true,
+            locationFound: !!data,
+          },
+        },
+        "Geocoding successful"
+      );
       return data as GeoLocation;
     } else {
-      log.warn("got no json response");
+      log.warn(
+        {
+          data: {
+            location,
+            result: "empty response",
+          },
+        },
+        "Geocoding returned no data"
+      );
       return null;
     }
   } catch (error) {
-    log.error("error while geocoding location: ", error);
+    log.error(error, "Error while geocoding location");
     return null;
   }
 };

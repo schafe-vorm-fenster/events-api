@@ -5,6 +5,10 @@ import {
 } from "@/src/rest/health.schema";
 import { getClassificationApiConfig } from "./helpers/config";
 import { getConfigCacheTTL } from "@/src/config/cache-control-header";
+import { getLogger } from "@/src/logging/logger";
+import { ClientClassification } from "@/src/logging/loggerApps.config";
+
+const log = getLogger(ClientClassification.health);
 
 /**
  * Checks the health of the classification API service.
@@ -12,6 +16,7 @@ import { getConfigCacheTTL } from "@/src/config/cache-control-header";
  */
 export const checkClassificationApiHealth =
   async (): Promise<ServiceStatusSchema> => {
+    log.debug({}, "Checking classification API health");
     try {
       const { host, token } = getClassificationApiConfig();
       const url: string = host;
@@ -45,9 +50,20 @@ export const checkClassificationApiHealth =
         name: name || "classification-api",
         version: version, // TODO: get version from health endpoint
       };
+
+      log.info(
+        {
+          data: {
+            status: serviceInfo.status,
+            name: serviceInfo.name,
+            version: serviceInfo.version,
+          },
+        },
+        "Classification API health check successful"
+      );
       return serviceInfo;
     } catch (error) {
-      console.error(error);
+      log.error(error, "Classification API health check failed");
 
       const serviceInfo: UnhealthyServiceInfoSchema = {
         status: 503,
