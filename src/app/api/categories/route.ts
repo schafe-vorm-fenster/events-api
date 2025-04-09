@@ -16,43 +16,67 @@ const handler = createNextHandler(
       const lang: string | undefined = query?.language ?? undefined;
       const examples: boolean | undefined = query?.examples ?? undefined;
 
-      log.info({ lang, examples }, `get categories`);
-
-      // copy categories to avoid mutation
-      const categories: RuralEventCategoryList = JSON.parse(
-        JSON.stringify(ruralEventCategories)
+      log.debug(
+        {
+          query: {
+            language: lang,
+            examples,
+          },
+        },
+        "Get categories request received"
       );
 
-      // filter localizations by given language on locale
-      // remove examples if not requested
-      categories.map((category) => {
-        if (lang) {
-          category.localizations = category.localizations.filter(
-            (localization) => localization.locale === lang
-          );
-        }
-        if (examples !== true) {
-          category.localizations = category.localizations.map(
-            (localization) => {
-              delete localization.examples;
-              return localization;
-            }
-          );
-        }
-        return category;
-      });
+      try {
+        // copy categories to avoid mutation
+        const categories: RuralEventCategoryList = JSON.parse(
+          JSON.stringify(ruralEventCategories)
+        );
 
-      res.responseHeaders.set("Cache-Control", getConfigCacheControlHeader());
+        // filter localizations by given language on locale
+        // remove examples if not requested
+        categories.map((category) => {
+          if (lang) {
+            category.localizations = category.localizations.filter(
+              (localization) => localization.locale === lang
+            );
+          }
+          if (examples !== true) {
+            category.localizations = category.localizations.map(
+              (localization) => {
+                delete localization.examples;
+                return localization;
+              }
+            );
+          }
+          return category;
+        });
 
-      return {
-        status: 200,
-        body: {
+        res.responseHeaders.set("Cache-Control", getConfigCacheControlHeader());
+
+        log.info(
+          {
+            data: {
+              count: categories.length,
+              language: lang,
+              hasExamples: examples === true,
+            },
+          },
+          "Categories retrieved successfully"
+        );
+
+        return {
           status: 200,
-          results: categories.length,
-          timestamp: new Date().toISOString(),
-          data: categories,
-        },
-      };
+          body: {
+            status: 200,
+            results: categories.length,
+            timestamp: new Date().toISOString(),
+            data: categories,
+          },
+        };
+      } catch (error) {
+        log.error(error, "Error retrieving categories");
+        throw error;
+      }
     },
   },
   {

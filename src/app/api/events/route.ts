@@ -26,12 +26,19 @@ const handler = createNextHandler(
   AddOrDeleteEventsContract,
   {
     "add-event": async ({ body }: { body: GoogleEvent }) => {
+      log.debug(
+        {
+          query: { body },
+        },
+        "Add event request received"
+      );
+
       const incomingEvent = body as GoogleEvent;
 
       try {
         GoogleEventSchema.parse(incomingEvent);
       } catch (error) {
-        log.error({ error }, "Error parsing request body");
+        log.error(error, "Error parsing request body");
         throw new Error("Error parsing request body");
       }
 
@@ -41,8 +48,10 @@ const handler = createNextHandler(
         isValidGoogleEvent(incomingEvent);
       } catch (error: unknown) {
         log.warn(
-          { body: incomingEvent },
-          "Request body is no valid google event."
+          {
+            data: { body: incomingEvent },
+          },
+          "Request body is not a valid Google event"
         );
         return {
           status: 400,
@@ -59,9 +68,13 @@ const handler = createNextHandler(
       if (isCancelledEvent(incomingEvent)) {
         try {
           const eventId = eventUuid(incomingEvent);
+          log.debug({ query: { eventId } }, "Deleting cancelled event");
 
           const deleteResult = await deleteEvent(eventId);
-          log.debug({ deleteResult }, "Cancelled event deleted");
+          log.info(
+            { data: { deleteResult, eventId } },
+            "Cancelled event deleted successfully"
+          );
           return {
             status: 200,
             body: {
@@ -72,7 +85,7 @@ const handler = createNextHandler(
             } as AddEventSuccessfulSchema,
           };
         } catch (error: unknown) {
-          log.error({ error }, "Error deleting cancelled event");
+          log.error(error, "Error deleting cancelled event");
           return {
             status: 500,
             body: {
@@ -89,14 +102,15 @@ const handler = createNextHandler(
       let indexableEvent: IndexedEvent;
 
       try {
+        log.debug({}, "Qualifying event");
         // Process incoming event using the new qualifyEvent function
         indexableEvent = (await qualifyEvent(incomingEvent)) as IndexedEvent;
         log.debug(
-          { incomingEvent, indexableEvent },
-          "Event is fully qualified"
+          { data: { eventId: indexableEvent.id } },
+          "Event qualified successfully"
         );
       } catch (error) {
-        log.error({ error }, "Error qualifying event");
+        log.error(error, "Error qualifying event");
         return {
           status: 500,
           body: {
@@ -108,8 +122,15 @@ const handler = createNextHandler(
 
       // Create or update the event in the database
       try {
+        log.debug(
+          { query: { eventId: indexableEvent.id } },
+          "Creating or updating event"
+        );
         const data = await createOrUpdateEvent(indexableEvent);
-        log.debug({ data }, "Event created or updated successfully");
+        log.info(
+          { data: { eventId: indexableEvent.id } },
+          "Event created or updated successfully"
+        );
         return {
           status: 200,
           body: {
@@ -120,10 +141,7 @@ const handler = createNextHandler(
           } as AddEventSuccessfulSchema,
         };
       } catch (error: ApiErrorSchema | unknown) {
-        log.error(
-          { error, data: indexableEvent },
-          "Error creating or updating event"
-        );
+        log.error(error, "Error creating or updating event");
         return {
           status: 500,
           body: {
@@ -138,13 +156,18 @@ const handler = createNextHandler(
     },
     "delete-events": async ({ query }: { query: { before?: string } }) => {
       const log = getLogger(ApiEvents["delete-by-date"]);
+      log.debug({ query }, "Delete events request received");
 
       try {
         const timestamp = new Date().toISOString();
+        log.debug(
+          { query: { before: query.before || "now" } },
+          "Deleting events before specified date"
+        );
         const result = await deleteEventsBefore(query.before || "now");
-        log.debug({ data: result }, "Events deleted");
 
         if (result === 0) {
+          log.info({ data: { result } }, "No events found to delete");
           return {
             status: 200,
             body: {
@@ -156,6 +179,7 @@ const handler = createNextHandler(
           };
         }
 
+        log.info({ data: { result } }, "Events deleted successfully");
         return {
           status: 200,
           body: {
@@ -166,7 +190,7 @@ const handler = createNextHandler(
           } as DeleteEventsSuccessfulSchema,
         };
       } catch (error: unknown) {
-        log.error({ error }, "Error deleting events");
+        log.error(error, "Error deleting events");
         return {
           status: 500,
           body: {
