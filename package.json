@@ -23,7 +23,8 @@
     "start": "next start -p 8000",
     "test": "vitest run",
     "test:ci": "vitest run --coverage",
-    "test:watch": "vitest watch"
+    "test:watch": "vitest watch",
+    "check": "next lint && vitest run && next build"
   },
   "dependencies": {
     "@cospired/i18n-iso-languages": "^4.0.1",
