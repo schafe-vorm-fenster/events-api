@@ -56,8 +56,42 @@ export const scopifyContent = async (
 
     // check classification for category and scope
     const scopifyResponse: AnyResult = await response.json();
+
+    // Add diagnostic logging to understand the response structure
+    log.debug(
+      {
+        data: {
+          responseStatus: response.status,
+          responseHeaders: Object.fromEntries(response.headers.entries()),
+          rawResponse: scopifyResponse,
+          responseType: typeof scopifyResponse,
+          isObject: typeof scopifyResponse === "object",
+          hasData: scopifyResponse?.data !== undefined,
+          dataValue: scopifyResponse?.data,
+          dataType: typeof scopifyResponse?.data,
+        },
+      },
+      "Raw scopify API response received"
+    );
+
+    // Add diagnostic logging before schema parsing
+    log.debug(
+      {
+        data: {
+          aboutToParse: scopifyResponse,
+          aboutToParseData: scopifyResponse?.data,
+          aboutToParseScope: scopifyResponse?.data?.scope,
+          schemaExpects:
+            "string enum: 'community' | 'municipality' | 'county' | 'state' | 'country' | 'nearby' | 'region'",
+        },
+      },
+      "About to parse scopify response with schema"
+    );
+
+    // Extract the scope value from the nested data structure
+    const scopeValue = scopifyResponse?.data?.scope;
     const scopification: ScopifyContentResponse =
-      ScopifyContentResponseSchema.parse(scopifyResponse);
+      ScopifyContentResponseSchema.parse(scopeValue);
 
     log.debug(
       {

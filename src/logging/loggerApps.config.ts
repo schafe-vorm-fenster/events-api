@@ -79,3 +79,7 @@ export enum ClientTypesense {
   "create-schema" = "client.typesense.create-schema",
   "delete-schema" = "client.typesense.delete-schema",
 }
+
+export enum DataTextMapper {
+  unknownToData = "data-text-mapper.unknownToData",
+}

@@ -6,9 +6,20 @@ import {
 } from "../../../packages/data-text-mapper/src";
 import { containsHtml } from "../../../packages/data-text-mapper/src/helpers/containsHtml";
 import { isDataHtml } from "./helpers/isDataHtml";
+import { getLogger } from "../../../src/logging/logger";
+
+const log = getLogger("data-text-mapper.unknownToData");
 
 export const unknownToData = (body: string): TextWithData => {
-  console.log("unknownToData", "No body provided");
+  log.trace(
+    {
+      query: {
+        body: body?.substring(0, 100) + (body?.length > 100 ? "..." : ""), // Truncate long content for logging
+        bodyLength: body?.length || 0,
+      },
+    },
+    "unknownToData called"
+  );
 
   // extract tags from body
   let textWithData: TextWithData | null;
@@ -23,7 +34,7 @@ export const unknownToData = (body: string): TextWithData => {
     textWithData = textToData(body);
   }
 
-  return {
+  const result = {
     description:
       textWithData && textWithData.description
         ? textWithData.description
@@ -33,4 +44,24 @@ export const unknownToData = (body: string): TextWithData => {
     scopes: textWithData && textWithData.scopes ? textWithData.scopes : [],
     image: textWithData && textWithData.image ? textWithData.image : "",
   };
+
+  log.debug(
+    {
+      data: {
+        hasDescription: !!result.description,
+        hasUrl: !!result.url,
+        tagsCount: result.tags.length,
+        scopesCount: result.scopes.length,
+        hasImage: !!result.image,
+        processingPath: isDataHtml(body)
+          ? "dataHtml"
+          : containsHtml(body)
+            ? "html"
+            : "text",
+      },
+    },
+    "unknownToData completed successfully"
+  );
+
+  return result;
 };
