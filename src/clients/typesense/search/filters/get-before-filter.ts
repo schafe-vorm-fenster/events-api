@@ -6,8 +6,15 @@ import { ISO8601, ISO8601Schema } from "../../../../rest/iso8601.types";
  */
 export const getBeforeFilter = (isoDate?: ISO8601): string | undefined => {
   if (!isoDate) return undefined;
-  ISO8601Schema.parse(isoDate);
-  const beforeTimestamp: number = new Date(isoDate).getTime();
+
+  const parseResult = ISO8601Schema.safeParse(isoDate);
+  if (!parseResult.success) {
+    throw new Error(
+      `Invalid ISO8601 date format for before filter: ${isoDate}`
+    );
+  }
+
+  const beforeTimestamp: number = new Date(parseResult.data).getTime();
   const beforeFilter: string = `start:<= ${beforeTimestamp}`;
   return beforeFilter;
 };

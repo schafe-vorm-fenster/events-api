@@ -32,6 +32,26 @@ const handler = createNextHandler(
   SearchEventsByCommunityContract,
   {
     "search-events-by-community": async ({ params, query }, res) => {
+      console.log(
+        "🚀 HANDLER: Route handler called with params:",
+        params,
+        "query:",
+        query
+      );
+
+      // Add diagnostic logging for route parameters
+      log.debug(
+        {
+          data: {
+            rawParams: params,
+            rawQuery: query,
+            communityParam: params?.community,
+            communityType: typeof params?.community,
+          },
+        },
+        "Raw route parameters received"
+      );
+
       const community: GeonameId = params?.community ?? "";
       const before: ISO8601 | undefined =
         (query?.before as ISO8601) ?? undefined;
@@ -51,14 +71,35 @@ const handler = createNextHandler(
         extractGeonameId(community)
       );
 
-      return await searchEvents({
+      // Add diagnostic logging for searchEvents parameters
+      const searchParams = {
         center: communityCenter,
-        scope: "region", // TODO: check which should be the default scope if not set
+        scope: "region" as const, // TODO: check which should be the default scope if not set
         containTighterScopes: true,
         after: after,
         before: before,
         language: language,
-      })
+      };
+
+      log.debug(
+        {
+          data: {
+            searchParams,
+            afterType: typeof after,
+            beforeType: typeof before,
+            afterValue: after,
+            beforeValue: before,
+          },
+        },
+        "About to call searchEvents with parameters"
+      );
+
+      console.log(
+        "🔍 DEBUG: About to call searchEvents with params:",
+        JSON.stringify(searchParams, null, 2)
+      );
+
+      return await searchEvents(searchParams)
         .then((result) => {
           // map all result item trhough localizedEvent
           const localizedEvents: LocalizedEvent[] = result.hits.map(
@@ -84,6 +125,37 @@ const handler = createNextHandler(
           let httpCode: number | undefined;
           if (error instanceof HttpError) httpCode = error?.status;
 
+          console.log("❌ ERROR: Search events failed:", {
+            error: error,
+            errorMessage:
+              error instanceof Error ? error.message : String(error),
+            errorStack: error instanceof Error ? error.stack : undefined,
+            errorType: error?.constructor?.name,
+            httpCode: httpCode,
+          });
+
+          // Enhanced error logging
+          log.error(
+            {
+              data: {
+                error: error,
+                errorMessage:
+                  error instanceof Error ? error.message : String(error),
+                errorStack: error instanceof Error ? error.stack : undefined,
+                errorType: error?.constructor?.name,
+                httpCode: httpCode,
+                searchParams: {
+                  community,
+                  before,
+                  after,
+                  language,
+                  country,
+                },
+              },
+            },
+            "Search events failed with error"
+          );
+
           res.responseHeaders.set(
             "Cache-Control",
             getErrorCacheControlHeader()
@@ -102,7 +174,10 @@ const handler = createNextHandler(
     jsonQuery: true,
     responseValidation: false, // TODO: Check why it fails
     handlerType: "app-router",
-    errorHandler: handleZodError,
+    errorHandler: (error) => {
+      console.log("🔥 TS-REST ERROR HANDLER:", error);
+      return handleZodError(error);
+    },
   }
 );
 

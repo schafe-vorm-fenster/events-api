@@ -49,9 +49,16 @@ export const searchEvents = async (
   query: SearchEventsQuery
 ): Promise<SearchEventsResult> => {
   const log = getLogger(ApiEvents.search);
-  log.debug("query: ", query);
+  log.debug("searchEvents called with query: ", query);
+
+  console.log(
+    "🔍 searchEvents: Function called with query:",
+    JSON.stringify(query, null, 2)
+  );
 
   // validate geo center
+  log.debug("Validating geo center...");
+  console.log("🔍 searchEvents: Validating geo center...");
   if (
     !query.center ||
     !query.center.geopoint ||
@@ -61,14 +68,24 @@ export const searchEvents = async (
     !query.center.stateId ||
     !query.center.countryId
   ) {
+    log.error("Invalid center param validation failed", {
+      center: query.center,
+      hasGeopoint: !!query.center?.geopoint,
+      hasCommunityId: !!query.center?.communityId,
+      hasMunicipalityId: !!query.center?.municipalityId,
+      hasCountyId: !!query.center?.countyId,
+      hasStateId: !!query.center?.stateId,
+      hasCountryId: !!query.center?.countryId,
+    });
     throw createHttpError(
       400,
       "invalid center param, event search requires a valid center geopoint and geoname ids for all levels"
     );
   }
+  log.debug("Geo center validation passed");
 
   // validate scope
-  if (!query.scope || !RuralEventScopeSchema.parse(query.scope)) {
+  if (!query.scope || !RuralEventScopeSchema.safeParse(query.scope).success) {
     throw createHttpError(
       400,
       "invalid scope param, event search requires a valid scope"
@@ -256,6 +273,7 @@ export const searchEvents = async (
 
   log.debug(searchParameters, "searchParameters");
 
+  log.debug("Starting Typesense search...");
   // TODO: maybe put into one generic function? Only for error handling reasons?
   // TODO: refactor to pure http api
   const result = await client
@@ -263,7 +281,15 @@ export const searchEvents = async (
     .documents()
     .search(searchParameters)
     .then(function (searchResults) {
-      log.debug(`Found ${searchResults.found} events`);
+      log.debug(
+        `Typesense search successful - Found ${searchResults.found} events`
+      );
+      log.debug("Search results structure:", {
+        found: searchResults.found,
+        page: searchResults.page,
+        out_of: searchResults.out_of,
+        hitsCount: searchResults.hits?.length || 0,
+      });
       return {
         found: searchResults.found,
         page: searchResults.page,
@@ -274,11 +300,22 @@ export const searchEvents = async (
     .catch((error: TypesenseError | unknown) => {
       let httpCode: number | undefined;
       if (error instanceof TypesenseError) httpCode = error?.httpStatus;
+
+      log.error("Typesense search failed", {
+        error: error,
+        errorMessage: error instanceof Error ? error.message : String(error),
+        errorType: error?.constructor?.name,
+        httpCode: httpCode,
+        searchParameters: searchParameters,
+      });
+
       throw createHttpError(
         httpCode || 500,
         (error as TypesenseError | Error)?.message ||
           "Error while searching for events"
       );
     });
+
+  log.debug("Returning search results:", result);
   return result;
 };

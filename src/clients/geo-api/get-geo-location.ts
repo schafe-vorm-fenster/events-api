@@ -30,7 +30,34 @@ export const getGeoLocation = async (
 
   try {
     const config = getGeoApiConfig();
+
+    // Add diagnostic logging for URL construction
+    log.debug(
+      {
+        data: {
+          geonameId,
+          configHost: config.host,
+          configHostType: typeof config.host,
+          pathSegment: `/api/community/${geonameId}`,
+        },
+      },
+      "About to construct URL for geo location request"
+    );
+
     const url = new URL(`/api/community/${geonameId}`, config.host);
+
+    log.debug(
+      {
+        data: {
+          constructedUrl: url.toString(),
+          urlHost: url.host,
+          urlHostname: url.hostname,
+          urlProtocol: url.protocol,
+          urlPathname: url.pathname,
+        },
+      },
+      "URL constructed successfully for geo location request"
+    );
 
     const response = await fetch(url, {
       method: "GET",
@@ -44,23 +71,27 @@ export const getGeoLocation = async (
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    if (data) {
+    if (data && data.data) {
       log.debug(
         {
           data: {
             hasData: true,
-            locationFound: !!data,
+            locationFound: !!data.data,
+            status: data.status,
+            message: data.message,
           },
         },
         "Geo location retrieved successfully"
       );
-      return data as GeoLocation;
+      return data.data as GeoLocation;
     } else {
       log.warn(
         {
           data: {
             geonameId,
-            result: "empty response",
+            result: "empty response or missing data property",
+            responseStatus: data?.status,
+            responseMessage: data?.message,
           },
         },
         "Geo location retrieval returned no data"

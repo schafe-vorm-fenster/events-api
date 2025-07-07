@@ -1,5 +1,15 @@
 // TODO: import from geo-api module as soon as it is available on public npm
 
+/**
+ * Wrapper for geo API responses
+ */
+export interface GeoApiResponse<T> {
+  status: number;
+  message: string;
+  timestamp: string;
+  data: T;
+}
+
 export interface GeoPoint {
   lat: number;
   lng: number;
@@ -19,7 +29,7 @@ export interface GeoPosition {
 }
 
 export interface GeoIdentifiers {
-  geonamesId: number | null;
+  geonameId: number | null;
   googlePlaceId: string | null;
   wikidataId: string | null;
   googleMyBusinessId: string | null;

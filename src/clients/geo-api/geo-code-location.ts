@@ -46,23 +46,27 @@ export const geoCodeLocation = async (
     }
 
     const data = await response.json();
-    if (data) {
+    if (data && data.data) {
       log.debug(
         {
           data: {
             hasData: true,
-            locationFound: !!data,
+            locationFound: !!data.data,
+            status: data.status,
+            message: data.message,
           },
         },
         "Geocoding successful"
       );
-      return data as GeoLocation;
+      return data.data as GeoLocation;
     } else {
       log.warn(
         {
           data: {
             location,
-            result: "empty response",
+            result: "empty response or missing data property",
+            responseStatus: data?.status,
+            responseMessage: data?.message,
           },
         },
         "Geocoding returned no data"

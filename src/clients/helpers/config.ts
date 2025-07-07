@@ -21,15 +21,56 @@ export const getApiHost = (
   const log = getLogger(loggerName);
   const host = process.env[hostEnvVar];
 
+  log.debug(
+    {
+      data: {
+        envVarName: hostEnvVar,
+        rawHostValue: host,
+        hostType: typeof host,
+        hostLength: host?.length,
+      },
+    },
+    "Processing API host environment variable"
+  );
+
   if (!host || host.length <= 1) {
     const error = `${hostEnvVar} is not properly configured`;
     log.error(error);
     throw new Error(error);
   }
 
-  // validate by using URL constructor
-  const url = new URL(host);
-  return url.toString();
+  try {
+    // validate by using URL constructor
+    const url = new URL(host);
+    const processedHost = url.toString();
+
+    log.debug(
+      {
+        data: {
+          originalHost: host,
+          processedHost: processedHost,
+          urlProtocol: url.protocol,
+          urlHostname: url.hostname,
+          urlPort: url.port,
+        },
+      },
+      "API host URL processed successfully"
+    );
+
+    return processedHost;
+  } catch (urlError) {
+    log.error(
+      {
+        error: {
+          message: (urlError as Error).message,
+          originalHost: host,
+          envVarName: hostEnvVar,
+        },
+      },
+      "Failed to parse API host URL"
+    );
+    throw urlError;
+  }
 };
 
 /**
