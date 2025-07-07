@@ -4,7 +4,6 @@ const nextConfig: NextConfig = {
   reactStrictMode: false, // SwaggerUI uses some non-strict React features
   experimental: {
     useCache: true,
-    dynamicIO: true,
     cacheLife: {
       classification: {
         stale: 3600, // 1 hour
